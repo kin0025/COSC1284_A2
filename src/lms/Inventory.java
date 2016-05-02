@@ -67,22 +67,24 @@ public class Inventory {
     /* Add Methods */
     public boolean addHolding(String ID, char itemType, String title, int loanFee) {
         if (numberOfHoldings < holdings.length) {
-            checkID(ID, itemType);
-            String holdingID = itemType + ID;
-            int itemNumber = firstNullArray(itemType);
-            if (itemType == 'b') {
-                holdings[itemNumber] = new Book(holdingID, title);
-                numberOfHoldings++;
-                return true;
-            } else if (itemType == 'v') {
-                holdings[itemNumber] = new Video(holdingID, title, loanFee);
-                numberOfHoldings++;
-                return true;
+            if (checkID(ID, itemType).equals("valid")) {
+                String holdingID = itemType + ID;
+                int itemNumber = firstNullArray(itemType);
+                if (itemType == 'b') {
+                    holdings[itemNumber] = new Book(holdingID, title);
+                    numberOfHoldings++;
+                    return true;
+                } else if (itemType == 'v') {
+                    holdings[itemNumber] = new Video(holdingID, title, loanFee);
+                    numberOfHoldings++;
+                    return true;
+                }
             }
+            System.out.println("All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
+            return false;
         }
-        System.out.println("All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
+        System.out.print("Invalid ID");
         return false;
-
     }
 
     public boolean addMember(String ID, char itemType, String name) {
