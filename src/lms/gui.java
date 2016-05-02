@@ -451,23 +451,36 @@ public class GUI {
     } //Done
 
     private void removeHolding() {
+        String choiceOptions[] = {"y", "n"};
+        char choice;
         newPage("Remove Holding");
         System.out.println("Enter Holding ID:");
         String ID = input.nextLine();
-        boolean result = inv.removeHolding(ID);
+        boolean result = inv.printHolding(ID);
         while (!result) {
-            char choice;
-            do {
-                System.out.println("Incorrect holding ID. Nothing was removed. Do you want to try again? y/n");
-                choice = input.nextLine().toLowerCase().charAt(0);
-            } while (!(choice == 'y') && !(choice == 'n'));
+            choice = receiveStringInput("Incorrect Holding ID. Do you want to try again?", choiceOptions, "y", 1).charAt(0);
             if (choice == 'y') {
                 ID = input.nextLine();
-                result = inv.removeHolding(ID);
+                result = inv.printHolding(ID);
             } else {
                 mainMenu();
             }
         }
+            choice = receiveStringInput("Do you want to remove this holding? Please confirm", choiceOptions, true, 1).charAt(0);
+            if(choice == 'y') {
+                result = inv.removeHolding(ID);
+                while (!result) {
+                choice = receiveStringInput("Incorrect Holding ID. No items were deleted. Do you want to try again?", choiceOptions, true, 1).charAt(0);
+                    if (choice == 'y') {
+                        ID = input.nextLine();
+                        result = inv.removeHolding(ID);
+                    } else {
+                        mainMenu();
+                    }
+                }
+            }
+
+        mainMenu();
     }
 
     private void addMember() {
