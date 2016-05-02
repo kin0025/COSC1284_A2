@@ -42,7 +42,7 @@ public class Inventory {
                 case 'b':
                 case 'v':
                     if (holdings[i] != null) {
-                        if (holdings[i].getID().substring(1, 6).equals(ID)) {
+                        if (holdings[i].getID().equals(itemType + ID)) {
                             return ("Already Taken");
                         }
                     }
@@ -51,7 +51,7 @@ public class Inventory {
 
                 case 'p':
                     if (members[i] != null) {
-                        if (members[i].getID().substring(1, 6).equals(ID)) {
+                        if (members[i].getID().equals(itemType + ID)) {
                             return ("Already Taken");
                         }
                     }
