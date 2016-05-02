@@ -101,6 +101,44 @@ public class Inventory {
         return randomID;
     }
 
+    private void recalculateStatistics(){
+        numberOfHoldings = 0;
+        numberOfMembers = 0;
+        for(int i = 0; i < holdings.length;i++){
+            if(holdings[i] != null){
+                numberOfHoldings++;
+            }
+        }
+        for(int i = 0; i < members.length;i++){
+            if(members[i] != null){
+                numberOfMembers++;
+            }
+        }
+    }
+    private int searchArrays(String ID) {
+        char itemType = ID.toLowerCase().charAt(0);
+        if (itemType == 'v' || itemType == 'b') {
+            for (int i = 0; i < holdings.length; i++) {
+                if (holdings[i].getID().equals(ID)) {
+                    return (i);
+                }
+            }
+            System.out.println("Unable to find holding with that ID");
+            return (-1);
+        } else if (itemType == 'p' || itemType == 's') {
+            for (int i = 0; i < members.length ; i++) {
+                if (members[i].getID().equals(ID)) {
+                    return (i);
+                }
+            }
+            System.out.println("Unable to find member with that ID");
+            return -1;
+        } else {
+            System.out.println("Wrong ID format");
+            return -1;
+        }
+    }
+
     /* Methods that add items to inventory */
 
     /**
@@ -210,9 +248,13 @@ public class Inventory {
         }
     }
 
-    public void printHolding(String ID) {
+    public boolean printHolding(String ID) {
         int holdingID = searchArrays(ID);
-        holdings[holdingID].print();
+        if(holdingID < 0){
+            System.out.println("No Holding Found");
+            return false;
+        }else holdings[holdingID].print();
+        return true;
     }
 
     public void printMember(String ID) {
@@ -222,30 +264,6 @@ public class Inventory {
 
     public void save() {
 
-    }
-
-    private int searchArrays(String ID) {
-        char itemType = ID.toLowerCase().charAt(0);
-        if (itemType == 'v' || itemType == 'b') {
-            for (int i = 0; holdings.length < i; i++) {
-                if (holdings[i].getID().equals(ID)) {
-                    return (i);
-                }
-            }
-            System.out.println("Unable to find holding with that ID");
-            return (-1);
-        } else if (itemType == 'p' || itemType == 's') {
-            for (int i = 0; members.length < i; i++) {
-                if (members[i].getID().equals(ID)) {
-                    return (i);
-                }
-            }
-            System.out.println("Unable to find member with that ID");
-            return -1;
-        } else {
-            System.out.println("Wrong ID format");
-            return -1;
-        }
     }
 
 
