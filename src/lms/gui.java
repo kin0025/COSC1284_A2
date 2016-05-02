@@ -14,6 +14,15 @@ public class GUI {
     private Scanner input = new Scanner(System.in);
     private Inventory inv = new Inventory();
 
+    private static void printCharTimes(char c, int times, boolean newLine) {
+        for (int i = 0; i < times; i++) {
+            System.out.print(c);
+        }
+        if (newLine) {
+            System.out.println();
+        }
+    }
+
     //UI Methods
     public void logoBoot() {
         System.out.printf("                                                            \n" +
@@ -282,7 +291,6 @@ public class GUI {
         return (inputChar);
     }
 
-
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
         System.out.println(flavourText + " " + charArrayToString(options) + "[" + defaultAnswer + "]");
         if (outputLength <= 0) {
@@ -308,18 +316,9 @@ public class GUI {
             return (inputChar);
         } else {
             System.out.println("Input was not an option. Please try again.");
-            inputChar = receiveStringInput(flavourText, options, true, outputLength);//If they didn't get it right the first time, supply options.
+            inputChar = receiveStringInput(flavourText, options, defaultAnswer, outputLength);//If they didn't get it right the first time, supply options.
         }
         return inputChar;
-    }
-
-    private static void printCharTimes(char c, int times, boolean newLine) {
-        for (int i = 0; i < times; i++) {
-            System.out.print(c);
-        }
-        if (newLine) {
-            System.out.println();
-        }
     }
 
     //Page Main Menu Methods
@@ -454,34 +453,58 @@ public class GUI {
         String choiceOptions[] = {"y", "n"};
         char choice;
         newPage("Remove Holding");
+
+        //Request holding ID
         System.out.println("Enter Holding ID:");
         String ID = input.nextLine();
+        //Print the holding listing so they know what they are deleting. This also checks if the holding exists.
         boolean result = inv.printHolding(ID);
-        while (!result) {
+
+        //If the holding doesn't exist, prompt the user for a working ID
+        if (!result) {
+            //Ask them if they want to continue or return to the main menu
             choice = receiveStringInput("Incorrect Holding ID. Do you want to try again?", choiceOptions, "y", 1).charAt(0);
+            //If they want to continue give them 4 tries so they don't get stuck here if there are no holdings to remove
             if (choice == 'y') {
-                ID = input.nextLine();
-                result = inv.printHolding(ID);
+                System.out.println("You have 4 tries before returning to main menu");
+                int tries = 0;
+                //End the loop either upon entering a correct id, or using up all the tries
+                while (!result && tries < 4) {
+                    System.out.println((tries + 1) + ": Enter a valid holding ID:");
+                    ID = input.nextLine();
+                    result = inv.printHolding(ID);
+                    tries++;
+                }
+                //If they time out because of tries, return them to main menu
+                if (tries == 4) {
+                    mainMenu();
+                }
+                //If they choose no earlier return them to main menu.
             } else {
                 mainMenu();
             }
         }
-            choice = receiveStringInput("Do you want to remove this holding? Please confirm", choiceOptions, true, 1).charAt(0);
-            if(choice == 'y') {
-                result = inv.removeHolding(ID);
-                while (!result) {
-                choice = receiveStringInput("Incorrect Holding ID. No items were deleted. Do you want to try again?", choiceOptions, true, 1).charAt(0);
-                    if (choice == 'y') {
-                        ID = input.nextLine();
-                        result = inv.removeHolding(ID);
-                    } else {
-                        mainMenu();
-                    }
-                }
+        //We now have a correct id. Ask the user if they want to delete the holding.
+        choice = receiveStringInput("Do you want to remove this holding? Please confirm", choiceOptions, "n", 1).charAt(0);
+        //If they do, remove the holding.
+        if (choice == 'y') {
+            result = inv.removeHolding(ID);
+            //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
+            if (result) {
+                System.out.println(ID + " deleted. Press enter to return to main menu.");
+                input.nextLine();
+            } else {
+                //If the holding is somehow not deleted after all the checks, inform the user.
+                System.out.println("Holding deletion failed. Please report to developer and try again. Press enter to return to main menu");
+                input.nextLine();
             }
-
+            //If they decide not to delete the holding, return them to the menu.
+        } else {
+            System.out.println("Holding deletion canceled. Press enter to return to main menu.");
+            input.nextLine();
+        }
         mainMenu();
-    }
+    } //Done
 
     private void addMember() {
         newPage("Add Member");
