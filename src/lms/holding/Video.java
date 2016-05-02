@@ -24,18 +24,16 @@ public class Video extends Holding {
     public Video(String ID, String title, int loanCost, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable){
         super(ID, title,loanCost, maxLoanPeriod,borrowDate, active, unavailable);
     }
-    public boolean setID(String itemID, char itemType) {
-        if(itemType == 'v' && itemID.length() == 6){
-            super.setID(itemType + "" + itemID);
-            return (true);
-        }else{
-            if(itemID.length() == 6){}
-            return(false);
-        }
-    }
 @Override
     public boolean setID(String ID) {
-        if(ID.charAt(0) == 'v' && ID.length() == 7){
+    boolean validID = true;
+    int i= 1;
+    while(ID.length() > i && validID){
+        if(!(ID.charAt(i) >= 0)){
+            validID = false;
+        }
+    }
+    if(ID.charAt(0) == 'v' && ID.length() == 7 && validID){
             super.setID(ID);
             return(true);
         }else{

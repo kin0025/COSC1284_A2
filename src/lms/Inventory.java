@@ -60,7 +60,7 @@ public class Inventory {
         String randomID;
         do {
             randomID = Util.randomID();
-        } while (!checkID(randomID, itemType).equalsIgnoreCase("already taken"));
+        } while (!checkID(randomID, itemType).equalsIgnoreCase("valid"));
         return randomID;
     }
 

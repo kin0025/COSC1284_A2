@@ -29,17 +29,17 @@ public class Book extends Holding {
         setAuthor(author);
 
     }
-    public boolean setID(String itemID, char itemType) {
-        if (itemType == 'b' && itemID.length() == 6) {
-            super.setID(itemType + "" + itemID);
-            return (true);
-        } else {
-            return (false);
-        }
-    }
+
 @Override
     public boolean setID(String ID) {
-        if (ID.charAt(0) == 'b' && ID.length() == 7) {
+    boolean validID = true;
+    int i= 1;
+    while(ID.length() > i && validID){
+        if(!(ID.charAt(i) >= 0)){
+            validID = false;
+        }
+    }
+        if (ID.charAt(0) == 'b' && ID.length() == 7 && validID) {
             super.setID(ID);
             return (true);
         } else {

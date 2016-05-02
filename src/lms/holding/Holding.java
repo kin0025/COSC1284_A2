@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * Created by akinr on 11/04/2016.
  */
-public class Holding {
+public abstract class Holding {
     private String ID;
     private String title;
     private int loanCost;
@@ -106,11 +106,7 @@ public class Holding {
         return (maxLoanPeriod);
     }
 
-    public int calculateLateFee(DateTime dateReturned) {
-        int daysOut = DateTime.diffDays(dateReturned, borrowDate);
-        int daysDiff = daysOut - maxLoanPeriod;
-        return (daysDiff * loanCost);
-    }
+    public abstract int calculateLateFee(DateTime dateReturned);
 
     protected boolean getActiveStatus() {
         return active;
@@ -212,7 +208,7 @@ public class Holding {
                 this.active = true;
                 return true;
             case "invalid id":
-                System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
+          /*      System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
                 System.out.println("Do you want to enter another one? (yes/no/y/n)");
                 char result = input.nextLine().toLowerCase().charAt(0);
                 if (result == 'y') {
@@ -223,8 +219,8 @@ public class Holding {
                     activate();
                 } else return false;
                 break;
-            case "invalid title":
-                System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
+          */  case "invalid title":
+            /*    System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
                 System.out.println("Do you want to enter another one? (yes/no/y/n)");
                 result = input.nextLine().toLowerCase().charAt(0);
                 if (result == 'y') {
@@ -234,12 +230,12 @@ public class Holding {
                     } while (checkValidity().equalsIgnoreCase("invalid title"));
                     activate();
                 } else return false;
-            default:
+            */default:
                 System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
                 return (false);
 
         }
-        return false;
+//        return false;
     }
 
     public boolean deactivate() {
