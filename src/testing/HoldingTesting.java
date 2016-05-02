@@ -11,10 +11,11 @@ import lms.util.DateTime;
  */
 public class HoldingTesting {
     public static void main(String[] args) {
-        Book book = new Book("b123456", "Book Title");
-        Video video = new Video("v123456", "Video", 6);
-        testSetID(book,video);
-        testBorrowReturn(book, video);
+        //Book book = new Book("b123456", "Book Title");
+        //Video video = new Video("v123456", "Video", 6);
+        System.out.println((2.0 + 1.0) / 10);
+        //testSetID(book,video);
+        //testBorrowReturn(book, video);
     }
 
     public static void testSetID(Book book, Video video) {

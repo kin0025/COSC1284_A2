@@ -10,4 +10,11 @@ public class adminVerify {
     private boolean isVerified;
     private String passwordHashes[] = new String[8];
     private String masterPassword = "Password1";//todo use hashes via a library
+
+    public boolean authenticated(String passcode) {
+        if (passcode.equals(masterPassword)) {
+            return true;
+        }
+        return false;
+    }
 }

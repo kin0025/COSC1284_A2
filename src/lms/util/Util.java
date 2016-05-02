@@ -15,6 +15,6 @@ public class Util {
         for (int i = 0; i < 5; i++) {
             numbers[i] = random.nextInt(10);
         }
-        return(numbers[0] + "" + numbers[1] + numbers [2] + numbers [3] + numbers[4] + numbers [5]);
+        return (numbers[0] + "" + numbers[1] + numbers[2] + numbers[3] + numbers[4] + numbers[5]);
     }
 }

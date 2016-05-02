@@ -19,13 +19,25 @@ public class Inventory {
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
 
-    //Check if an ID is correct - both type and ID. Return the result in string form (Valid, Already Taken,Invalid Type)
-    public String checkID(String ID, char itemType) {
+    /**
+     * Check if the details needed for an id are correct. Returns the result in string form (Valid, Already Taken,Invalid Type, ID contains Characters)
+     **/
+    String checkID(String ID, char itemType) {
         if (ID.length() != 6) {
             return ("Wrong Number of Digits");
         }
+        boolean validID = true;
+        int i = 0;
+        while (ID.length() > i && validID) {
+            //So we need to cast the id to a char to an int. This returns an ascii value, as I found out with the loanFee.
+            if (!((int) ID.charAt(i) >= 48 && (int) ID.charAt(i) <= 58)) { //Ascii codes for numbers are between 48 and 58 (including 0). If each character is between these values, they are numbers.
+                validID = false;
+            }
+            i++;
+        }
+        if (!validID) return ("ID contains characters");
         //Checking for duplicate ID
-        for (int i = 0; i < holdings.length; i++) {
+        for (i = 0; i < holdings.length; i++) {
             switch (itemType) {
                 case 'b':
                 case 'v':
@@ -51,11 +63,36 @@ public class Inventory {
 
     }
 
-    public String infoPrintout() {
-        return ("Holdings:" + numberOfHoldings + "/" + holdings.length + " " + "Members:" + numberOfMembers + "/" + members.length);
+    /**
+     * Finds the array index of the firsy null value
+     **/
+    private int firstNullArray(char type) {
+        if (type == 'v' || type == 'b') {
+            for (int i = 0; i < holdings.length; i++) {
+                if (holdings[i] == null) {
+                    return i;
+                }
+            }
+        } else if (type == 'p' || type == 's') {
+            for (int i = 0; i < members.length; i++) {
+                if (holdings[i] == null) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
-    //Create an ID that isn't already taken for an item type
+    /**
+     * Provides a string form printout of inventory values in the form Holdings:number/max Members: Number/max
+     **/
+    public String infoPrintout() {
+        return ("Holdings:" + numberOfHoldings + "/" + holdings.length + " | " + "Members:" + numberOfMembers + "/" + members.length);
+    }
+
+    /**
+     * Creates an ID number that is not already taken for a specific item type - holding or ID
+     **/
     public String generateValidID(char itemType) {
         String randomID;
         do {
@@ -64,10 +101,14 @@ public class Inventory {
         return randomID;
     }
 
-    /* Add Methods */
+    /* Methods that add items to inventory */
+
+    /**
+     * Adds a holding based upon provided information. Returns a booleans value of success
+     **/
     public boolean addHolding(String ID, char itemType, String title, int loanFee) {
         if (numberOfHoldings < holdings.length) {
-            if (checkID(ID, itemType).equals("valid")) {
+            if (checkID(ID, itemType).equals("Valid")) {
                 String holdingID = itemType + ID;
                 int itemNumber = firstNullArray(itemType);
                 if (itemType == 'b') {
@@ -79,11 +120,9 @@ public class Inventory {
                     numberOfHoldings++;
                     return true;
                 }
-            }
+            } else System.out.println("Invalid ID");
+        } else
             System.out.println("All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
-            return false;
-        }
-        System.out.print("Invalid ID");
         return false;
     }
 
@@ -209,22 +248,7 @@ public class Inventory {
         }
     }
 
-    private int firstNullArray(char type) {
-        if (type == 'v' || type == 'b') {
-            for (int i = 0; i < holdings.length; i++) {
-                if (holdings[i] == null) {
-                    return i;
-                }
-            }
-        } else if (type == 'p' || type == 's') {
-            for (int i = 0; i < members.length; i++) {
-                if (holdings[i] == null) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
+
 /*
 
     public void importFile() {

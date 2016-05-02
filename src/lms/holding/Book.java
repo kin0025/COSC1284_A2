@@ -30,15 +30,16 @@ public class Book extends Holding {
 
     }
 
-@Override
+    @Override
     public boolean setID(String ID) {
-    boolean validID = true;
-    int i= 1;
-    while(ID.length() > i && validID){
-        if(!(ID.charAt(i) >= 0)){
-            validID = false;
+        boolean validID = true;
+        int i = 1;
+        while (ID.length() > i && validID) {
+            if (!((int) ID.charAt(i) >= 48 && (int) ID.charAt(i) <= 58)) { //Ascii codes for numbers are between 48 and 58 (including 0). If each character is between these values, they are numbers.
+                validID = false;
+            }
+            i++;
         }
-    }
         if (ID.charAt(0) == 'b' && ID.length() == 7 && validID) {
             super.setID(ID);
             return (true);
@@ -50,9 +51,11 @@ public class Book extends Holding {
     public void setAuthor(String author) {
         this.author = author;
     }
-    public String getAuthor(){
+
+    public String getAuthor() {
         return author;
     }
+
     @Override
     public int calculateLateFee(DateTime dateReturned) {
         int daysOut = DateTime.diffDays(dateReturned, getBorrowDate());
@@ -62,7 +65,8 @@ public class Book extends Holding {
         }
         return (daysDiff * 2);
     }
-@Override
+
+    @Override
     public String checkValidity() {
         String result = super.checkValidity();
         if (getDefaultLoanFee() != 10) {
@@ -70,8 +74,9 @@ public class Book extends Holding {
         }
         return (result);
     }
+
     @Override
-    public String toFile(){
+    public String toFile() {
         String result = getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + getActiveStatus() + "," + getUnavailable() + "," + getAuthor();
         return (result);
     }

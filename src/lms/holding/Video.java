@@ -13,59 +13,64 @@ public class Video extends Holding {
         setID(holdingId);
         setLoanCost(loanFee);
         setMaxLoanPeriod(7);
-        if(!checkValidity().equalsIgnoreCase("valid")){
+        setUnavailable(false);
+        activate();
+        if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
             System.out.println(checkValidity());
             System.out.println("Item has been deactivated due to invalid details.");
         }
-        setUnavailable(false);
-        activate();
     }
-    public Video(String ID, String title, int loanCost, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable){
-        super(ID, title,loanCost, maxLoanPeriod,borrowDate, active, unavailable);
+
+    public Video(String ID, String title, int loanCost, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable) {
+        super(ID, title, loanCost, maxLoanPeriod, borrowDate, active, unavailable);
     }
-@Override
+
+    @Override
     public boolean setID(String ID) {
-    boolean validID = true;
-    int i= 1;
-    while(ID.length() > i && validID){
-        if(!(ID.charAt(i) >= 0)){
-            validID = false;
+        boolean validID = true;
+        int i = 1;
+        while (ID.length() > i && validID) {
+            if (!((int) ID.charAt(i) >= 48 && (int) ID.charAt(i) <= 58)) { //Ascii codes for numbers are between 48 and 58 (including 0). If each character is between these values, they are numbers.
+                validID = false;
+            }
+            i++;
         }
-    }
-    if(ID.charAt(0) == 'v' && ID.length() == 7 && validID){
+        if (ID.charAt(0) == 'v' && ID.length() == 7 && validID) {
             super.setID(ID);
-            return(true);
-        }else{
+            return (true);
+        } else {
             return (false);
         }
 
     }
+
     @Override
     public int calculateLateFee(DateTime dateReturned) {
-        int daysOut = DateTime.diffDays(dateReturned,getBorrowDate());
+        int daysOut = DateTime.diffDays(dateReturned, getBorrowDate());
         int daysDiff = daysOut - getMaxLoanPeriod();
-        if(daysDiff < 0){
+        if (daysDiff < 0) {
             daysDiff = 0;
         }
-        return ((int)(daysDiff * getDefaultLoanFee() * 0.5));
+        return ((int) (daysDiff * getDefaultLoanFee() * 0.5));
     }
+
     @Override
     public void setLoanCost(int loanCost) {
-        if(loanCost == 4 || loanCost == 6) {
+        if (loanCost == 4 || loanCost == 6) {
             super.setLoanCost(loanCost);
-        }
-        else {
+        } else {
             System.out.println("Invalid loan cost. Holding has been deactivated. ID:" + getID());
             deactivate();
         }
     }
+
     @Override
-    public String checkValidity(){
+    public String checkValidity() {
         String result = super.checkValidity();
-        if (getDefaultLoanFee() == 6 || getDefaultLoanFee() ==4) {
+        if (getDefaultLoanFee() == 6 || getDefaultLoanFee() == 4) {
             return (result);
-        }else return ("Invalid Fee");
+        } else return ("Invalid Fee");
     }
 }
 
