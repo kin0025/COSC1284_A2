@@ -231,7 +231,7 @@ public class Inventory {
     public boolean borrowHolding(String holdingID, String memberID) {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
-        if (holdingPos >= 0) {
+        if (holdingPos >= 0 && memberPos >= 0) {
             holdings[holdingPos].borrowHolding();
             members[memberPos].borrowHolding(holdings[holdingPos]);
             return true;
@@ -242,7 +242,7 @@ public class Inventory {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         DateTime current = new DateTime();
-        if (holdingPos >= 0) {
+        if (holdingPos >= 0 && memberPos >= 0) {
             holdings[holdingPos].returnHolding(current);
             members[memberPos].returnHolding(holdings[holdingPos], current);
             return true;
