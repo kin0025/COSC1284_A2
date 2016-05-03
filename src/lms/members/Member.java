@@ -11,7 +11,7 @@ import lms.util.DateTime;
 /**
  * Created by akinr on 11/04/2016.
  */
-public class Member {
+public abstract class Member {
     private String ID;
     private String name;
     private int maxCredit;
@@ -24,12 +24,10 @@ public class Member {
         setName(fullName);
         setCredit(credit);
     }
-
-    protected Member() {
-    }
+    protected Member(){}
 /* Setters */
 
-    public boolean setID(String ID) {
+    protected boolean setID(String ID) {
         this.ID = ID;
         return true;
     } //Done

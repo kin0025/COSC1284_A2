@@ -8,8 +8,9 @@ package lms;
  */
 public class LMS {
     public static void main(String[] args){
-        GUI state = new GUI();
+        gui state = new gui();
         state.logoBoot();
+        state.addDefault();
         state.mainMenu();
     }
 }

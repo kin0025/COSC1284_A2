@@ -46,28 +46,31 @@ public class Inventory {
         }
         if (!validID) return ("ID contains characters");
         //Checking for duplicate ID
-        for (i = 0; i < holdings.length; i++) {
-            switch (itemType) {
-                case 'b':
-                case 'v':
+        switch (itemType) {
+            case 'b':
+            case 'v':
+                for (i = 0; i < holdings.length; i++) {
                     if (holdings[i] != null) {
                         if (holdings[i].getID().equals(itemType + ID)) {
                             return ("Already Taken");
                         }
                     }
-                    break;
-                case 's':
+                }
+                break;
+            case 's':
 
-                case 'p':
+            case 'p':
+                for (i = 0; i < members.length; i++) {
                     if (members[i] != null) {
                         if (members[i].getID().equals(itemType + ID)) {
                             return ("Already Taken");
                         }
                     }
-                    break;
-            }
-
+                }
+                break;
         }
+
+
         return ("Valid");
 
     }
@@ -110,7 +113,7 @@ public class Inventory {
         return randomID;
     }
 
-    private void recalculateStatistics() {
+    public void recalculateStatistics() {
         numberOfHoldings = 0;
         numberOfMembers = 0;
         for (int i = 0; i < holdings.length; i++) {
