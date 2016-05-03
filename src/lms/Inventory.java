@@ -23,6 +23,14 @@ public class Inventory {
     /**
      * Check if the details needed for an id are correct. Returns the result in string form (Valid, Already Taken,Invalid Type, ID contains Characters)
      **/
+    int getNumberOfHoldings() {
+        return (numberOfHoldings);
+    }
+
+    int getNumberOfMembers() {
+        return numberOfMembers;
+    }
+
     String checkID(String ID, char itemType) {
         if (ID.length() != 6) {
             return ("Wrong Number of Digits");
@@ -174,18 +182,20 @@ public class Inventory {
 
     public boolean addMember(String ID, char itemType, String name) {
         if (numberOfMembers < members.length) {
-            checkID(ID, itemType);
-            String memberID = itemType + ID;
-            int itemNumber = firstNullArray(itemType);
-            if (itemType == 's') {
-                members[itemNumber] = new StandardMember(memberID, name);
-                numberOfMembers++;
-                return true;
-            } else if (itemType == 'p') {
-                members[itemNumber] = new PremiumMember(memberID, name);
-                numberOfMembers++;
-                return true;
+            if (checkID(ID, itemType).equals("Valid")) {
+                String memberID = itemType + ID;
+                int itemNumber = firstNullArray(itemType);
+                if (itemType == 's') {
+                    members[itemNumber] = new StandardMember(memberID, name);
+                    numberOfMembers++;
+                    return true;
+                } else if (itemType == 'p') {
+                    members[itemNumber] = new PremiumMember(memberID, name);
+                    numberOfMembers++;
+                    return true;
+                }
             }
+            System.out.println("Invalid ID");
         }
         System.out.println("All member spots are taken. Please pay for a larger subscription to support more members, or remove exiting members");
         return false;
@@ -269,9 +279,44 @@ public class Inventory {
         return true;
     }
 
-    public void printMember(String ID) {
+    public boolean printMember(String ID) {
+        if (ID.length() != 7) {
+            System.out.println("Incorrect ID");
+            return false;
+        }
         int memberID = searchArrays(ID);
-        members[memberID].print();
+        if (memberID < 0) {
+            System.out.println("No Member Found");
+            return false;
+        } else members[memberID].print();
+        return true;
+    }
+
+    public String getMemberName(String ID) {
+        boolean result;
+        if (ID.charAt(0) == 's' || ID.charAt(0) == 'p') {
+            result = idExists(ID);
+        } else {
+            System.out.println("ID not a member. Please try again");
+            return null;
+        }
+        if (!result) {
+            return null;
+        } else {
+            return (members[searchArrays(ID)].getFullName());
+        }
+    }
+
+    public boolean idExists(String ID) {
+        if (ID.length() != 7) {
+            System.out.println("Incorrect ID");
+            return false;
+        }
+        if (searchArrays(ID) < 0) {
+            System.out.println("Not Found");
+            return false;
+        } else
+            return true;
     }
 
     public void save() {
