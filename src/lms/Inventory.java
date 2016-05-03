@@ -87,7 +87,7 @@ public class Inventory {
             }
         } else if (type == 'p' || type == 's') {
             for (int i = 0; i < members.length; i++) {
-                if (holdings[i] == null) {
+                if (members[i] == null) {
                     return i;
                 }
             }
@@ -170,7 +170,7 @@ public class Inventory {
                 int itemNumber = firstNullArray(itemType);
                 if (itemType == 'b') {
                     holdings[itemNumber] = new Book(holdingID, title);
-                    numberOfHoldings++;
+                    recalculateStatistics();
                     return true;
                 } else if (itemType == 'v') {
                     holdings[itemNumber] = new Video(holdingID, title, loanFee);
@@ -190,7 +190,7 @@ public class Inventory {
                 int itemNumber = firstNullArray(itemType);
                 if (itemType == 's') {
                     members[itemNumber] = new StandardMember(memberID, name);
-                    numberOfMembers++;
+                    recalculateStatistics();
                     return true;
                 } else if (itemType == 'p') {
                     members[itemNumber] = new PremiumMember(memberID, name);
@@ -209,7 +209,7 @@ public class Inventory {
         int holdingPos = searchArrays(ID);
         if (holdingPos >= 0) {
             holdings[holdingPos] = null;
-            numberOfHoldings--;
+            recalculateStatistics();
         } else {
             System.out.println("Nothing was removed");
             return false;
@@ -222,7 +222,7 @@ public class Inventory {
         int memberPos = searchArrays(ID);
         if (memberPos >= 0) {
             members[memberPos] = null;
-            numberOfMembers--;
+            recalculateStatistics();
         } else {
             System.out.println("Nothing was removed");
             return false;
@@ -256,7 +256,8 @@ public class Inventory {
     public void printAllHoldings() {
         for (int i = 0; i < holdings.length; i++) {
             if (holdings[i] != null) {
-                holdings[i].printfResult();
+                holdings[i].print();
+                gui.printCharTimes('=', 150, true);
             }
         }
     }
@@ -265,6 +266,7 @@ public class Inventory {
         for (int i = 0; i < members.length; i++) {
             if (members[i] != null) {
                 members[i].print();
+                gui.printCharTimes('=', 150, true);
             }
         }
     }

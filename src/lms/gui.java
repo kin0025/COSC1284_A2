@@ -19,15 +19,6 @@ public class gui {
     private Scanner input = new Scanner(System.in);
     private Inventory inv = new Inventory();
 
-    private static void printCharTimes(char c, int times, boolean newLine) {
-        for (int i = 0; i < times; i++) {
-            System.out.print(c);
-        }
-        if (newLine) {
-            System.out.println();
-        }
-    }
-
     //UI Methods
     public void logoBoot() {
         System.out.printf("                                                            \n" +
@@ -85,7 +76,23 @@ public class gui {
                 "                       Press enter key to continue              \n" +
                 "                                                            \n" +
                 "                                                            \n");
-        input.nextLine(); // TODO: 19/04/2016 On any kb input, not just enter.
+        input.nextLine();
+        String[] choiceOptions = {"default","d","saved","s","new","n"};
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?",choiceOptions,true,1).charAt(0);
+        if(choice == 'd'){
+            addDefault();
+        }else if (choice == 's') {
+            load();
+        }
+    }
+
+    public static void printCharTimes(char c, int times, boolean newLine) {
+        for (int i = 0; i < times; i++) {
+            System.out.print(c);
+        }
+        if (newLine) {
+            System.out.println();
+        }
     }
 
     public void mainMenu() {
@@ -244,9 +251,9 @@ public class gui {
     }
 
     /**
-     * Returns an array of chars (for example {a,b,c} as a String in the format (a/b/c)
+     * Returns an array of Strings (for example {a,b,c} as a String in the format (a/b/c)
      **/
-    private String charArrayToString(String[] array) {
+    private String stringArrayToString(String[] array) {
         String result = "(";
         for (int i = 0; i < array.length; i++) {
             result += array[i];
@@ -267,14 +274,14 @@ public class gui {
             outputLength = 1;
         }
         if (printOptionText) {
-            System.out.println(charArrayToString(options));
+            System.out.println(stringArrayToString(options));
         } else System.out.println();
         String inputString = input.nextLine().toLowerCase();
         while (inputString.length() == 0) {
             System.out.println("Answer needs to be entered");
             System.out.print(flavourText + " ");
             if (printOptionText) {
-                System.out.println(charArrayToString(options));
+                System.out.println(stringArrayToString(options));
             } else System.out.println();
             inputString = input.nextLine().toLowerCase();
         }
@@ -303,7 +310,7 @@ public class gui {
      * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options or is empty. if it is empty returns the defaultAnswer. Final number is length of returned string
      **/
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
-        System.out.println(flavourText + " " + charArrayToString(options) + "[" + defaultAnswer + "]");
+        System.out.println(flavourText + " " + stringArrayToString(options) + "[" + defaultAnswer + "]");
         if (outputLength <= 0) {
             outputLength = 1;
         }
@@ -331,7 +338,7 @@ public class gui {
         }
         return inputChar;
     }
-
+/** Propts the user for an ID and returns it. typeID is a string that will be displayed when asking the user for and ID, and expectedTypes restricts input(i.e if someone enters s000001, but the user is searching for a holding it wont work. **/
     private String getExistingID(String typeID, char[] expectedTypes) {
         System.out.println("Enter " + typeID + " ID:");
         String ID = input.nextLine();
@@ -375,7 +382,7 @@ public class gui {
         }
         return (ID);
     }
-
+/** Adds the default holdings **/
     public void addDefault() {
         String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
         char[] holdingType = {'b', 'b', 'b', 'b', 'v', 'v', 'v', 'v'};
@@ -390,7 +397,7 @@ public class gui {
         for (int i = 0; i < memberID.length; i++) {
             inv.addMember(memberID[i], memberType[i], memberName[i]);
         }
-        inv.recalculateStatistics();
+        //inv.recalculateStatistics();
     }
 
     //Page Main Menu Methods
@@ -806,12 +813,11 @@ public class gui {
     private void exit() {
         Scanner input = new Scanner(System.in);
         newPage("Exit");
-        System.out.println("Do you want to exit? y/n");
-        String exit = input.nextLine();
-        if (exit.charAt(0) == 'y') {
-            exit();
+        char choice = receiveStringInput("You you want to exit?",choiceOptions,"y",1).charAt(0);
+        if (choice == 'n') {
+            mainMenu();
         }
-
+System.exit(0);
     }
 
     //Page Admin Menu Pages
