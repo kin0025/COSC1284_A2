@@ -1,5 +1,6 @@
 package lms.holding;
 
+import lms.SystemOperations;
 import lms.util.DateTime;
 
 import java.util.Scanner;
@@ -10,7 +11,7 @@ import java.util.Scanner;
 /**
  * Created by akinr on 11/04/2016.
  */
-public abstract class Holding {
+public abstract class Holding implements SystemOperations{
     private String ID;
     private String title;
     private int loanCost;

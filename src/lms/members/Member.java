@@ -3,6 +3,7 @@
 */
 package lms.members;
 
+import lms.SystemOperations;
 import lms.holding.*;
 import lms.util.DateTime;
 
@@ -10,7 +11,7 @@ import lms.util.DateTime;
 /**
  * Created by akinr on 11/04/2016.
  */
-public abstract class Member {
+public abstract class Member implements SystemOperations {
     private String ID;
     private String name;
     private int maxCredit;

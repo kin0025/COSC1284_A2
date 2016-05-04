@@ -3,6 +3,7 @@
 */
 package lms;
 
+import lms.util.AdminVerify;
 import lms.util.DateTime;
 
 import java.util.Scanner;
@@ -21,12 +22,14 @@ public class gui {
     //Functional Methods
 
     /**
-     * Prints the specified character "c" number of "times", then if new line == tru prints a new line at the end
+     * Prints the specified character "c" number of "times", then if new line == true prints a new line at the end
      **/
     public static void printCharTimes(char c, int times, boolean newLine) {
+        //Prints the character times.
         for (int i = 0; i < times; i++) {
             System.out.print(c);
         }
+        //If we want to print a new line, print a new line.
         if (newLine) {
             System.out.println();
         }
@@ -36,30 +39,38 @@ public class gui {
      * Creates a new page with the title "title"
      **/
     private void newPage(String title) {
+        //Sets the width of the page.
         int pageWidth = 150;
+        //Print a new line a bunch to clear the screen. WHY IS THERE NO PLATFORM INDEPENDENT SOLUTION LIKE CLS
         for (int i = 30; i != 0; i--) {
             System.out.printf("\n");
         }
+        //Print the first line, made of equal signs.
         printCharTimes('=', pageWidth, true);
-
+//Set the three components of a menu screen.
         String leftText = DateTime.getCurrentTime();
         String centreText = "Library Management System: " + title;
         String rightText = inv.infoPrintout();
-
+//Find the length of the menu areas.
         int left = leftText.length();
         int centre = centreText.length();
         int right = rightText.length();
-
+//Find the spacing between the three elements. Total width/2 - the size of left and half of the centre.
         int leftSpacing = pageWidth / 2 - left - (int) centre / 2;
-        int rightSpacing = pageWidth / 2 - 1 - right - (int) centre / 2;
-
+        //Due to float to int conversion, subtract 1 more than the length.
+        int rightSpacing = (pageWidth / 2) - 1 - right - (int) centre / 2;
+//Print the left
         System.out.print(leftText);
+        //Print the spacing
         printCharTimes(' ', leftSpacing, false);
+        //Print the centre
         System.out.print(centreText);
+        //Print the right spacing
         printCharTimes(' ', rightSpacing, false);
+        //Print the right text
         System.out.println(rightText);
 
-
+//Finish off the menu with another border.
         printCharTimes('=', pageWidth, true);
         System.out.println();
     }
@@ -69,13 +80,15 @@ public class gui {
      **/
     private String stringArrayToString(String[] array) {
         String result = "(";
+        //Add all the things together
         for (int i = 0; i < array.length; i++) {
-            result += array[i];
+            //If this isn't the last entry in the array, add a / on as well
             if (i < array.length - 1) {
-                result += "/";
+                result += array[i] + "/";
+            }else{ //If it is the last entry, add a closing bracket instead.
+                result += array[i] + ")";
             }
         }
-        result += ")";
         return (result);
     }
 
@@ -83,23 +96,32 @@ public class gui {
      * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are avaliable. Final number is length of returned string
      **/
     private String receiveStringInput(String flavourText, String[] options, boolean printOptionText, int outputLength) {
+        //Print the flavour text.
         System.out.print(flavourText + " ");
+        //Make sure that we don't npe anywhere
         if (outputLength <= 0) {
             outputLength = 1;
         }
+        //If we have enabled option printing, print the array.
         if (printOptionText) {
             System.out.println(stringArrayToString(options));
-        } else System.out.println();
+        } else System.out.println(); //Otherwise end the line.
+        //Receive input
         String inputString = input.nextLine().toLowerCase();
+        //If it is too short, prompt for input again.
         while (inputString.length() == 0) {
+            //Print the stuff again.
             System.out.println("Answer needs to be entered");
             System.out.print(flavourText + " ");
             if (printOptionText) {
                 System.out.println(stringArrayToString(options));
             } else System.out.println();
+            //Request input again.
             inputString = input.nextLine().toLowerCase();
         }
+        //Ensure input is the same.
         String inputChar = inputString.toLowerCase();
+        //If the input we are given is longer than the specified maximum output, make it shorter.
         if (inputChar.length() >= outputLength) {
             inputChar = inputChar.substring(0, outputLength);
         }
@@ -416,10 +438,11 @@ public class gui {
     }
 
     private void adminMenuVerify() {
+        AdminVerify verify = new AdminVerify();
         newPage("Admin Verification");
-        System.out.println("Please enter your admin password (VerySecure):");
+        System.out.println("Please enter your admin password (Password1):");
         String password = input.nextLine();
-        if (password.equals("Password1") || password.equals("VerySecure")) {
+        if (verify.authenticated(password)) {
             adminMenu();
         } else {
             System.out.println("Incorrect Password. Returning to main menu");
