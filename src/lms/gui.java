@@ -11,81 +11,18 @@ import java.util.Scanner;
  * Created by akinr on 11/04/2016.
  */
 public class gui {
-    private final String[] choiceOptions = {"y", "n"};
-    private final String[] memberOptions = {"s", "p"};
-    private final String[] holdingOptions = {"b", "v"};
+    private final String[] choiceOptions = {"y", "n","e","yes","no","exit"};
+    private final String[] memberOptions = {"s", "p","standard","premium"};
+    private final String[] holdingOptions = {"b", "v","book","video"};
     private final char[] memberTypes = {'s', 'p'};
     private final char[] holdingTypes = {'b', 'v'};
     private Scanner input = new Scanner(System.in);
     private Inventory inv = new Inventory();
+    //Functional Methods
 
-    //UI Methods
-    public void logoBoot() {
-        System.out.printf("                                                            \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "                                  +                         \n" +
-                "                                ++++'                       \n" +
-                "                               +++ +++                      \n" +
-                "                             '++'   +++;                    \n" +
-                "                            +++       +++                   \n" +
-                "                           +++         +++                  \n" +
-                "                         '++'           '++;                \n" +
-                "                        +++               +++               \n" +
-                "                       +++                 +++              \n" +
-                "                     +++                     +++            \n" +
-                "                    +++                       +++           \n" +
-                "                  '+++                         +++          \n" +
-                "                 +++                             +++        \n" +
-                "                +++                               +++       \n" +
-                "              +++                                  '++'     \n" +
-                "             +++                                     +++    \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "              +++++++    ++++++++  ;++++++++    +++++++     \n" +
-                "              +++++++   +++++++++++++++++++++  '+++++++     \n" +
-                "              +;    +   +'       +++       ++  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +         +        '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   ++++++++++ ++++++++++  '+    '+     \n" +
-                "              +++++++   ++++';'+++++++';'++++  '+++++++     \n" +
-                "              +++++++   +         +         +   +++++++     \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +                                          '+   \n" +
-                "            +                                          '+   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "                                                            \n" +
-                "                       Press enter key to continue              \n" +
-                "                                                            \n" +
-                "                                                            \n");
-        input.nextLine();
-        String[] choiceOptions = {"default","d","saved","s","new","n"};
-        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?",choiceOptions,true,1).charAt(0);
-        if(choice == 'd'){
-            addDefault();
-        }else if (choice == 's') {
-            load();
-        }
-    }
-
+    /**
+     * Prints the specified character "c" number of "times", then if new line == tru prints a new line at the end
+     **/
     public static void printCharTimes(char c, int times, boolean newLine) {
         for (int i = 0; i < times; i++) {
             System.out.print(c);
@@ -95,132 +32,9 @@ public class gui {
         }
     }
 
-    public void mainMenu() {
-        newPage("Home");
-        System.out.println(" 1. Add Holding");
-        System.out.println(" 2. Remove Holding");
-        System.out.println(" 3. Add Member");
-        System.out.println(" 4. Remove Member");
-        System.out.println(" 5. Borrow Holding");
-        System.out.println(" 6. Return Holding");
-        System.out.println(" 7. Print all Holdings");
-        System.out.println(" 8. Print all Members");
-        System.out.println(" 9. Print specific Holding");
-        System.out.println("10. Print specific Member");
-        System.out.println("11. Save to file");
-        System.out.println("12. Load from file");
-        System.out.println("13. Exit");
-        System.out.println("14. Admin");
-        printCharTimes('=', 150, true);
-        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
-        String choice = receiveStringInput("Enter an option:", options, false, 2);
-        switch (choice) {
-            case "1":
-                addHolding();
-                break;
-            case "2":
-                removeHolding();
-                break;
-            case "3":
-                addMember();
-                break;
-            case "4":
-                removeMember();
-                break;
-            case "5":
-                borrowHolding();
-                break;
-            case "6":
-                returnHolding();
-                break;
-            case "7":
-                printAllHoldings();
-                break;
-            case "8":
-                printAllMembers();
-                break;
-            case "9":
-                printHolding();
-                break;
-            case "10":
-                printMember();
-                break;
-            case "11":
-                save();
-                break;
-            case "12":
-                load();
-                break;
-            case "13":
-                exit();
-                mainMenu();
-                break;
-            case "14":
-                adminMenu();
-                break;
-            default:
-                mainMenu();
-                break;
-        }
-    }
-
-    public void adminMenuVerify() {
-        newPage("Admin Verification");
-        System.out.println("Please enter your admin password (VerySecure):");
-        String password = input.nextLine();
-        if (password.equals("Password1") || password.equals("VerySecure")) {
-            adminMenu();
-        } else {
-            System.out.println("Incorrect Password. Returning to main menu");
-            //todo- 1 second delay.
-            mainMenu();
-        }
-
-    }
-
-    public void adminMenu() {
-        newPage("Admin");
-        System.out.println(" 1. Activate Holding");
-        System.out.println(" 2. Deactivate Holding");
-        System.out.println(" 3. Edit Holding");
-        System.out.println(" 4. Reset Member Credit");
-        System.out.println(" 5. Edit Member Details");
-        System.out.println(" 6. Temporary Deactivate Holding");
-        System.out.println(" 7. Return holding ignoring fees");
-        System.out.println(" 8. Back to Main Menu");
-        printCharTimes('=', 50, true);
-        System.out.println("Enter an option:");
-        int options = input.nextInt();
-        switch (options) {
-            case 1:
-                activateHolding();
-                break;
-            case 2:
-                deactivateHolding();
-                break;
-            case 3:
-                editHolding();
-                break;
-            case 4:
-                resetMemberCredit();
-                break;
-            case 5:
-                editMember();
-                break;
-            case 6:
-                temporaryRemoveHolding();
-                break;
-            case 7:
-                returnHoldingNoFee();
-                break;
-            case 8:
-                mainMenu();
-                break;
-            default:
-                adminMenu();
-        }
-    }
-
+    /**
+     * Creates a new page with the title "title"
+     **/
     private void newPage(String title) {
         int pageWidth = 150;
         for (int i = 30; i != 0; i--) {
@@ -338,7 +152,10 @@ public class gui {
         }
         return inputChar;
     }
-/** Propts the user for an ID and returns it. typeID is a string that will be displayed when asking the user for and ID, and expectedTypes restricts input(i.e if someone enters s000001, but the user is searching for a holding it wont work. **/
+
+    /**
+     * Propts the user for an ID and returns it. typeID is a string that will be displayed when asking the user for and ID, and expectedTypes restricts input(i.e if someone enters s000001, but the user is searching for a holding it wont work.
+     **/
     private String getExistingID(String typeID, char[] expectedTypes) {
         System.out.println("Enter " + typeID + " ID:");
         String ID = input.nextLine();
@@ -382,7 +199,10 @@ public class gui {
         }
         return (ID);
     }
-/** Adds the default holdings **/
+
+    /**
+     * Adds the default holdings
+     **/
     public void addDefault() {
         String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
         char[] holdingType = {'b', 'b', 'b', 'b', 'v', 'v', 'v', 'v'};
@@ -400,15 +220,7 @@ public class gui {
         //inv.recalculateStatistics();
     }
 
-    //Page Main Menu Methods
-    private void addHolding() {
-        //Setting options that will be used later on as choices.
-        Scanner input = new Scanner(System.in);
-
-        //Creating the first page
-        newPage("Add Holding");
-        //Using the the method to take input.
-        char type = receiveStringInput("Enter type of holding: Video/Book", holdingOptions, true, 1).charAt(0);
+    private String getValidID(String typeID, char type){
 
         //Not a choice, requesting input. If they don't enter anything it will be caught below, and one will be generated for them.
         System.out.println("Enter the unique 6 digit ID or press enter to have one generated:");
@@ -463,6 +275,208 @@ public class gui {
                     System.out.println(inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
         }
+        return ID;
+    }
+
+    //UI Methods
+    public void logoBoot() {
+        System.out.printf("                                                            \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "                                  +                         \n" +
+                "                                ++++'                       \n" +
+                "                               +++ +++                      \n" +
+                "                             '++'   +++;                    \n" +
+                "                            +++       +++                   \n" +
+                "                           +++         +++                  \n" +
+                "                         '++'           '++;                \n" +
+                "                        +++               +++               \n" +
+                "                       +++                 +++              \n" +
+                "                     +++                     +++            \n" +
+                "                    +++                       +++           \n" +
+                "                  '+++                         +++          \n" +
+                "                 +++                             +++        \n" +
+                "                +++                               +++       \n" +
+                "              +++                                  '++'     \n" +
+                "             +++                                     +++    \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "              +++++++    ++++++++  ;++++++++    +++++++     \n" +
+                "              +++++++   +++++++++++++++++++++  '+++++++     \n" +
+                "              +;    +   +'       +++       ++  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +         +        '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   ++++++++++ ++++++++++  '+    '+     \n" +
+                "              +++++++   ++++';'+++++++';'++++  '+++++++     \n" +
+                "              +++++++   +         +         +   +++++++     \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +                                          '+   \n" +
+                "            +                                          '+   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "                                                            \n" +
+                "                       Press enter key to continue              \n" +
+                "                                                            \n" +
+                "                                                            \n");
+        input.nextLine();
+        String[] choiceOptions = {"default", "d", "saved", "s", "new", "n"};
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, true, 1).charAt(0);
+        if (choice == 'd') {
+            addDefault();
+        } else if (choice == 's') {
+            load();
+        }
+    }
+
+    public void mainMenu() {
+        newPage("Home");
+        System.out.println(" 1. Add Holding");
+        System.out.println(" 2. Remove Holding");
+        System.out.println(" 3. Add Member");
+        System.out.println(" 4. Remove Member");
+        System.out.println(" 5. Borrow Holding");
+        System.out.println(" 6. Return Holding");
+        System.out.println(" 7. Print all Holdings");
+        System.out.println(" 8. Print all Members");
+        System.out.println(" 9. Print specific Holding");
+        System.out.println("10. Print specific Member");
+        System.out.println("11. Save to file");
+        System.out.println("12. Load from file");
+        System.out.println("13. Exit");
+        System.out.println("14. Admin");
+        printCharTimes('=', 150, true);
+        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
+        String choice = receiveStringInput("Enter an option:", options, false, 2);
+        switch (choice) {
+            case "1":
+                addHolding();
+                break;
+            case "2":
+                removeHolding();
+                break;
+            case "3":
+                addMember();
+                break;
+            case "4":
+                removeMember();
+                break;
+            case "5":
+                borrowHolding();
+                break;
+            case "6":
+                returnHolding();
+                break;
+            case "7":
+                printAllHoldings();
+                break;
+            case "8":
+                printAllMembers();
+                break;
+            case "9":
+                printHolding();
+                break;
+            case "10":
+                printMember();
+                break;
+            case "11":
+                save();
+                break;
+            case "12":
+                load();
+                break;
+            case "13":
+                exit();
+                mainMenu();
+                break;
+            case "14":
+                adminMenuVerify();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void adminMenuVerify() {
+        newPage("Admin Verification");
+        System.out.println("Please enter your admin password (VerySecure):");
+        String password = input.nextLine();
+        if (password.equals("Password1") || password.equals("VerySecure")) {
+            adminMenu();
+        } else {
+            System.out.println("Incorrect Password. Returning to main menu");
+            //todo- 1 second delay.
+        }
+
+    }
+
+    private void adminMenu() {
+        newPage("Admin");
+        System.out.println(" 1. Activate Holding");
+        System.out.println(" 2. Deactivate Holding");
+        System.out.println(" 3. Edit Holding");
+        System.out.println(" 4. Reset Member Credit");
+        System.out.println(" 5. Edit Member Details");
+        System.out.println(" 6. Temporary Deactivate Holding");
+        System.out.println(" 7. Return holding ignoring fees");
+        System.out.println(" 8. Back to Main Menu");
+        printCharTimes('=', 50, true);
+        System.out.println("Enter an option:");
+        int options = input.nextInt();
+        switch (options) {
+            case 1:
+                activateHolding();
+                break;
+            case 2:
+                deactivateHolding();
+                break;
+            case 3:
+                editHolding();
+                break;
+            case 4:
+                resetMemberCredit();
+                break;
+            case 5:
+                editMember();
+                break;
+            case 6:
+                temporaryRemoveHolding();
+                break;
+            case 7:
+                returnHoldingNoFee();
+                break;
+            case 8:
+                break;
+            default:
+                adminMenu();
+        }
+    }
+
+
+    //Page Main Menu Methods
+    private void addHolding() {
+        //Using the the method to take input.
+
+        //Creating the first page
+        newPage("Add Holding");
+        char type = receiveStringInput("Enter type of holding: Video/Book", holdingOptions, true, 1).charAt(0);
+        String ID = getValidID("Holding",type);
         //The ID is done now.
 
         //Set a String representation of the type for use in prompts.
@@ -534,60 +548,8 @@ public class gui {
         newPage("Add Member");
         //Using the the method to take input.
         char type = receiveStringInput("Enter type of member: Standard/Premium", memberOptions, true, 1).charAt(0);
+        String ID = getValidID("Holding",type);
 
-        //Not a choice, requesting input. If they don't enter anything it will be caught below, and one will be generated for them.
-        System.out.println("Enter the unique 6 digit ID or press enter to have one generated:");
-        String ID = input.nextLine();
-
-        //Check validity of the entered information
-        String IDResult = inv.checkID(ID, type);
-        //Print the result
-        System.out.println(IDResult);
-        switch (IDResult.toLowerCase()) {
-            case "wrong number of digits":
-            case "already taken":
-                //If the ID number was already taken or had the wrong number of digits request a new one or give the user an already generated one.
-                String newID = inv.generateValidID(type);
-                //Using the variant of the choice input that has a default option. Pressing enter will select that default option, rather than prompting for a non null result.
-                char answer = receiveStringInput(newID + " is not taken. Do you want to set it as the id?", choiceOptions, "y", 1).charAt(0);
-                //If the user has selected to use the generated ID, use that one.
-                if (answer == 'y') {
-                    ID = newID;
-                } else { //If the user is an idiot and wants to try entering a 6 digit number that they somehow got wrong the first time again, give them the choice.
-                    do {
-                        //Ask for the new ID
-                        System.out.println("Enter new ID");
-                        //Receive the new ID as input
-                        ID = input.nextLine();
-                        //Print the result
-                        System.out.println(inv.checkID(ID, type));
-                    }
-                    while (!inv.checkID(ID, type).equalsIgnoreCase("valid")); //If they somehow still fail to enter a 6 digit number that is different from the other 15 6 digit number, let them try again.
-                }
-                break;
-            case "invalid type":
-                //If they entered type is incorrect(somehow, as the input method won't let an incorrect one be entered), request a valid one.
-                do {
-                    type = receiveStringInput("Invalid type, try again", memberOptions, true, 1).charAt(0);
-                    System.out.println(inv.checkID(ID, type));
-                } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
-                break;
-            case "id contains characters":
-                do {
-                    System.out.println("Invalid ID. Can only contain numbers, try again");
-                    ID = input.nextLine();
-                    System.out.println(inv.checkID(ID, type));
-                } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
-                break;
-            case "valid": //If it is valid, keep going.
-                break;
-            default: //Any further errors will be caused by the ID been incorrect, so prompt for it again.
-                do {
-                    System.out.println("Enter new ID");
-                    ID = input.nextLine();
-                    System.out.println(inv.checkID(ID, type));
-                } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
-        }
         //The ID is done now.
 
         //Set a String representation of the type for use in prompts.
@@ -813,11 +775,10 @@ public class gui {
     private void exit() {
         Scanner input = new Scanner(System.in);
         newPage("Exit");
-        char choice = receiveStringInput("You you want to exit?",choiceOptions,"y",1).charAt(0);
-        if (choice == 'n') {
-            mainMenu();
+        char choice = receiveStringInput("You you want to exit?", choiceOptions, "y", 1).charAt(0);
+        if (choice == 'y') {
+            System.exit(0);
         }
-System.exit(0);
     }
 
     //Page Admin Menu Pages

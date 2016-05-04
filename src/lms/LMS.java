@@ -10,6 +10,9 @@ public class LMS {
     public static void main(String[] args){
         gui state = new gui();
         state.logoBoot();
-        state.mainMenu();
+        while(true){
+            state.mainMenu();
+
+        }
     }
 }
