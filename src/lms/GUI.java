@@ -168,7 +168,7 @@ public class GUI {
      **/
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
         //Print a prompt for the user to enter input.
-        System.out.println(flavourText + " " + stringArrayToString(options) + "[" + defaultAnswer + "]");
+        System.out.println(flavourText + " " + stringArrayToString(options) + ANSI_RED + "[" + defaultAnswer + "]" + ANSI_RESET);
         //Ensure we don't try to access a negative array index.
         if (outputLength <= 0) {
             outputLength = 1;
