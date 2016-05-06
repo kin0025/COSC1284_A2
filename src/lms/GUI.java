@@ -88,7 +88,7 @@ public class GUI {
         printCharTimes(' ', rightSpacing, false);
         //Print the right text
         System.out.println(rightText);
-System.out.print(ANSI_RESET);
+        System.out.print(ANSI_RESET);
 //Finish off the menu with another border.
         System.out.print(ANSI_PURPLE);
         printCharTimes('=', pageWidth, true);
@@ -218,9 +218,10 @@ System.out.print(ANSI_RESET);
         String ID = input.nextLine();
         boolean result = inv.idExists(ID);
         if (result) {
+            result = false;
             for (int i = 0; i < expectedTypes.length; i++)
-                if (ID.charAt(0) != expectedTypes[i]) {
-                    result = false;
+                if (ID.charAt(0) == expectedTypes[i]) {
+                    result = true;
                 }
         }
         char choice;
@@ -239,9 +240,10 @@ System.out.print(ANSI_RESET);
                     ID = input.nextLine();
                     result = inv.idExists(ID);
                     if (result) {
+                        result = false;
                         for (int i = 0; i < expectedTypes.length; i++)
-                            if (ID.charAt(0) != expectedTypes[i]) {
-                                result = false;
+                            if (ID.charAt(0) == expectedTypes[i]) {
+                                result = true;
                             }
                     }
                     tries++;
@@ -461,7 +463,6 @@ System.out.print(ANSI_RESET);
                 break;
             case 13:
                 exit();
-                mainMenu();
                 break;
             case 14:
                 adminMenuVerify();
@@ -481,7 +482,6 @@ System.out.print(ANSI_RESET);
             adminMenu();
         } else {
             System.out.println("Incorrect Password. Returning to main menu");
-            //todo- 1 second delay.
         }
 
     }
@@ -531,78 +531,84 @@ System.out.print(ANSI_RESET);
 
     //Page Main Menu Methods
     private void addHolding() {
-        //Using the the method to take input.
+        boolean keepGoing = true;
+        while (keepGoing) {
+            //Using the the method to take input.
 
-        //Creating the first page
-        newPage("Add Holding");
-        char type = receiveStringInput("Enter type of holding: Video/Book", HOLDING_OPTIONS, true, 1).charAt(0);
-        String ID = getValidID("Holding", type);
-        //The ID is done now.
+            //Creating the first page
+            newPage("Add Holding");
+            char type = receiveStringInput("Enter type of holding: Video/Book", HOLDING_OPTIONS, true, 1).charAt(0);
+            String ID = getValidID("Holding", type);
+            //The ID is done now.
 
-        //Set a String representation of the type for use in user facing prompts.
-        String typeName;
-        if (type == 'b') {
-            typeName = "Book";
-        } else if (type == 'v') {
-            typeName = "Video";
-        } else {
-            typeName = "Incorrect";
-        }
+            //Set a String representation of the type for use in user facing prompts.
+            String typeName;
+            if (type == 'b') {
+                typeName = "Book";
+            } else if (type == 'v') {
+                typeName = "Video";
+            } else {
+                typeName = "Incorrect";
+            }
 
-        //Create a new page.
-        newPage("Add " + typeName);
-        //Tell the user what they just entered.
-        System.out.println("ID: " + type + ID);
-        //Now prompt them for the title of the holding
-        System.out.println("Enter the title of the " + typeName);
-        String title = input.nextLine();
-        while (title.length() == 0) { //If the title was not entered, prompt the user until they get it right.
-            //Holy shit if they can't even enter a title what are they going to do with a book? How will they know how to put the dvd in?
-            System.out.println("Title not entered correctly, try again");
-            title = input.nextLine();
-        }
+            //Create a new page.
+            newPage("Add " + typeName);
+            //Tell the user what they just entered.
+            System.out.println("ID: " + type + ID);
+            //Now prompt them for the title of the holding
+            System.out.println("Enter the title of the " + typeName);
+            String title = input.nextLine();
+            while (title.length() == 0) { //If the title was not entered, prompt the user until they get it right.
+                //Holy shit if they can't even enter a title what are they going to do with a book? How will they know how to put the dvd in?
+                System.out.println("Title not entered correctly, try again");
+                title = input.nextLine();
+            }
 
-        //Title is now set.
-        int loanFee = 10;
-        //If the item is a video, the loan fee varies. Ask the user what it will be.
-        if (type == 'v') {
-            //Give the user the possible loan values
-            String[] loanOptions = {"4", "6"};
-            //Use the choice method to request the loan fee. Convert the string result to int using a built in method. We don't need to catch here, but should. TODO: 2/05/2016 Add a catch for any possible errors.
-            loanFee = Integer.parseInt(receiveStringInput("Enter the loan fee", loanOptions, true, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
-        }
+            //Title is now set.
+            int loanFee = 10;
+            //If the item is a video, the loan fee varies. Ask the user what it will be.
+            if (type == 'v') {
+                //Give the user the possible loan values
+                String[] loanOptions = {"4", "6"};
+                //Use the choice method to request the loan fee. Convert the string result to int using a built in method. We don't need to catch here, but should.
+                loanFee = Integer.parseInt(receiveStringInput("Enter the loan fee", loanOptions, true, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
+            }
 
-        //We have all the info from the user.
-        newPage("Add " + typeName + ": Confirmation");
-        //Print all the info they have entered.
-        System.out.println("ID:" + type + ID);
-        System.out.println("Title: " + title);
-        if (type == 'v') System.out.println("Loan Fee: " + loanFee);
-        //Prompt the user for confirmation before creating the holding. Default to yes.
-        char choice = receiveStringInput("Check Details. Are they correct?", CHOICE_OPTIONS, "y", 1).charAt(0);
+            //We have all the info from the user.
+            newPage("Add " + typeName + ": Confirmation");
+            //Print all the info they have entered.
+            System.out.println("ID:" + type + ID);
+            System.out.println("Title: " + title);
+            if (type == 'v') System.out.println("Loan Fee: " + loanFee);
+            //Prompt the user for confirmation before creating the holding. Default to yes.
+            char choice = receiveStringInput("Check Details. Are they correct?", CHOICE_OPTIONS, "y", 1).charAt(0);
 
-        if (choice == 'e') return;
-        if (choice == 'y') {
-            //If they say yes add the method, record its success.
-            boolean added = inv.addHolding(ID, type, title, loanFee);
-            //If it failed tell the user.
-            if (!added) {
-                System.out.println("Adding failed. Please try again.");
-            } else System.out.println("Adding successful. Holding created");
-            //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
-            System.out.println("Press enter to return to main menu");
-            input.nextLine();
-            mainMenu();
-        } else if (choice == 'n') {
-            //If they choose not to continue, return them to to main menu.
-            System.out.println("Creation canceled. No holding was created. Please start from beginning");
-            System.out.println("Press enter to return to main menu");
-            input.nextLine();
-            mainMenu();
+            if (choice == 'e') return;
+            if (choice == 'y') {
+                //If they say yes add the method, record its success.
+                boolean added = inv.addHolding(ID, type, title, loanFee);
+                //If it failed tell the user.
+                if (!added) {
+                    System.out.println("Adding failed. Please try again.");
+                } else System.out.println("Adding successful. Holding created");
+                //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
+            } else if (choice == 'n') {
+                //If they choose not to continue, return them to to main menu.
+                System.out.println("Creation canceled. No holding was created. Please start from beginning");
+                System.out.println("Press enter to return to main menu");
+                input.nextLine();
+                return;
+            }
+            choice = receiveStringInput("Do you want to make another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
+            if(choice != 'y'){
+                keepGoing = false;
+            }
         }
     } //Done
 
     private void addMember() {
+        boolean keepGoing = true;
+        while(keepGoing){
         //Setting options that will be used later on as choices.
 
         //Creating the first page
@@ -654,23 +660,29 @@ System.out.print(ANSI_RESET);
                 System.out.println("Adding failed. Please try again.");
             } else System.out.println("Adding successful. Member created");
             //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
-            System.out.println("Press enter to return to main menu");
-            input.nextLine();
-            mainMenu();
+
         } else if (choice == 'n') {
             //If they choose not to continue, return them to to main menu.
             System.out.println("Creation canceled. No member was created. Please start from beginning");
             System.out.println("Press enter to return to main menu");
             input.nextLine();
+            return;
         }
+        choice = receiveStringInput("Do you want to make another member?",CHOICE_OPTIONS,"n",1).charAt(0);
+        if(choice != 'y'){
+            keepGoing = false;
+        }}
     } //Done
 
     private void removeHolding() {
+        boolean keepGoing = true;
+        while(keepGoing){
         char choice;
         newPage("Remove Holding");
         if (inv.getNumberOfHoldings() == 0) {
             System.out.printf("There are no holdings to remove. \nPlease press enter to return to main menu");
             input.nextLine();
+            return;
         }
         String ID = getExistingID("Holding", HOLDING_TYPES);
         if (ID != null) {
@@ -684,28 +696,34 @@ System.out.print(ANSI_RESET);
                 result = inv.removeHolding(ID);
                 //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
                 if (result) {
-                    System.out.println(ID + " deleted. Press enter to return to main menu.");
-                    input.nextLine();
+                    System.out.println(ID + " deleted.");
+
                 } else {
                     //If the holding is somehow not deleted after all the checks, inform the user.
-                    System.out.println("Holding deletion failed. Please report to developer and try again. Press enter to return to main menu");
-                    input.nextLine();
+                    System.out.println("Holding deletion failed. Please report to developer and try again.");
+
                 }
                 //If they decide not to delete the holding, return them to the menu.
             } else {
-                System.out.println("Holding deletion canceled. Press enter to return to main menu.");
-                input.nextLine();
+                System.out.println("Holding deletion canceled.");
+
             }
         }
+        choice = receiveStringInput("Do you want to remove another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
+        if(choice != 'y'){
+            keepGoing = false;
+        }}
     } //Done
 
     private void removeMember() {
+        boolean keepGoing = true;
+        while(keepGoing){
         char choice;
         newPage("Remove Member");
         if (inv.getNumberOfMembers() == 0) {
             System.out.printf("There are no members to remove. \nPlease press enter to return to main menu");
             input.nextLine();
-            mainMenu();
+            return;
         }
         //Request member ID
         String ID = getExistingID("Member", MEMBER_TYPES);
@@ -720,22 +738,28 @@ System.out.print(ANSI_RESET);
                 result = inv.removeMember(ID);
                 //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
                 if (result) {
-                    System.out.println(ID + " deleted. Press enter to return to main menu.");
+                    System.out.println(ID + " deleted.");
                     input.nextLine();
                 } else {
                     //If the member is somehow not deleted after all the checks, inform the user.
-                    System.out.println("Member deletion failed. Please report to developer and try again. Press enter to return to main menu");
+                    System.out.println("Member deletion failed. Please report to developer and try again.");
                     input.nextLine();
                 }
                 //If they decide not to delete the member, return them to the menu.
             } else {
-                System.out.println("Member deletion canceled. Press enter to return to main menu.");
+                System.out.println("Member deletion canceled.");
                 input.nextLine();
             }
         }
+            choice = receiveStringInput("Do you want to remove another member?",CHOICE_OPTIONS,"n",1).charAt(0);
+            if(choice != 'y'){
+                keepGoing = false;
+            }}
     } //Done
 
     private void borrowHolding() {
+        boolean keepGoing = true;
+        while(keepGoing){
         newPage("Borrow");
         String memberID = getExistingID("Member", MEMBER_TYPES);
         if (memberID != null) {
@@ -768,9 +792,15 @@ System.out.print(ANSI_RESET);
                 }
             }
         }
+        char choice = receiveStringInput("Do you want to borrow another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
+        if(choice != 'y'){
+            keepGoing = false;
+        }}
     }
 
     private void returnHolding() {
+        boolean keepGoing = true;
+        while(keepGoing){
         newPage("Return");
         String memberID = getExistingID("Member", MEMBER_TYPES);
         if (memberID != null) {
@@ -803,6 +833,10 @@ System.out.print(ANSI_RESET);
                 }
             }
         }
+        char choice = receiveStringInput("Do you want to return another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
+        if(choice != 'y'){
+            keepGoing = false;
+        }}
     }
 
     private void printAllHoldings() {
@@ -820,6 +854,8 @@ System.out.print(ANSI_RESET);
     }
 
     private void printHolding() {
+        boolean keepGoing = true;
+        while(keepGoing){
         newPage("Holding");
         String ID = getExistingID("Holding", HOLDING_TYPES);
         if (ID != null) {
@@ -828,9 +864,15 @@ System.out.print(ANSI_RESET);
             System.out.println("Press enter to return to menu.");
             input.nextLine();
         }
+        char choice = receiveStringInput("Do you want to print another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
+        if(choice != 'y'){
+        keepGoing = false;
+        }}
     }
 
     private void printMember() {
+        boolean keepGoing = true;
+        while(keepGoing){
         newPage("Member");
         String ID = getExistingID("Member", MEMBER_TYPES);
         if (ID != null) {
@@ -839,6 +881,10 @@ System.out.print(ANSI_RESET);
             System.out.println("Press enter to return to menu.");
             input.nextLine();
         }
+        char choice = receiveStringInput("Do you want to print another member?",CHOICE_OPTIONS,"n",1).charAt(0);
+        if(choice != 'y'){
+        keepGoing = false;
+        }}
     }
 
     private void save() {
@@ -851,7 +897,6 @@ System.out.print(ANSI_RESET);
         newPage("Load File");
         System.out.println("Enter Holding ID:");
         // TODO: 19/04/2016 Holding Logic Here
-        // TODO: 19/04/2016 Add-  not replace
     }
 
     private void exit() {
