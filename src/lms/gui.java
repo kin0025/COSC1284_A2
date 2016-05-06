@@ -11,12 +11,22 @@ import java.util.Scanner;
 /**
  * Created by akinr on 11/04/2016.
  */
-public class gui {
-    private final String[] choiceOptions = {"y", "n", "e", "yes", "no", "exit"};
-    private final String[] memberOptions = {"s", "p", "standard", "premium"};
-    private final String[] holdingOptions = {"b", "v", "book", "video"};
-    private final char[] memberTypes = {'s', 'p'};
-    private final char[] holdingTypes = {'b', 'v'};
+public class GUI {
+    //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
+    private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
+    private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
+    private static final char[] MEMBER_TYPES = {'s', 'p'};
+    private static final char[] HOLDING_TYPES = {'b', 'v'};
     private Scanner input = new Scanner(System.in);
     private Inventory inv = new Inventory();
     //Functional Methods
@@ -79,21 +89,22 @@ public class gui {
      * Returns an array of Strings (for example {a,b,c} as a String in the format (a/b/c)
      **/
     private String stringArrayToString(String[] array) {
-        String result = "(";
+        String result = ANSI_YELLOW + "{" + ANSI_RESET;
         //Add all the things together
         for (int i = 0; i < array.length; i++) {
             //If this isn't the last entry in the array, add a / on as well
             if (i < array.length - 1) {
-                result += array[i] + "/";
-            }else{ //If it is the last entry, add a closing bracket instead.
-                result += array[i] + ")";
+                result += array[i] + ANSI_YELLOW + "/" + ANSI_RESET;
+            } else { //If it is the last entry, add a closing bracket instead.
+                result += array[i] + ANSI_YELLOW + "}" + ANSI_RESET;
             }
         }
         return (result);
     }
 
     /**
-     * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are avaliable. Final number is length of returned string
+     * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are avaliable.
+     * Final number is length of returned string and length of input that will be compared to the strings.
      **/
     private String receiveStringInput(String flavourText, String[] options, boolean printOptionText, int outputLength) {
         //Print the flavour text.
@@ -128,7 +139,11 @@ public class gui {
         boolean isCorrect = false;
         int i = 0;
         while (i < options.length && !isCorrect) {
-            if (options[i].equals(inputChar)) {
+            String currentExamined;
+            if (options[i].length() >= outputLength) {
+                currentExamined = options[i].substring(0, outputLength);
+            } else currentExamined = options[i];
+            if (currentExamined.equals(inputChar)) {
                 isCorrect = true;
             }
             i++;
@@ -165,7 +180,11 @@ public class gui {
         boolean isCorrect = false;
         int i = 0;
         while (i < options.length && !isCorrect) {
-            if (options[i].equals(inputChar)) {
+            String currentExamined;
+            if (options[i].length() >= outputLength) {
+                currentExamined = options[i].substring(0, outputLength);
+            } else currentExamined = options[i];
+            if (currentExamined.equals(inputChar)) {
                 isCorrect = true;
             }
             i++;
@@ -198,7 +217,8 @@ public class gui {
         //If the ID doesn't exist, prompt the user for a working ID
         if (!result) {
             //Ask them if they want to continue or return to the main menu
-            choice = receiveStringInput("Incorrect " + typeID + " ID. Do you want to try again?", choiceOptions, "y", 1).charAt(0);
+            choice = receiveStringInput("Incorrect " + typeID + " ID. Do you want to try again?", CHOICE_OPTIONS, "y", 1).charAt(0);
+            if (choice == 'e') return null;
             //If they want to continue give them 4 tries so they don't get stuck here.
             if (choice == 'y') {
                 System.out.println("You have 4 tries before returning to main menu");
@@ -264,9 +284,9 @@ public class gui {
                 //If the ID number was already taken or had the wrong number of digits request a new one or give the user an already generated one.
                 String newID = inv.generateValidID(type);
                 //Using the variant of the choice input that has a default option. Pressing enter will select that default option, rather than prompting for a non null result.
-                char answer = receiveStringInput(newID + " is not taken. Do you want to set it as the id?", choiceOptions, "y", 1).charAt(0);
+                char choice = receiveStringInput(newID + " is not taken. Do you want to set it as the id?", CHOICE_OPTIONS, "y", 1).charAt(0);
                 //If the user has selected to use the generated ID, use that one.
-                if (answer == 'y') {
+                if (choice == 'y') {
                     ID = newID;
                 } else { //If the user is an idiot and wants to try entering a 6 digit number that they somehow got wrong the first time again, give them the choice.
                     do {
@@ -283,7 +303,7 @@ public class gui {
             case "invalid type":
                 //If they entered type is incorrect(somehow, as the input method won't let an incorrect one be entered), request a valid one.
                 do {
-                    type = receiveStringInput("Invalid type, try again", holdingOptions, true, 1).charAt(0);
+                    type = receiveStringInput("Invalid type, try again", HOLDING_OPTIONS, true, 1).charAt(0);
                     System.out.println(inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
                 break;
@@ -360,12 +380,12 @@ public class gui {
                 "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
                 "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
                 "                                                            \n" +
-                "                       Press enter key to continue              \n" +
+                "                       " + ANSI_YELLOW + "Press enter key to continue" + ANSI_RESET + "         \n" +
                 "                                                            \n" +
                 "                                                            \n");
         input.nextLine();
-        String[] choiceOptions = {"default", "d", "saved", "s", "new", "n"};
-        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, true, 1).charAt(0);
+        String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "s", 1).charAt(0);
         if (choice == 'd') {
             addDefault();
         } else if (choice == 's') {
@@ -391,55 +411,56 @@ public class gui {
         System.out.println("14. Admin");
         printCharTimes('=', 150, true);
         String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
-        String choice = receiveStringInput("Enter an option:", options, false, 2);
+        int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 2)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         switch (choice) {
-            case "1":
+            case 1:
                 addHolding();
                 break;
-            case "2":
+            case 2:
                 removeHolding();
                 break;
-            case "3":
+            case 3:
                 addMember();
                 break;
-            case "4":
+            case 4:
                 removeMember();
                 break;
-            case "5":
+            case 5:
                 borrowHolding();
                 break;
-            case "6":
+            case 6:
                 returnHolding();
                 break;
-            case "7":
+            case 7:
                 printAllHoldings();
                 break;
-            case "8":
+            case 8:
                 printAllMembers();
                 break;
-            case "9":
+            case 9:
                 printHolding();
                 break;
-            case "10":
+            case 10:
                 printMember();
                 break;
-            case "11":
+            case 11:
                 save();
                 break;
-            case "12":
+            case 12:
                 load();
                 break;
-            case "13":
+            case 13:
                 exit();
                 mainMenu();
                 break;
-            case "14":
+            case 14:
                 adminMenuVerify();
                 break;
             default:
                 break;
         }
     }
+
 
     private void adminMenuVerify() {
         AdminVerify verify = new AdminVerify();
@@ -466,8 +487,8 @@ public class gui {
         System.out.println(" 7. Return holding ignoring fees");
         System.out.println(" 8. Back to Main Menu");
         printCharTimes('=', 50, true);
-        System.out.println("Enter an option:");
-        int options = input.nextInt();
+        String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7", "8"};
+        int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         switch (options) {
             case 1:
                 activateHolding();
@@ -491,7 +512,7 @@ public class gui {
                 returnHoldingNoFee();
                 break;
             case 8:
-                break;
+                return;
             default:
                 adminMenu();
         }
@@ -504,11 +525,11 @@ public class gui {
 
         //Creating the first page
         newPage("Add Holding");
-        char type = receiveStringInput("Enter type of holding: Video/Book", holdingOptions, true, 1).charAt(0);
+        char type = receiveStringInput("Enter type of holding: Video/Book", HOLDING_OPTIONS, true, 1).charAt(0);
         String ID = getValidID("Holding", type);
         //The ID is done now.
 
-        //Set a String representation of the type for use in prompts.
+        //Set a String representation of the type for use in user facing prompts.
         String typeName;
         if (type == 'b') {
             typeName = "Book";
@@ -537,7 +558,7 @@ public class gui {
         if (type == 'v') {
             //Give the user the possible loan values
             String[] loanOptions = {"4", "6"};
-            //Use the choice method to request the loan fee. Convert the string result to int using a built in method. We don't need to catch here, but shoudld. //// TODO: 2/05/2016 Add a catch for any possible errors.
+            //Use the choice method to request the loan fee. Convert the string result to int using a built in method. We don't need to catch here, but should. TODO: 2/05/2016 Add a catch for any possible errors.
             loanFee = Integer.parseInt(receiveStringInput("Enter the loan fee", loanOptions, true, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         }
 
@@ -548,7 +569,9 @@ public class gui {
         System.out.println("Title: " + title);
         if (type == 'v') System.out.println("Loan Fee: " + loanFee);
         //Prompt the user for confirmation before creating the holding. Default to yes.
-        char choice = receiveStringInput("Check Details. Are they correct?", choiceOptions, "y", 1).charAt(0);
+        char choice = receiveStringInput("Check Details. Are they correct?", CHOICE_OPTIONS, "y", 1).charAt(0);
+
+        if (choice == 'e') return;
         if (choice == 'y') {
             //If they say yes add the method, record its success.
             boolean added = inv.addHolding(ID, type, title, loanFee);
@@ -575,7 +598,7 @@ public class gui {
         //Creating the first page
         newPage("Add Member");
         //Using the the method to take input.
-        char type = receiveStringInput("Enter type of member: Standard/Premium", memberOptions, true, 1).charAt(0);
+        char type = receiveStringInput("Enter type of member: Standard/Premium", MEMBER_OPTIONS, true, 1).charAt(0);
         String ID = getValidID("Holding", type);
 
         //The ID is done now.
@@ -611,7 +634,8 @@ public class gui {
         System.out.println("ID:" + type + ID);
         System.out.println("Name: " + name);
         //Prompt the user for confirmation before creating the holding. Default to yes.
-        char choice = receiveStringInput("Check Details. Are they correct?", choiceOptions, "y", 1).charAt(0);
+        char choice = receiveStringInput("Check Details. Are they correct?", CHOICE_OPTIONS, "y", 1).charAt(0);
+        if (choice == 'e') return;
         if (choice == 'y') {
             //If they say yes add the method, record its success.
             boolean added = inv.addMember(ID, type, name);
@@ -638,12 +662,13 @@ public class gui {
             System.out.printf("There are no holdings to remove. \nPlease press enter to return to main menu");
             input.nextLine();
         }
-        String ID = getExistingID("Holding", holdingTypes);
+        String ID = getExistingID("Holding", HOLDING_TYPES);
         if (ID != null) {
             boolean result;
             inv.printHolding(ID);
             //We now have a correct id. Ask the user if they want to delete the holding.
-            choice = receiveStringInput("Do you want to remove this holding? Please confirm", choiceOptions, "n", 1).charAt(0);
+            choice = receiveStringInput("Do you want to remove this holding? Please confirm", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice == 'e') return;
             //If they do, remove the holding.
             if (choice == 'y') {
                 result = inv.removeHolding(ID);
@@ -673,13 +698,13 @@ public class gui {
             mainMenu();
         }
         //Request member ID
-        String ID = getExistingID("Member", memberTypes);
+        String ID = getExistingID("Member", MEMBER_TYPES);
         if (ID != null) {
-
             boolean result;
             inv.printMember(ID);
             //We now have a correct id. Ask the user if they want to delete the member.
-            choice = receiveStringInput("Do you want to remove this member? Please confirm", choiceOptions, "n", 1).charAt(0);
+            choice = receiveStringInput("Do you want to remove this member? Please confirm", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice == 'e') return;
             //If they do, remove the member.
             if (choice == 'y') {
                 result = inv.removeMember(ID);
@@ -702,20 +727,21 @@ public class gui {
 
     private void borrowHolding() {
         newPage("Borrow");
-        String memberID = getExistingID("Member", memberTypes);
+        String memberID = getExistingID("Member", MEMBER_TYPES);
         if (memberID != null) {
-
             System.out.println(inv.getMemberName(memberID));
-            char choice = receiveStringInput("Is this your name?", choiceOptions, "y", 1).charAt(0);
+            char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+            if (choice == 'e') return;
             if (choice == 'n') {
                 System.out.println("Holding has not been borrowed. Press enter to return to menu.");
                 input.nextLine();
             } else {
-                String holdingID = getExistingID("Holding", holdingTypes);
+                String holdingID = getExistingID("Holding", HOLDING_TYPES);
                 if (holdingID != null) {
 
                     inv.printHolding(holdingID);
-                    choice = receiveStringInput("Do you want to borrow this holding?", choiceOptions, "y", 1).charAt(0);
+                    choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                    if (choice == 'e') return;
                     if (choice == 'y') {
                         boolean result = inv.borrowHolding(holdingID, memberID);
                         if (result) {
@@ -736,19 +762,21 @@ public class gui {
 
     private void returnHolding() {
         newPage("Return");
-        String memberID = getExistingID("Member", memberTypes);
+        String memberID = getExistingID("Member", MEMBER_TYPES);
         if (memberID != null) {
             System.out.println(inv.getMemberName(memberID));
-            char choice = receiveStringInput("Is this your name?", choiceOptions, "y", 1).charAt(0);
+            char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+            if (choice == 'e') return;
             if (choice == 'n') {
                 System.out.println("No holding was returned. Press enter to return to menu.");
                 input.nextLine();
             } else {
-                String holdingID = getExistingID("Holding", holdingTypes);
+                String holdingID = getExistingID("Holding", HOLDING_TYPES);
                 if (holdingID != null) {
 
                     inv.printHolding(holdingID);
-                    choice = receiveStringInput("Do you want to return this holding?", choiceOptions, "y", 1).charAt(0);
+                    choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                    if (choice == 'e') return;
                     if (choice == 'y') {
                         boolean result = inv.returnHolding(holdingID, memberID);
                         if (result) {
@@ -783,7 +811,7 @@ public class gui {
 
     private void printHolding() {
         newPage("Holding");
-        String ID = getExistingID("Holding", holdingTypes);
+        String ID = getExistingID("Holding", HOLDING_TYPES);
         if (ID != null) {
             newPage("Holding: " + ID);
             inv.printHolding(ID);
@@ -794,7 +822,7 @@ public class gui {
 
     private void printMember() {
         newPage("Member");
-        String ID = getExistingID("Member", memberTypes);
+        String ID = getExistingID("Member", MEMBER_TYPES);
         if (ID != null) {
             newPage("Member: " + ID);
             inv.printHolding(ID);
@@ -818,7 +846,8 @@ public class gui {
 
     private void exit() {
         newPage("Exit");
-        char choice = receiveStringInput("You you want to exit?", choiceOptions, "y", 1).charAt(0);
+        char choice = receiveStringInput("You you want to exit?", CHOICE_OPTIONS, "y", 1).charAt(0);
+        if (choice == 'e') return;
         if (choice == 'y') {
             System.exit(0);
         }
@@ -856,18 +885,18 @@ public class gui {
     }
 
     private void editHolding() {
+        String ID = getExistingID("Holding", HOLDING_TYPES);
+
         newPage("Edit Holding");
         System.out.println(" 1. ID");
         System.out.println(" 2. Title");
         System.out.println(" 3. Loan Cost");
         System.out.println(" 4. Daily Loan Amount");
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
         System.out.println("Enter your selections separated by commas");
     }
 
     private void editMember() {
+        String ID = getExistingID("Member", MEMBER_TYPES);
     }
 
     private void activateHolding() {
