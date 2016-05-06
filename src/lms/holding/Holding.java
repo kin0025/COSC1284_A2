@@ -180,10 +180,6 @@ public abstract class Holding implements SystemOperations{
             Max Loan Period: 28
     */
 
-    public String printfResult() {
-        return ("ID:" + ID + "\n" + "Title:" + title + "\n" + "Loan Fee: $" + loanCost + "\n" + "Max Loan Period: " + maxLoanPeriod);
-    }
-
     public String toString() {
         String result = getID() + ":" + getTitle() + ":" + getDefaultLoanFee() + ":" + getMaxLoanPeriod();
         return (result);

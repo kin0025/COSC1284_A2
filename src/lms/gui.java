@@ -146,11 +146,15 @@ public class gui {
      * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options or is empty. if it is empty returns the defaultAnswer. Final number is length of returned string
      **/
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
+        //Print a prompt for the user to enter input.
         System.out.println(flavourText + " " + stringArrayToString(options) + "[" + defaultAnswer + "]");
+        //Ensure we don't try to access a negative array index.
         if (outputLength <= 0) {
             outputLength = 1;
         }
+        //Actually get input.
         String inputString = input.nextLine().toLowerCase();
+        //If the user entered nothing, return the default input.
         if (inputString.length() == 0) {
             return ("" + defaultAnswer);
         }
