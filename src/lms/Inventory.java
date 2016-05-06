@@ -6,8 +6,6 @@ import lms.holding.*;
 import lms.members.*;
 import lms.util.*;
 
-import java.util.Objects;
-
 
 /**
  * Created by akinr on 11/04/2016.
@@ -257,7 +255,7 @@ public class Inventory {
         for (int i = 0; i < holdings.length; i++) {
             if (holdings[i] != null) {
                 holdings[i].print();
-                gui.printCharTimes('=', 150, true);
+                GUI.printCharTimes('=', 150, true);
             }
         }
     }
@@ -266,7 +264,7 @@ public class Inventory {
         for (int i = 0; i < members.length; i++) {
             if (members[i] != null) {
                 members[i].print();
-                gui.printCharTimes('=', 150, true);
+                GUI.printCharTimes('=', 150, true);
             }
         }
     }
