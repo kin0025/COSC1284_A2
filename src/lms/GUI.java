@@ -62,7 +62,9 @@ public class GUI {
             System.out.printf("\n");
         }
         //Print the first line, made of equal signs.
+        System.out.print(ANSI_PURPLE);
         printCharTimes('=', pageWidth, true);
+        System.out.print(ANSI_RESET);
 //Set the three components of a menu screen.
         String leftText = DateTime.getCurrentTime();
         String centreText = "Library Management System: " + title;
@@ -76,6 +78,7 @@ public class GUI {
         //Due to float to int conversion, subtract 1 more than the length.
         int rightSpacing = (pageWidth / 2) - 1 - right - (int) centre / 2;
 //Print the left
+        System.out.print(ANSI_YELLOW);
         System.out.print(leftText);
         //Print the spacing
         printCharTimes(' ', leftSpacing, false);
@@ -85,10 +88,11 @@ public class GUI {
         printCharTimes(' ', rightSpacing, false);
         //Print the right text
         System.out.println(rightText);
-
+System.out.print(ANSI_RESET);
 //Finish off the menu with another border.
+        System.out.print(ANSI_PURPLE);
         printCharTimes('=', pageWidth, true);
-        System.out.println();
+        System.out.println(ANSI_RESET);
     }
 
     /**
