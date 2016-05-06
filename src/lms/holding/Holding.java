@@ -1,3 +1,9 @@
+/*
+ * Copyright Alex Kinross-Smith (c) 2016.
+ * s3603437@student.rmit.edu.au
+ * alex@akinrosssmith.id.au
+ */
+
 package lms.holding;
 
 import lms.SystemOperations;
@@ -8,9 +14,6 @@ import java.util.Scanner;
 *@author - Alex Kinross-Smith
 */
 
-/**
- * Created by akinr on 11/04/2016.
- */
 public abstract class Holding implements SystemOperations{
     private String ID;
     private String title;
