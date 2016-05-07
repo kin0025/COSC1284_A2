@@ -507,7 +507,7 @@ public class GUI {
                 deactivateHolding();
                 break;
             case 3:
-                editHolding();
+                editHoldingMenu();
                 break;
             case 4:
                 resetMemberCredit();
@@ -599,8 +599,8 @@ public class GUI {
                 input.nextLine();
                 return;
             }
-            choice = receiveStringInput("Do you want to make another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
-            if(choice != 'y'){
+            choice = receiveStringInput("Do you want to make another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
                 keepGoing = false;
             }
         }
@@ -608,235 +608,240 @@ public class GUI {
 
     private void addMember() {
         boolean keepGoing = true;
-        while(keepGoing){
-        //Setting options that will be used later on as choices.
+        while (keepGoing) {
+            //Setting options that will be used later on as choices.
 
-        //Creating the first page
-        newPage("Add Member");
-        //Using the the method to take input.
-        char type = receiveStringInput("Enter type of member: Standard/Premium", MEMBER_OPTIONS, true, 1).charAt(0);
-        String ID = getValidID("Holding", type);
+            //Creating the first page
+            newPage("Add Member");
+            //Using the the method to take input.
+            char type = receiveStringInput("Enter type of member: Standard/Premium", MEMBER_OPTIONS, true, 1).charAt(0);
+            String ID = getValidID("Holding", type);
 
-        //The ID is done now.
+            //The ID is done now.
 
-        //Set a String representation of the type for use in prompts.
-        String typeName;
-        if (type == 's') {
-            typeName = "Standard Member";
-        } else if (type == 'v') {
-            typeName = "Premium Member";
-        } else {
-            typeName = "Incorrect";
+            //Set a String representation of the type for use in prompts.
+            String typeName;
+            if (type == 's') {
+                typeName = "Standard Member";
+            } else if (type == 'v') {
+                typeName = "Premium Member";
+            } else {
+                typeName = "Incorrect";
+            }
+
+            //Create a new page.
+            newPage("Add " + typeName);
+            //Tell the user what they just entered.
+            System.out.println("ID: " + type + ID);
+            //Now prompt them for the name of the holding
+            System.out.println("Enter the name of the " + typeName);
+            String name = input.nextLine();
+            while (name.length() == 0) { //If the name was not entered, prompt the user until they get it right.
+                System.out.println("Name not entered correctly, try again");
+                name = input.nextLine();
+            }
+
+            //Title is now set.
+
+
+            //We have all the info from the user.
+            newPage("Add " + typeName + ": Confirmation");
+            //Print all the info they have entered.
+            System.out.println("ID:" + type + ID);
+            System.out.println("Name: " + name);
+            //Prompt the user for confirmation before creating the holding. Default to yes.
+            char choice = receiveStringInput("Check Details. Are they correct?", CHOICE_OPTIONS, "y", 1).charAt(0);
+            if (choice == 'e') return;
+            if (choice == 'y') {
+                //If they say yes add the method, record its success.
+                boolean added = inv.addMember(ID, type, name);
+                //If it failed tell the user.
+                if (!added) {
+                    System.out.println("Adding failed. Please try again.");
+                } else System.out.println("Adding successful. Member created");
+                //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
+
+            } else if (choice == 'n') {
+                //If they choose not to continue, return them to to main menu.
+                System.out.println("Creation canceled. No member was created. Please start from beginning");
+                System.out.println("Press enter to return to main menu");
+                input.nextLine();
+                return;
+            }
+            choice = receiveStringInput("Do you want to make another member?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
+            }
         }
-
-        //Create a new page.
-        newPage("Add " + typeName);
-        //Tell the user what they just entered.
-        System.out.println("ID: " + type + ID);
-        //Now prompt them for the name of the holding
-        System.out.println("Enter the name of the " + typeName);
-        String name = input.nextLine();
-        while (name.length() == 0) { //If the name was not entered, prompt the user until they get it right.
-            System.out.println("Name not entered correctly, try again");
-            name = input.nextLine();
-        }
-
-        //Title is now set.
-
-
-        //We have all the info from the user.
-        newPage("Add " + typeName + ": Confirmation");
-        //Print all the info they have entered.
-        System.out.println("ID:" + type + ID);
-        System.out.println("Name: " + name);
-        //Prompt the user for confirmation before creating the holding. Default to yes.
-        char choice = receiveStringInput("Check Details. Are they correct?", CHOICE_OPTIONS, "y", 1).charAt(0);
-        if (choice == 'e') return;
-        if (choice == 'y') {
-            //If they say yes add the method, record its success.
-            boolean added = inv.addMember(ID, type, name);
-            //If it failed tell the user.
-            if (!added) {
-                System.out.println("Adding failed. Please try again.");
-            } else System.out.println("Adding successful. Member created");
-            //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
-
-        } else if (choice == 'n') {
-            //If they choose not to continue, return them to to main menu.
-            System.out.println("Creation canceled. No member was created. Please start from beginning");
-            System.out.println("Press enter to return to main menu");
-            input.nextLine();
-            return;
-        }
-        choice = receiveStringInput("Do you want to make another member?",CHOICE_OPTIONS,"n",1).charAt(0);
-        if(choice != 'y'){
-            keepGoing = false;
-        }}
     } //Done
 
     private void removeHolding() {
         boolean keepGoing = true;
-        while(keepGoing){
-        char choice;
-        newPage("Remove Holding");
-        if (inv.getNumberOfHoldings() == 0) {
-            System.out.printf("There are no holdings to remove. \nPlease press enter to return to main menu");
-            input.nextLine();
-            return;
-        }
-        String ID = getExistingID("Holding", HOLDING_TYPES);
-        if (ID != null) {
-            boolean result;
-            inv.printHolding(ID);
-            //We now have a correct id. Ask the user if they want to delete the holding.
-            choice = receiveStringInput("Do you want to remove this holding? Please confirm", CHOICE_OPTIONS, "n", 1).charAt(0);
-            if (choice == 'e') return;
-            //If they do, remove the holding.
-            if (choice == 'y') {
-                result = inv.removeHolding(ID);
-                //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
-                if (result) {
-                    System.out.println(ID + " deleted.");
+        while (keepGoing) {
+            char choice;
+            newPage("Remove Holding");
+            if (inv.getNumberOfHoldings() == 0) {
+                System.out.printf("There are no holdings to remove. \nPlease press enter to return to main menu");
+                input.nextLine();
+                return;
+            }
+            String ID = getExistingID("Holding", HOLDING_TYPES);
+            if (ID != null) {
+                boolean result;
+                inv.printHolding(ID);
+                //We now have a correct id. Ask the user if they want to delete the holding.
+                choice = receiveStringInput("Do you want to remove this holding? Please confirm", CHOICE_OPTIONS, "n", 1).charAt(0);
+                if (choice == 'e') return;
+                //If they do, remove the holding.
+                if (choice == 'y') {
+                    result = inv.removeHolding(ID);
+                    //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
+                    if (result) {
+                        System.out.println(ID + " deleted.");
 
+                    } else {
+                        //If the holding is somehow not deleted after all the checks, inform the user.
+                        System.out.println("Holding deletion failed. Please report to developer and try again.");
+
+                    }
+                    //If they decide not to delete the holding, return them to the menu.
                 } else {
-                    //If the holding is somehow not deleted after all the checks, inform the user.
-                    System.out.println("Holding deletion failed. Please report to developer and try again.");
+                    System.out.println("Holding deletion canceled.");
 
                 }
-                //If they decide not to delete the holding, return them to the menu.
-            } else {
-                System.out.println("Holding deletion canceled.");
-
+            }
+            choice = receiveStringInput("Do you want to remove another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
             }
         }
-        choice = receiveStringInput("Do you want to remove another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
-        if(choice != 'y'){
-            keepGoing = false;
-        }}
     } //Done
 
     private void removeMember() {
         boolean keepGoing = true;
-        while(keepGoing){
-        char choice;
-        newPage("Remove Member");
-        if (inv.getNumberOfMembers() == 0) {
-            System.out.printf("There are no members to remove. \nPlease press enter to return to main menu");
-            input.nextLine();
-            return;
-        }
-        //Request member ID
-        String ID = getExistingID("Member", MEMBER_TYPES);
-        if (ID != null) {
-            boolean result;
-            inv.printMember(ID);
-            //We now have a correct id. Ask the user if they want to delete the member.
-            choice = receiveStringInput("Do you want to remove this member? Please confirm", CHOICE_OPTIONS, "n", 1).charAt(0);
-            if (choice == 'e') return;
-            //If they do, remove the member.
-            if (choice == 'y') {
-                result = inv.removeMember(ID);
-                //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
-                if (result) {
-                    System.out.println(ID + " deleted.");
-                    input.nextLine();
+        while (keepGoing) {
+            char choice;
+            newPage("Remove Member");
+            if (inv.getNumberOfMembers() == 0) {
+                System.out.printf("There are no members to remove. \nPlease press enter to return to main menu");
+                input.nextLine();
+                return;
+            }
+            //Request member ID
+            String ID = getExistingID("Member", MEMBER_TYPES);
+            if (ID != null) {
+                boolean result;
+                inv.printMember(ID);
+                //We now have a correct id. Ask the user if they want to delete the member.
+                choice = receiveStringInput("Do you want to remove this member? Please confirm", CHOICE_OPTIONS, "n", 1).charAt(0);
+                if (choice == 'e') return;
+                //If they do, remove the member.
+                if (choice == 'y') {
+                    result = inv.removeMember(ID);
+                    //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
+                    if (result) {
+                        System.out.println(ID + " deleted.");
+                        input.nextLine();
+                    } else {
+                        //If the member is somehow not deleted after all the checks, inform the user.
+                        System.out.println("Member deletion failed. Please report to developer and try again.");
+                        input.nextLine();
+                    }
+                    //If they decide not to delete the member, return them to the menu.
                 } else {
-                    //If the member is somehow not deleted after all the checks, inform the user.
-                    System.out.println("Member deletion failed. Please report to developer and try again.");
+                    System.out.println("Member deletion canceled.");
                     input.nextLine();
                 }
-                //If they decide not to delete the member, return them to the menu.
-            } else {
-                System.out.println("Member deletion canceled.");
-                input.nextLine();
+            }
+            choice = receiveStringInput("Do you want to remove another member?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
             }
         }
-            choice = receiveStringInput("Do you want to remove another member?",CHOICE_OPTIONS,"n",1).charAt(0);
-            if(choice != 'y'){
-                keepGoing = false;
-            }}
     } //Done
 
     private void borrowHolding() {
         boolean keepGoing = true;
-        while(keepGoing){
-        newPage("Borrow");
-        String memberID = getExistingID("Member", MEMBER_TYPES);
-        if (memberID != null) {
-            System.out.println(inv.getMemberName(memberID));
-            char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
-            if (choice == 'e') return;
-            if (choice == 'n') {
-                System.out.println("Holding has not been borrowed. Press enter to return to menu.");
-                input.nextLine();
-            } else {
-                String holdingID = getExistingID("Holding", HOLDING_TYPES);
-                if (holdingID != null) {
+        while (keepGoing) {
+            newPage("Borrow");
+            String memberID = getExistingID("Member", MEMBER_TYPES);
+            if (memberID != null) {
+                System.out.println(inv.getMemberName(memberID));
+                char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                if (choice == 'e') return;
+                if (choice == 'n') {
+                    System.out.println("Holding has not been borrowed. Press enter to return to menu.");
+                    input.nextLine();
+                } else {
+                    String holdingID = getExistingID("Holding", HOLDING_TYPES);
+                    if (holdingID != null) {
 
-                    inv.printHolding(holdingID);
-                    choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
-                    if (choice == 'e') return;
-                    if (choice == 'y') {
-                        boolean result = inv.borrowHolding(holdingID, memberID);
-                        if (result) {
-                            System.out.println("Holding " + holdingID + " has been borrowed. Press enter to return to menu.");
-                            input.nextLine();
+                        inv.printHolding(holdingID);
+                        choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                        if (choice == 'e') return;
+                        if (choice == 'y') {
+                            boolean result = inv.borrowHolding(holdingID, memberID);
+                            if (result) {
+                                System.out.println("Holding " + holdingID + " has been borrowed. Press enter to return to menu.");
+                                input.nextLine();
+                            } else {
+                                System.out.println("Holding was not been borrowed. Press enter to return to menu.");
+                                input.nextLine();
+                            }
                         } else {
-                            System.out.println("Holding was not been borrowed. Press enter to return to menu.");
+                            System.out.println("Holding has not been borrowed. Press enter to return to menu.");
                             input.nextLine();
                         }
-                    } else {
-                        System.out.println("Holding has not been borrowed. Press enter to return to menu.");
-                        input.nextLine();
                     }
                 }
             }
+            char choice = receiveStringInput("Do you want to borrow another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
+            }
         }
-        char choice = receiveStringInput("Do you want to borrow another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
-        if(choice != 'y'){
-            keepGoing = false;
-        }}
     }
 
     private void returnHolding() {
         boolean keepGoing = true;
-        while(keepGoing){
-        newPage("Return");
-        String memberID = getExistingID("Member", MEMBER_TYPES);
-        if (memberID != null) {
-            System.out.println(inv.getMemberName(memberID));
-            char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
-            if (choice == 'e') return;
-            if (choice == 'n') {
-                System.out.println("No holding was returned. Press enter to return to menu.");
-                input.nextLine();
-            } else {
-                String holdingID = getExistingID("Holding", HOLDING_TYPES);
-                if (holdingID != null) {
+        while (keepGoing) {
+            newPage("Return");
+            String memberID = getExistingID("Member", MEMBER_TYPES);
+            if (memberID != null) {
+                System.out.println(inv.getMemberName(memberID));
+                char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                if (choice == 'e') return;
+                if (choice == 'n') {
+                    System.out.println("No holding was returned. Press enter to return to menu.");
+                    input.nextLine();
+                } else {
+                    String holdingID = getExistingID("Holding", HOLDING_TYPES);
+                    if (holdingID != null) {
 
-                    inv.printHolding(holdingID);
-                    choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
-                    if (choice == 'e') return;
-                    if (choice == 'y') {
-                        boolean result = inv.returnHolding(holdingID, memberID);
-                        if (result) {
-                            System.out.println("Holding " + holdingID + " has been returned. Press enter to return to menu.");
-                            input.nextLine();
+                        inv.printHolding(holdingID);
+                        choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                        if (choice == 'e') return;
+                        if (choice == 'y') {
+                            boolean result = inv.returnHolding(holdingID, memberID);
+                            if (result) {
+                                System.out.println("Holding " + holdingID + " has been returned. Press enter to return to menu.");
+                                input.nextLine();
+                            } else {
+                                System.out.println("Holding was not been returned. Press enter to return to menu.");
+                                input.nextLine();
+                            }
                         } else {
-                            System.out.println("Holding was not been returned. Press enter to return to menu.");
+                            System.out.println("Holding has not been returned. Press enter to return to menu.");
                             input.nextLine();
                         }
-                    } else {
-                        System.out.println("Holding has not been returned. Press enter to return to menu.");
-                        input.nextLine();
                     }
                 }
             }
+            char choice = receiveStringInput("Do you want to return another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
+            }
         }
-        char choice = receiveStringInput("Do you want to return another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
-        if(choice != 'y'){
-            keepGoing = false;
-        }}
     }
 
     private void printAllHoldings() {
@@ -855,36 +860,38 @@ public class GUI {
 
     private void printHolding() {
         boolean keepGoing = true;
-        while(keepGoing){
-        newPage("Holding");
-        String ID = getExistingID("Holding", HOLDING_TYPES);
-        if (ID != null) {
-            newPage("Holding: " + ID);
-            inv.printHolding(ID);
-            System.out.println("Press enter to return to menu.");
-            input.nextLine();
+        while (keepGoing) {
+            newPage("Holding");
+            String ID = getExistingID("Holding", HOLDING_TYPES);
+            if (ID != null) {
+                newPage("Holding: " + ID);
+                inv.printHolding(ID);
+                System.out.println("Press enter to return to menu.");
+                input.nextLine();
+            }
+            char choice = receiveStringInput("Do you want to print another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
+            }
         }
-        char choice = receiveStringInput("Do you want to print another holding?",CHOICE_OPTIONS,"n",1).charAt(0);
-        if(choice != 'y'){
-        keepGoing = false;
-        }}
     }
 
     private void printMember() {
         boolean keepGoing = true;
-        while(keepGoing){
-        newPage("Member");
-        String ID = getExistingID("Member", MEMBER_TYPES);
-        if (ID != null) {
-            newPage("Member: " + ID);
-            inv.printHolding(ID);
-            System.out.println("Press enter to return to menu.");
-            input.nextLine();
+        while (keepGoing) {
+            newPage("Member");
+            String ID = getExistingID("Member", MEMBER_TYPES);
+            if (ID != null) {
+                newPage("Member: " + ID);
+                inv.printHolding(ID);
+                System.out.println("Press enter to return to menu.");
+                input.nextLine();
+            }
+            char choice = receiveStringInput("Do you want to print another member?", CHOICE_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y') {
+                keepGoing = false;
+            }
         }
-        char choice = receiveStringInput("Do you want to print another member?",CHOICE_OPTIONS,"n",1).charAt(0);
-        if(choice != 'y'){
-        keepGoing = false;
-        }}
     }
 
     private void save() {
@@ -909,45 +916,41 @@ public class GUI {
     }
 
     //Page Admin Menu Pages
-    private void edit() {
-        //Establishing type
-        newPage("Edit");
-        String type;
-        boolean result = false;
-        System.out.println("Enter the type of item you want to edit. (Member/Holding");
-        type = input.nextLine();
-        while (!type.equalsIgnoreCase("member") || !type.equalsIgnoreCase("holding")) {
-            System.out.println("Incorrect entry. Check spelling and try again. (Member/Holding)");
-            type = input.nextLine();
-        }
-        String typeExact;
-        System.out.print("Now enter the type of ");
-        if (type.equalsIgnoreCase("member")) {
-            System.out.print("Member (Standard/Premium)");
-            typeExact = input.nextLine();
-            while (!typeExact.equalsIgnoreCase("standard") || !typeExact.equalsIgnoreCase("premium")) {
-                System.out.println("Incorrect entry. Check spelling and try again. (Standard/Premium)");
-                typeExact = input.nextLine();
-            }
-        } else if (type.equalsIgnoreCase("holding")) {
-            System.out.print("Holding (Book/Video)");
-            typeExact = input.nextLine();
-            while (!typeExact.equalsIgnoreCase("book") || !typeExact.equalsIgnoreCase("video")) {
-                System.out.println("Incorrect entry. Check spelling and try again. (Book/Video)");
-                typeExact = input.nextLine();
-            }
-        }
-    }
 
-    private void editHolding() {
+    private void editHoldingMenu() {
         String ID = getExistingID("Holding", HOLDING_TYPES);
 
         newPage("Edit Holding");
         System.out.println(" 1. ID");
         System.out.println(" 2. Title");
         System.out.println(" 3. Loan Cost");
-        System.out.println(" 4. Daily Loan Amount");
-        System.out.println("Enter your selections separated by commas");
+        System.out.println(" 4. Overdue Fee");
+        String[] choiceOptions = {"1", "2", "3", "4"};
+        int choice = Integer.parseInt(receiveStringInput("Enter your selection:", choiceOptions, false, 1));
+        switch(choice){
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            default:
+
+        }
+    }
+
+    private void editID() {
+    }
+
+    private void editTitle() {
+    }
+
+    private void editLoanCost() {
+    }
+
+    private void editLoanFee() {
     }
 
     private void editMember() {
