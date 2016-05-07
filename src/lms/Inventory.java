@@ -18,11 +18,20 @@ import lms.util.*;
  */
 public class Inventory {
     //Start Screen
-    private Holding[] holdings = new Holding[15];
-    private Member[] members = new Member[15];
+    private Holding[] holdings;
+    private Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
 
+    public Inventory() {
+        this.holdings = new Holding[15];
+        this.members = new Member[15];
+    }
+
+    public Inventory(int holdings, int members) {
+        this.holdings = new Holding[holdings];
+        this.members = new Member[members];
+    }
 
     /**
      * Check if the details needed for an id are correct. Returns the result in string form (Valid, Already Taken,Invalid Type, ID contains Characters)
@@ -328,6 +337,32 @@ public class Inventory {
             return true;
     }
 
+    public void replaceID(String oldID, String newID) {
+        char type = oldID.charAt(0);
+        int arrayIndex = searchArrays(oldID);
+        if (type == 'b' || type == 'v') {
+            holdings[arrayIndex].setID(newID);
+        } else if (type == 'p' || type == 's') {
+            holdings[arrayIndex].setID(newID);
+        }
+        searchArrays(oldID);
+    }
+
+    public boolean replaceName(String ID, String name) {
+        int arrayPos = searchArrays(ID);
+        boolean result = members[arrayPos].setName(name);
+        return result;
+    }
+
+    public void replaceTitle(String ID, String title) {
+        int arrayPos = searchArrays(ID);
+        holdings[arrayPos].setTitle(title);
+    }
+    public void replaceLoan(String ID, int loanFee) {
+        int arrayPos = searchArrays(ID);
+        Video video = (Video)holdings[arrayPos];
+        video.setLoanCost(loanFee);
+           }
     public void save() {
 
     }
