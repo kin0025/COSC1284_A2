@@ -358,11 +358,29 @@ public class Inventory {
         int arrayPos = searchArrays(ID);
         holdings[arrayPos].setTitle(title);
     }
+
+    public boolean activateHolding(String ID) {
+        int arrayPos = searchArrays(ID);
+        boolean result = holdings[arrayPos].activate();
+        return result;
+    }
+
+    public boolean deactivateHolding(String ID) {
+        int arrayPos = searchArrays(ID);
+        boolean result = holdings[arrayPos].deactivate();
+        return result;
+    }
+
     public void replaceLoan(String ID, int loanFee) {
         int arrayPos = searchArrays(ID);
-        Video video = (Video)holdings[arrayPos];
+        Video video = (Video) holdings[arrayPos];
         video.setLoanCost(loanFee);
-           }
+    }
+    public void resetMemberCredit(String ID) {
+        int arrayPos = searchArrays(ID);
+        members[arrayPos].resetCredit();
+    }
+
     public void save() {
 
     }

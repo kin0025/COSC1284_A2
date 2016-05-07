@@ -897,44 +897,43 @@ public class GUI {
     //Page Admin Menu Pages
 
     private void adminMenu() {
-        newPage("Admin");
-        System.out.println(" 1. Activate Holding");
-        System.out.println(" 2. Deactivate Holding");
-        System.out.println(" 3. Edit Holding Details");
-        System.out.println(" 4. Reset Member Credit");
-        System.out.println(" 5. Edit Member Details");
-        System.out.println(" 6. Temporary Deactivate Holding");
-        System.out.println(" 7. Return holding ignoring fees");
-        System.out.println(" 8. Back to Main Menu");
-        printCharTimes('=', 50, true);
-        String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7", "8"};
-        int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
-        switch (options) {
-            case 1:
-                activateHolding();
-                break;
-            case 2:
-                deactivateHolding();
-                break;
-            case 3:
-                editHoldingMenu();
-                break;
-            case 4:
-                resetMemberCredit();
-                break;
-            case 5:
-                editMemberMenu();
-                break;
-            case 6:
-                temporaryRemoveHolding();
-                break;
-            case 7:
-                returnHoldingNoFee();
-                break;
-            case 8:
-                return;
-            default:
-                adminMenu();
+        while (true) {
+            newPage("Admin");
+
+            System.out.println(" 1. Activate Holding");
+            System.out.println(" 2. Deactivate Holding");
+            System.out.println(" 3. Edit Holding Details");
+            System.out.println(" 4. Reset Member Credit");
+            System.out.println(" 5. Edit Member Details");
+            System.out.println(" 6. Return holding ignoring fees");
+            System.out.println(" 7. Back to Main Menu");
+            printCharTimes('=', 50, true);
+            String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7"};
+            int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
+            switch (options) {
+                case 1:
+                    activateHolding();
+                    break;
+                case 2:
+                    deactivateHolding();
+                    break;
+                case 3:
+                    editHoldingMenu();
+                    break;
+                case 4:
+                    resetMemberCredit();
+                    break;
+                case 5:
+                    editMemberMenu();
+                    break;
+                case 6:
+                    returnHoldingNoFee();
+                    break;
+                case 7:
+                    return;
+                default:
+                    adminMenu();
+            }
         }
     }
 
@@ -954,7 +953,7 @@ public class GUI {
                 editTitle(HOLDING_TYPES, "Holding");
                 break;
             case 3:
-               editLoanCost();
+                editLoanCost();
                 break;
             default:
 
@@ -982,62 +981,94 @@ public class GUI {
 
     private void editID(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
-        String[] options = {oldID.substring(0, 0)};
-        String[] idInfo = getValidID(typeName, options);
-        String newID = idInfo[0] + idInfo[1];
-        inv.replaceID(oldID, newID);
+        if (oldID != null) {
+            String[] options = {oldID.substring(0, 0)};
+            String[] idInfo = getValidID(typeName, options);
+            String newID = idInfo[0] + idInfo[1];
+            inv.replaceID(oldID, newID);
+        } else System.out.println("Incorrect ID, nothing was changed.");
+
     }
 
     private void editTitle(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
-        String[] options = {oldID.substring(0, 0)};
-        String title = input.nextLine();
-        while (title.length() > 0) {
-            System.out.println("Please enter at least one character:");
-            title = input.nextLine();
-        }
-        inv.replaceTitle(oldID, title);
+        if (oldID != null) {
+            String[] options = {oldID.substring(0, 0)};
+            System.out.println("Please enter replacement title");
+            String title = input.nextLine();
+            while (title.length() == 0) {
+                System.out.println("Please enter at least one character:");
+                title = input.nextLine();
+            }
+            inv.replaceTitle(oldID, title);
+        } else System.out.println("Incorrect ID, nothing was changed.");
+
     }
 
     private void editName(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
-        String name = input.nextLine();
-        while (name.length() > 0) {
-            System.out.println("Please enter at least one character:");
-            name = input.nextLine();
-        }
-        boolean result = inv.replaceName(oldID, name);
-        if (!result) {
-            System.out.println("Change failed.");
-        }
+        if (oldID != null) {
+
+            System.out.println("Please enter replacement name");
+            String name = input.nextLine();
+            while (name.length() > 0) {
+                System.out.println("Please enter at least one character:");
+                name = input.nextLine();
+            }
+            boolean result = inv.replaceName(oldID, name);
+            if (!result) {
+                System.out.println("Change failed.");
+            }
+        } else System.out.println("Incorrect ID, nothing was changed.");
     }
 
     private void editLoanCost() {
         char[] type = {'v'};
         String oldID = getExistingID("Holding", type);
-        String[] choiceOptions = {"4", "6"};
-        int newLoan = Integer.parseInt(receiveStringInput("Enter new Loan Fee:", choiceOptions, true, 1));
-        inv.replaceLoan(oldID, newLoan);
+        if (oldID != null) {
+            String[] choiceOptions = {"4", "6"};
+            int newLoan = Integer.parseInt(receiveStringInput("Enter new Loan Fee:", choiceOptions, true, 1));
+            inv.replaceLoan(oldID, newLoan);
+        } else System.out.println("Incorrect ID, nothing was changed.");
     }
 
     private void activateHolding() {
+        String ID = getExistingID("Holding", HOLDING_TYPES);
+        if (ID != null) {
 
+            boolean result = inv.activateHolding(ID);
+            if (!result) {
+                System.out.println("Holding activation failed");
+            } else {
+                System.out.println("Holding was activated");
+            }
+        }
     }
 
     private void deactivateHolding() {
+        String ID = getExistingID("Holding", HOLDING_TYPES);
+        if (ID != null) {
 
+            boolean result = inv.deactivateHolding(ID);
+            if (!result) {
+                System.out.println("Holding deactivation failed");
+            } else {
+                System.out.println("Holding was deactivated");
+            }
+        }
     }
 
     private void resetMemberCredit() {
+        String ID = getExistingID("Member", MEMBER_TYPES);
+        if (ID != null) {
 
-    }
-
-    private void temporaryRemoveHolding() {
-
+            inv.resetMemberCredit(ID);
+            System.out.println("Credit was reset");
+        }
     }
 
     private void returnHoldingNoFee() {
 
     }
-
+// TODO: 8/05/2016 Needs more functionality
 }
