@@ -14,8 +14,8 @@ package lms.members;
  */
 public class PremiumMember extends Member {
 
-    public PremiumMember(String premimumMemberId, String premiumMemberName) {
-setID(premimumMemberId);
+    public PremiumMember(String premiumMemberId, String premiumMemberName) {
+setID(premiumMemberId);
         setName(premiumMemberName);
     }
     public boolean setID(String ID) {

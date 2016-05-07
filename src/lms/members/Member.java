@@ -24,7 +24,6 @@ public abstract class Member implements SystemOperations {
     private int balance;
     private Holding[] borrowed = new Holding[50];
     private boolean activeStatus;
-    private int currentBorrowedPos = 0;
 
     public Member(String memberID, String fullName, int credit) {
         setID(memberID);
@@ -116,12 +115,12 @@ public abstract class Member implements SystemOperations {
     public boolean borrowHolding(Holding holding) {
         if (balance - holding.getDefaultLoanFee() < 0 && activeStatus) {
             if (holding.borrowHolding()) {
-                borrowed[currentBorrowedPos] = holding;
+                borrowed[findFirstEmptyHoldingSlot()] = holding;
                 balance -= holding.getDefaultLoanFee();
                 System.out.print("Borrowed");
                 return true;
             } else
-                System.out.println("Book was unavaliable to be borrowed. Book was not added to your account and you were not charged.");
+                System.out.println("Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
         } else System.out.println("Your account was invalid or balance was insufficient to borrow book");
         return (false);
     }/*
@@ -167,7 +166,7 @@ public abstract class Member implements SystemOperations {
 
     //    The conditions for returning a holding are different depending on the type of member, please see the functional requirements section above.
     public void print() {
-    System.out.println("ID:" + getID());
+        System.out.println("ID:" + getID());
         System.out.println("Name:" + getFullName());
         System.out.println("Max Credit: " + getMaxCredit());
     }

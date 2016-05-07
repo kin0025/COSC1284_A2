@@ -83,8 +83,7 @@ public class Book extends Holding {
 
     @Override
     public String toFile() {
-        String result = getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + getActiveStatus() + "," + getUnavailable() + "," + getAuthor();
-        return (result);
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + getActiveStatus() + "," + getUnavailable() + "," + getAuthor());
     }
 
 }

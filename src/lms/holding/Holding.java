@@ -91,10 +91,7 @@ public abstract class Holding implements SystemOperations{
     } //Done
 
     public boolean isOnLoan() {
-        if (borrowDate == null) {
-            return (false);
-        }
-        return (true);
+        return borrowDate != null;
     } //Done
 
     public DateTime getBorrowDate() {
@@ -184,13 +181,11 @@ public abstract class Holding implements SystemOperations{
     */
 
     public String toString() {
-        String result = getID() + ":" + getTitle() + ":" + getDefaultLoanFee() + ":" + getMaxLoanPeriod();
-        return (result);
+        return (getID() + ":" + getTitle() + ":" + getDefaultLoanFee() + ":" + getMaxLoanPeriod());
     }
 
     public String toFile() {
-        String result = getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active + "," + unavailable;
-        return (result);
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active + "," + unavailable);
     }
 
     /*
@@ -202,40 +197,18 @@ public abstract class Holding implements SystemOperations{
             v000001:Intro to Java 1:4:7
     */
     public boolean activate() {
-        Scanner input = new Scanner(System.in);
         switch (checkValidity().toLowerCase()) {
             case "valid":
                 this.active = true;
                 return true;
             case "invalid id":
-          /*      System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
-                System.out.println("Do you want to enter another one? (yes/no/y/n)");
-                char result = input.nextLine().toLowerCase().charAt(0);
-                if (result == 'y') {
-                    do {
-                        System.out.println("Enter new ID:");
-                        setID(input.nextLine());
-                    } while (checkValidity().equalsIgnoreCase("invalid id"));
-                    activate();
-                } else return false;
-                break;
-          */  case "invalid title":
-            /*    System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
-                System.out.println("Do you want to enter another one? (yes/no/y/n)");
-                result = input.nextLine().toLowerCase().charAt(0);
-                if (result == 'y') {
-                    do {
-                        System.out.println("Enter new title:");
-                        setTitle(input.nextLine());
-                    } while (checkValidity().equalsIgnoreCase("invalid title"));
-                    activate();
-                } else return false;
-            */default:
+
+           case "invalid title":
+            default:
                 System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
                 return (false);
 
         }
-//        return false;
     }
 
     public boolean deactivate() {
@@ -254,16 +227,13 @@ public abstract class Holding implements SystemOperations{
         return ("Valid");
     }
 
-    public boolean isUseable() {
+    public boolean isUsable() {
         String result = checkValidity();
         if (!(result.equalsIgnoreCase("valid"))) {
             System.out.println(result);
             deactivate();
         }
-        if (unavailable || !active) {
-            return false;
-        }
-        return true;
+        return !(unavailable || !active);
     }
 
 

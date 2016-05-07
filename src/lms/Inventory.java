@@ -89,7 +89,7 @@ public class Inventory {
     }
 
     /**
-     * Finds the array index of the firsy null value
+     * Finds the array index of the first null value
      **/
     private int firstNullArray(char type) {
         if (type == 'v' || type == 'b') {
@@ -126,7 +126,7 @@ public class Inventory {
         return randomID;
     }
 
-    public void recalculateStatistics() {
+    private void recalculateStatistics() {
         numberOfHoldings = 0;
         numberOfMembers = 0;
         for (int i = 0; i < holdings.length; i++) {
@@ -284,30 +284,28 @@ public class Inventory {
         }
     }
 
-    public boolean printHolding(String ID) {
+    public void printHolding(String ID) {
         if (ID.length() != 7) {
             System.out.println("Incorrect ID");
-            return false;
+            return;
         }
         int holdingID = searchArrays(ID);
         if (holdingID < 0) {
             System.out.println("No Holding Found");
-            return false;
+            return;
         } else holdings[holdingID].print();
-        return true;
     }
 
-    public boolean printMember(String ID) {
+    public void printMember(String ID) {
         if (ID.length() != 7) {
             System.out.println("Incorrect ID");
-            return false;
+            return;
         }
         int memberID = searchArrays(ID);
         if (memberID < 0) {
             System.out.println("No Member Found");
-            return false;
+            return;
         } else members[memberID].print();
-        return true;
     }
 
     public String getMemberName(String ID) {
@@ -350,8 +348,7 @@ public class Inventory {
 
     public boolean replaceName(String ID, String name) {
         int arrayPos = searchArrays(ID);
-        boolean result = members[arrayPos].setName(name);
-        return result;
+        return members[arrayPos].setName(name);
     }
 
     public void replaceTitle(String ID, String title) {
@@ -361,14 +358,12 @@ public class Inventory {
 
     public boolean activateHolding(String ID) {
         int arrayPos = searchArrays(ID);
-        boolean result = holdings[arrayPos].activate();
-        return result;
+        return holdings[arrayPos].activate();
     }
 
     public boolean deactivateHolding(String ID) {
         int arrayPos = searchArrays(ID);
-        boolean result = holdings[arrayPos].deactivate();
-        return result;
+        return holdings[arrayPos].deactivate();
     }
 
     public void replaceLoan(String ID, int loanFee) {

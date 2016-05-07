@@ -9,7 +9,6 @@
 */
 package lms;
 
-import com.sun.istack.internal.Nullable;
 import lms.util.AdminVerify;
 import lms.util.DateTime;
 
@@ -20,15 +19,15 @@ import java.util.Scanner;
  */
 public class GUI {
     //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_BLUE = "\u001B[34m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_WHITE = "\u001B[37m";
     private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
@@ -88,9 +87,9 @@ public class GUI {
         int centre = centreText.length();
         int right = rightText.length();
 //Find the spacing between the three elements. Total width/2 - the size of left and half of the centre.
-        int leftSpacing = pageWidth / 2 - left - (int) centre / 2;
+        int leftSpacing = pageWidth / 2 - left - centre / 2;
         //Due to float to int conversion, subtract 1 more than the length.
-        int rightSpacing = (pageWidth / 2) - 1 - right - (int) centre / 2;
+        int rightSpacing = (pageWidth / 2) - 1 - right - centre / 2;
 //Print the left
         System.out.print(ANSI_YELLOW);
         System.out.print(leftText);
@@ -125,7 +124,7 @@ public class GUI {
     }
 
     /**
-     * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are avaliable.
+     * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are available.
      * Final number is length of returned string and length of input that will be compared to the strings.
      **/
     private String receiveStringInput(String flavourText, String[] options, boolean printOptionText, int outputLength) {
@@ -275,7 +274,7 @@ public class GUI {
     /**
      * Adds the default holdings
      **/
-    public void addDefault() {
+    private void addDefault() {
         String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
         char[] holdingType = {'b', 'b', 'b', 'b', 'v', 'v', 'v', 'v'};
         String[] holdingID = {"000001", "000002", "000003", "000004", "000001", "000002", "000003", "000004"};
@@ -352,8 +351,7 @@ public class GUI {
                     System.out.println(inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
         }
-        String[] result = {"" + type, ID};
-        return result;
+        return new String[]{"" + type, ID};
     }
 
     //UI Methods
@@ -982,7 +980,7 @@ public class GUI {
     private void editID(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
         if (oldID != null) {
-            String[] options = {oldID.substring(0, 0)};
+            String[] options = {oldID.substring(0, 1)};
             String[] idInfo = getValidID(typeName, options);
             String newID = idInfo[0] + idInfo[1];
             inv.replaceID(oldID, newID);
@@ -993,7 +991,6 @@ public class GUI {
     private void editTitle(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
         if (oldID != null) {
-            String[] options = {oldID.substring(0, 0)};
             System.out.println("Please enter replacement title");
             String title = input.nextLine();
             while (title.length() == 0) {
