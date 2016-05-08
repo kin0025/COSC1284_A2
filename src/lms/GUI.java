@@ -39,13 +39,20 @@ public class GUI {
     private Inventory inv;
     //Functional Methods
 
+    /**
+     * Runs on creation of a GUI object.
+     * Prompts user for inventory size input.
+     */
     public GUI() {
         String[] choiceOptions = {"y", "n"};
         char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1).charAt(0);
+        //Create a normal inventory object with 15 members and 15 holdings.
         if (choice == 'n') {
             inv = new Inventory();
         } else {
+            //Prompt the user for input and use the inputs for the size of the holding and members arrays in inventory.
             System.out.println("Enter an integer for max number of holdings:");
+            //We don't check input validity or catch the exceptions. At this stage we are not validating input.
             int holdings = input.nextInt();
             System.out.println("Enter an integer for max number of members:");
             int members = input.nextInt();
@@ -55,7 +62,10 @@ public class GUI {
     }
 
     /**
-     * Prints the specified character "c" number of "times", then if new line == true prints a new line at the end
+     * Prints a character a number of times, and can terminate the line at the end.
+     *
+     * @param times   The number of times to print the <code>char</code>
+     * @param newLine If it is true print a new line at the end of the char sequence.
      **/
     public static void printCharTimes(char c, int times, boolean newLine) {
         //Prints the character times.
@@ -69,7 +79,9 @@ public class GUI {
     }
 
     /**
-     * Creates a new page with the title "title"
+     * Creates a new page. Formatted, displays current date and the status of inventory.
+     *
+     * @param title Used to make the central element of the page.
      **/
     private void newPage(String title) {
         //Sets the width of the page.
@@ -119,6 +131,9 @@ public class GUI {
 
     /**
      * Returns an array of Strings (for example {a,b,c} as a String in the format (a/b/c)
+     *
+     * @param array used as the input to formulate the final string.
+     * @return A string in the format of (0/1/2/3/...) of the input array {0,1,2,3,...}
      **/
     private String stringArrayToString(String[] array) {
         String result = ANSI_YELLOW + "{" + ANSI_RESET;
@@ -137,6 +152,12 @@ public class GUI {
     /**
      * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are available.
      * Final number is length of returned string and length of input that will be compared to the strings.
+     *
+     * @param flavourText     Printed before every request for input.
+     * @param options         The array of <code>Strings</code> that is used for validation of input.
+     * @param printOptionText If true, display the potential inputs to the user. If false, don't display it.
+     * @param outputLength    The length of input that will be validated and output.
+     * @return The final validated chosen user input of the first <code>int outputLength</code> positions.
      **/
     private String receiveStringInput(String flavourText, String[] options, boolean printOptionText, int outputLength) {
         //Print the flavour text.
@@ -191,6 +212,12 @@ public class GUI {
 
     /**
      * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options or is empty. if it is empty returns the defaultAnswer. Final number is length of returned string
+     *
+     * @param flavourText   Printed before every request for input.
+     * @param options       The array of <code>Strings</code> that is used for validation of input.
+     * @param defaultAnswer The default solutions. If no input is received this is returned.
+     * @param outputLength  The length of input that will be validated and output.
+     * @return The final validated chosen user input of the first <code>int outputLength</code> positions.
      **/
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
         //Print a prompt for the user to enter input.
@@ -231,9 +258,13 @@ public class GUI {
     }
 
     /**
-     * Prompts the user for an ID and returns it.
+     * Prompts the user for an ID that already exists.
      * TypeID is a string that will be displayed when asking the user for and ID, and expectedTypes restricts input(i.e if someone enters s000001, but the user is searching for a holding it wont work.
      * If user doesn't want to enter input returns null.
+     *
+     * @param typeID        Used strictly for printing to the user. Displayed in user facing prompts.
+     * @param expectedTypes The input ID must start with one of these expected types.
+     * @return The ID chosen by the user.
      **/
     private String getExistingID(String typeID, char[] expectedTypes) {
         System.out.println("Enter " + typeID + " ID:");
@@ -283,7 +314,7 @@ public class GUI {
     }
 
     /**
-     * Adds the default holdings
+     * Adds the default holdings as specified by assignment spec.
      **/
     private void addDefault() {
         String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
@@ -302,6 +333,13 @@ public class GUI {
         //inv.recalculateStatistics();
     }
 
+    /**
+     * Prompts the user for a formatting valid ID, conforming to the types possible.
+     *
+     * @param typeID Used for user input in user facing prompts i.e Enter type of <code>typeID</code> :
+     * @param types  Used by <code>{@link #receiveStringInput(String, String[], boolean, int)}</code> to get the type of ID to be created.
+     * @return 2 long array of Strings. First position is the type, Second position is the 6 digit ID.
+     */
     private String[] getValidID(String typeID, String[] types) {
         char type;
         if (types.length > 1) {
@@ -366,6 +404,12 @@ public class GUI {
     }
 
     //UI Methods
+
+    /**
+     * Prints a pretty logo.
+     * Requests what will initialise the inventory
+     * Requests console width for page formatting
+     */
     public void logoBoot() {
         System.out.printf("                                                            \n" +
                 "                                                            \n" +
@@ -419,10 +463,8 @@ public class GUI {
                 "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
                 "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
                 "                                                            \n" +
-                "                       " + ANSI_YELLOW + "Press enter key to continue" + ANSI_RESET + "         \n" +
                 "                                                            \n" +
                 "                                                            \n");
-        input.nextLine();
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
         char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "d", 1).charAt(0);
         if (choice == 'd') {
@@ -448,6 +490,11 @@ public class GUI {
         }
     }
 
+    /**
+     * Main Menu
+     * Used for choice in user facing options.
+     * Runs other methods based on user input.
+     */
     public void mainMenu() {
         newPage("Home");
         System.out.println(" 1. Add Holding");
@@ -515,7 +562,9 @@ public class GUI {
         }
     }
 
-
+    /**
+     * Used to limit access to admin menu
+     */
     private void adminMenuVerify() {
         AdminVerify verify = new AdminVerify();
         newPage("Admin Verification");
@@ -541,6 +590,10 @@ public class GUI {
     }
 
     //Page Main Menu Methods
+
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void addHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -621,6 +674,9 @@ public class GUI {
     } //Done
 
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void addMember() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -690,6 +746,9 @@ public class GUI {
         }
     } //Done
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void removeHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -732,6 +791,9 @@ public class GUI {
         }
     } //Done
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void removeMember() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -775,6 +837,9 @@ public class GUI {
         }
     } //Done
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void borrowHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -817,6 +882,9 @@ public class GUI {
         }
     }
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void returnHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -859,6 +927,9 @@ public class GUI {
         }
     }
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void printAllHoldings() {
         newPage("Holding Listing");
         inv.printAllHoldings();
@@ -866,6 +937,9 @@ public class GUI {
         input.nextLine();
     }
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void printAllMembers() {
         newPage("Members Listing");
         inv.printAllMembers();
@@ -873,6 +947,9 @@ public class GUI {
         input.nextLine();
     }
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void printHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -891,6 +968,9 @@ public class GUI {
         }
     }
 
+    /**
+     * A menu to receive input that will be passed to the inventory class.
+     */
     private void printMember() {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -932,12 +1012,15 @@ public class GUI {
 
     //Page Admin Menu Pages
 
+    /**
+     * Secondary menu for admin functions used to choose what admin methods to run.
+     */
     private void adminMenu() {
         while (true) {
             newPage("Admin");
 
-            System.out.println(" 1. Activate Holding");
-            System.out.println(" 2. Deactivate Holding");
+            System.out.println(" 1. Activate");
+            System.out.println(" 2. Deactivate");
             System.out.println(" 3. Edit Holding Details");
             System.out.println(" 4. Reset Member Credit");
             System.out.println(" 5. Edit Member Details");
@@ -948,10 +1031,10 @@ public class GUI {
             int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
             switch (options) {
                 case 1:
-                    activateHolding();
+                    activate();
                     break;
                 case 2:
-                    deactivateHolding();
+                    deactivate();
                     break;
                 case 3:
                     editHoldingMenu();
@@ -973,6 +1056,9 @@ public class GUI {
         }
     }
 
+    /**
+     * A tertiary menu for editing holdings.
+     */
     private void editHoldingMenu() {
 
         newPage("Edit Holding");
@@ -996,6 +1082,9 @@ public class GUI {
         }
     }
 
+    /**
+     * A tertiary menu for editing members.
+     */
     private void editMemberMenu() {
 
         newPage("Edit Member");
@@ -1015,6 +1104,12 @@ public class GUI {
         }
     }
 
+    /**
+     * Edits the ID of either members or holdings.
+     *
+     * @param types    Used for valid types for input.
+     * @param typeName Used in user facing prompts.
+     */
     private void editID(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
         if (oldID != null) {
@@ -1026,6 +1121,12 @@ public class GUI {
 
     }
 
+    /**
+     * Edits the title of holdings.
+     *
+     * @param types    Used for valid types for input.
+     * @param typeName Used in user facing prompts.
+     */
     private void editTitle(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
         if (oldID != null) {
@@ -1040,6 +1141,12 @@ public class GUI {
 
     }
 
+    /**
+     * Edits the name of members.
+     *
+     * @param types    Used for valid types for input.
+     * @param typeName Used in user facing prompts.
+     */
     private void editName(char[] types, String typeName) {
         String oldID = getExistingID(typeName, types);
         if (oldID != null) {
@@ -1057,6 +1164,9 @@ public class GUI {
         } else System.out.println("Incorrect ID, nothing was changed.");
     }
 
+    /**
+     * Edits the loan cost of Videos.
+     */
     private void editLoanCost() {
         char[] type = {'v'};
         String oldID = getExistingID("Holding", type);
@@ -1067,34 +1177,41 @@ public class GUI {
         } else System.out.println("Incorrect ID, nothing was changed.");
     }
 
-    private void activateHolding() {
-        String ID = getExistingID("Holding", HOLDING_TYPES);
+    /**
+     * Activates the ID input by the user. Can be a member or holding.
+     */
+    private void activate() {
+        String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
         if (ID != null) {
 
-            boolean result = inv.activateHolding(ID);
+            boolean result = inv.activate(ID);
             if (!result) {
-                System.out.println("Holding activation failed");
+                System.out.println("Activation failed");
             } else {
-                System.out.println("Holding was activated");
+                System.out.println("Activation success");
             }
         }
     }
 
-    private void deactivateHolding() {
-        String ID = getExistingID("Holding", HOLDING_TYPES);
+    /**
+     * Deactivates the ID input by the user. Can be a member or holding.
+     */
+    private void deactivate() {
+        String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
         if (ID != null) {
 
-            boolean result = inv.deactivateHolding(ID);
+            boolean result = inv.deactivate(ID);
             if (!result) {
-                System.out.println("Holding was deactivated");
-
+                System.out.println("Deactivation failed");
             } else {
-                System.out.println("Holding deactivation failed");
-
+                System.out.println("Deactivation success");
             }
         }
     }
 
+    /**
+     * Resets the credit of the ID input by the user. Is for a member.
+     */
     private void resetMemberCredit() {
         String ID = getExistingID("Member", MEMBER_TYPES);
         if (ID != null) {

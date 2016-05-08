@@ -356,15 +356,22 @@ public class Inventory {
         holdings[arrayPos].setTitle(title);
     }
 
-    public boolean activateHolding(String ID) {
+    public boolean activate(String ID) {
         int arrayPos = searchArrays(ID);
-        return holdings[arrayPos].activate();
+        if(ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
+            return holdings[arrayPos].activate();
+        }else{
+            return members[arrayPos].activate();
+        }
     }
 
-    public boolean deactivateHolding(String ID) {
+    public boolean deactivate(String ID) {
         int arrayPos = searchArrays(ID);
-        return holdings[arrayPos].deactivate();
-    }
+        if(ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
+            return holdings[arrayPos].deactivate();
+        }else{
+            return members[arrayPos].deactivate();
+        }    }
 
     public void replaceLoan(String ID, int loanFee) {
         int arrayPos = searchArrays(ID);
