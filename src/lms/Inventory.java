@@ -23,27 +23,50 @@ public class Inventory {
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
 
+    /**
+     * Creates holding and member arrays of size 15
+     */
     public Inventory() {
         this.holdings = new Holding[15];
         this.members = new Member[15];
     }
 
+    /**
+     * Creates holding and member arrays of specified input size
+     *
+     * @param holdings Size of the holdings array
+     * @param members  Size of the members array
+     */
     public Inventory(int holdings, int members) {
         this.holdings = new Holding[holdings];
         this.members = new Member[members];
     }
 
     /**
-     * Check if the details needed for an id are correct. Returns the result in string form (Valid, Already Taken,Invalid Type, ID contains Characters)
-     **/
+     * Gets the number of holdings already in use.
+     *
+     * @return number of holdings currently in inventory.
+     */
     int getNumberOfHoldings() {
         return (numberOfHoldings);
     }
 
+    /**
+     * Gets the number of members already in use.
+     *
+     * @return number of members currently in inventory.
+     */
     int getNumberOfMembers() {
         return numberOfMembers;
     }
 
+    /**
+     * Checks an ID for validity, and if it has already been taken.
+     *
+     * @param ID       the numerical aspect of the ID been examined.
+     * @param itemType the type of item been examined
+     * @return Returns one of these strings: <code>Wrong Number of Digits,ID contains characters,Already taken, Valid</code>
+     */
     String checkID(String ID, char itemType) {
         if (ID.length() != 6) {
             return ("Wrong Number of Digits");
@@ -90,7 +113,9 @@ public class Inventory {
 
     /**
      * Finds the array index of the first null value
-     **/
+     * @param type the type of array to be examined
+     * @return returns an array index of the first null value
+     */
     private int firstNullArray(char type) {
         if (type == 'v' || type == 'b') {
             for (int i = 0; i < holdings.length; i++) {
@@ -109,15 +134,18 @@ public class Inventory {
     }
 
     /**
-     * Provides a string form printout of inventory values in the form Holdings:number/max Members: Number/max
-     **/
+     * Provides a string form printout of inventory values.
+     * @return Returns "Holdings:"number/max "Members:" Number/max
+     */
     public String infoPrintout() {
         return ("Holdings:" + numberOfHoldings + "/" + holdings.length + " | " + "Members:" + numberOfMembers + "/" + members.length);
     }
 
     /**
-     * Creates an ID number that is not already taken for a specific item type - holding or ID
-     **/
+     * Creates a 6 digit ID that is valid for use and is not already used for a holding of <code>itemType</code>
+     * @param itemType the type of item been examined
+     * @return String form 6 digit ID.
+     */
     public String generateValidID(char itemType) {
         String randomID;
         do {
@@ -126,6 +154,9 @@ public class Inventory {
         return randomID;
     }
 
+    /**
+     * Recalculates the statistics for number of items.
+     */
     private void recalculateStatistics() {
         numberOfHoldings = 0;
         numberOfMembers = 0;
@@ -141,6 +172,11 @@ public class Inventory {
         }
     }
 
+    /**
+     * Searches for the array index of the holding or member with the ID.
+     * @param ID Search for this ID in the arrays.
+     * @return array index that has an item that has a matching ID.
+     */
     private int searchArrays(String ID) {
         char itemType = ID.toLowerCase().charAt(0);
         if (itemType == 'v' || itemType == 'b') {
@@ -174,8 +210,13 @@ public class Inventory {
     /* Methods that add items to inventory */
 
     /**
-     * Adds a holding based upon provided information. Returns a booleans value of success
-     **/
+     * Creates a member based on provided information.
+     * @param ID
+     * @param itemType
+     * @param title
+     * @param loanFee
+     * @return
+     */
     public boolean addHolding(String ID, char itemType, String title, int loanFee) {
         if (numberOfHoldings < holdings.length) {
             if (checkID(ID, itemType).equals("Valid")) {
@@ -358,26 +399,28 @@ public class Inventory {
 
     public boolean activate(String ID) {
         int arrayPos = searchArrays(ID);
-        if(ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
+        if (ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
             return holdings[arrayPos].activate();
-        }else{
+        } else {
             return members[arrayPos].activate();
         }
     }
 
     public boolean deactivate(String ID) {
         int arrayPos = searchArrays(ID);
-        if(ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
+        if (ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
             return holdings[arrayPos].deactivate();
-        }else{
+        } else {
             return members[arrayPos].deactivate();
-        }    }
+        }
+    }
 
     public void replaceLoan(String ID, int loanFee) {
         int arrayPos = searchArrays(ID);
         Video video = (Video) holdings[arrayPos];
         video.setLoanCost(loanFee);
     }
+
     public void resetMemberCredit(String ID) {
         int arrayPos = searchArrays(ID);
         members[arrayPos].resetCredit();
