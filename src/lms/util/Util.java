@@ -12,7 +12,7 @@ package lms.util;
 import java.util.Random;
 
 /**
- * Created by akinr on 20/04/2016.
+ * Created by akinr on 20/04/2016 as part of s3603437_A2
  */
 public class Util {
     public static String randomID() {

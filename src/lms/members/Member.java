@@ -15,7 +15,7 @@ import lms.util.DateTime;
 
 
 /**
- * Created by akinr on 11/04/2016.
+ * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public abstract class Member implements SystemOperations {
     private String ID;
@@ -24,11 +24,16 @@ public abstract class Member implements SystemOperations {
     private int balance;
     private Holding[] borrowed = new Holding[50];
     private boolean activeStatus;
-
-    public Member(String memberID, String fullName, int credit) {
+    public Member(String memberID, String fullName, int maxCredit,int balance) {
         setID(memberID);
         setName(fullName);
-        setCredit(credit);
+        setCredit(balance);
+        this.maxCredit = maxCredit;
+    }
+    public Member(String memberID, String fullName, int maxCredit) {
+        setID(memberID);
+        setName(fullName);
+        this.maxCredit = maxCredit;
     }
 
     protected Member() {

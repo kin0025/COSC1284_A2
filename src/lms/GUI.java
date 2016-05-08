@@ -9,14 +9,14 @@
 */
 package lms;
 
-import lms.util.AdminVerify;
-import lms.util.DateTime;
+import lms.util.*;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
- * Created by akinr on 11/04/2016.
+ * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class GUI {
     //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
@@ -34,6 +34,7 @@ public class GUI {
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
     private static final char[] MEMBER_TYPES = {'s', 'p'};
     private static final char[] HOLDING_TYPES = {'b', 'v'};
+    private static int consoleWidth = 150;
     private Scanner input = new Scanner(System.in);
     private Inventory inv;
     //Functional Methods
@@ -74,14 +75,14 @@ public class GUI {
         //Sets the width of the page.
         try {
             Runtime.getRuntime().exec("cls");
-        }catch (IOException e){}
-        int pageWidth = 150;
+        } catch (IOException e) {
+        }
         //Print a new line a bunch to clear the screen. WHY IS THERE NO PLATFORM INDEPENDENT SOLUTION LIKE CLS
         for (int i = 30; i != 0; i--) {
             System.out.printf("\n");
         }
         //Print the first line, made of equal signs.
-        printCharTimes('=', pageWidth, true);
+        printCharTimes('=', consoleWidth, true);
 //Set the three components of a menu screen.
         String leftText = DateTime.getCurrentTime();
         String centreText = "Library Management System: " + title;
@@ -91,9 +92,15 @@ public class GUI {
         int centre = centreText.length();
         int right = rightText.length();
 //Find the spacing between the three elements. Total width/2 - the size of left and half of the centre.
-        int leftSpacing = pageWidth / 2 - left - centre / 2;
+        int leftSpacing = consoleWidth / 2 - left - centre / 2;
         //Due to float to int conversion, subtract 1 more than the length.
-        int rightSpacing = (pageWidth / 2) - 1 - right - centre / 2;
+        int rightSpacing = (consoleWidth / 2) - 1 - right - centre / 2;
+        if (leftSpacing == 0) {
+            leftSpacing = 1;
+        }
+        if (rightSpacing == 0) {
+            rightSpacing = 1;
+        }
 //Print the left
         System.out.print(ANSI_YELLOW);
         System.out.print(leftText);
@@ -107,7 +114,7 @@ public class GUI {
         System.out.println(rightText);
         System.out.print(ANSI_RESET);
 //Finish off the menu with another border.
-        printCharTimes('=', pageWidth, true);
+        printCharTimes('=', consoleWidth, true);
     }
 
     /**
@@ -417,11 +424,27 @@ public class GUI {
                 "                                                            \n");
         input.nextLine();
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
-        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "s", 1).charAt(0);
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "d", 1).charAt(0);
         if (choice == 'd') {
             addDefault();
         } else if (choice == 's') {
             load();
+        }
+        System.out.println("I recommend a terminal width of 150 characters. \nIf the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width.");
+        printCharTimes('-', 150, true);
+        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
+        if (choice == 'y') {
+            System.out.println("Enter the new terminal width:");
+            while (consoleWidth == 150) {
+                try {
+                    consoleWidth = input.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("A number must entered");
+                    throw e;
+                }
+            }
+        } else if (choice == 'e') {
+            System.exit(0);
         }
     }
 
@@ -441,7 +464,7 @@ public class GUI {
         System.out.println("12. Load from file");
         System.out.println("13. Exit");
         System.out.println("14. Admin");
-        printCharTimes('=', 150, true);
+        printCharTimes('=', consoleWidth, true);
         String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
         int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 2)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         switch (choice) {
@@ -504,14 +527,15 @@ public class GUI {
             try {
                 System.out.println("Incorrect Password. Returning to main menu");
                 System.out.print("In 5 seconds");
-                for(int i=5;i != 0 ;i--){
+                for (int i = 5; i != 0; i--) {
                     Thread.sleep(1000);
                     System.out.print("\r");
-                    System.out.print("In " + i  +" seconds");
+                    System.out.print("In " + i + " seconds");
 
 
                 }
-            }catch (InterruptedException e){}
+            } catch (InterruptedException e) {
+            }
         }
 
     }
@@ -1062,9 +1086,11 @@ public class GUI {
 
             boolean result = inv.deactivateHolding(ID);
             if (!result) {
-                System.out.println("Holding deactivation failed");
-            } else {
                 System.out.println("Holding was deactivated");
+
+            } else {
+                System.out.println("Holding deactivation failed");
+
             }
         }
     }

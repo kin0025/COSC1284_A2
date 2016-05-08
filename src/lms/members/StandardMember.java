@@ -10,13 +10,13 @@
 package lms.members;
 
 /**
- * Created by akinr on 11/04/2016.
+ * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class StandardMember extends Member{
 
     public StandardMember(String standardMemberId, String standardMemberName){
-        setID(standardMemberId);
-        setName(standardMemberName);
+        super(standardMemberId,standardMemberName,30);
+
     }
 
     public boolean setID(String ID) {

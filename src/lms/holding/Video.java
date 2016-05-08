@@ -11,7 +11,7 @@ package lms.holding;/*
 import lms.util.DateTime;
 
 /**
- * Created by akinr on 11/04/2016.
+ * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class Video extends Holding {
     public Video(String holdingId, String title, int loanFee) {

@@ -14,7 +14,7 @@ import java.util.Scanner;
 *@author - Alex Kinross-Smith
 */
 
-public abstract class Holding implements SystemOperations{
+public abstract class Holding implements SystemOperations {
     private String ID;
     private String title;
     private int loanCost;
@@ -125,17 +125,16 @@ public abstract class Holding implements SystemOperations{
         if (!unavailable && active && getBorrowDate() == null) {
             borrowDate = new DateTime();
             return true;
-        } else
-        if(unavailable){
+        } else if (unavailable) {
             System.out.println("Holding was marked as unavailable");
         }
-        if(!active){
+        if (!active) {
             System.out.println("Holding was marked as inactive");
         }
-        if(getBorrowDate() != null){
+        if (getBorrowDate() != null) {
             System.out.println("Holding was already borrowed");
         }
-            return (false);
+        return (false);
     }
 
     /*
@@ -165,7 +164,11 @@ public abstract class Holding implements SystemOperations{
                     If an item is returned, then it must have it’s borrowDate set to null
     */
     public void print() {
-        System.out.println("ID: " + ID);
+        if (!getActiveStatus()) {
+            System.out.println("ID: " + ID + " : Inactive");
+        } else {
+            System.out.println("ID: " + ID);
+        }
         System.out.println("Title: " + title);
         System.out.println("Loan Fee: $" + loanCost);
         System.out.println("Max Loan Period: " + maxLoanPeriod);
@@ -203,7 +206,7 @@ public abstract class Holding implements SystemOperations{
                 return true;
             case "invalid id":
 
-           case "invalid title":
+            case "invalid title":
             default:
                 System.out.println("Holding was invalid, could not be activated for reason:" + checkValidity());
                 return (false);

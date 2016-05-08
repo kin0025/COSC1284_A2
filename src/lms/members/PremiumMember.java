@@ -10,13 +10,13 @@
 package lms.members;
 
 /**
- * Created by akinr on 11/04/2016.
+ * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class PremiumMember extends Member {
 
     public PremiumMember(String premiumMemberId, String premiumMemberName) {
-setID(premiumMemberId);
-        setName(premiumMemberName);
+super(premiumMemberId,premiumMemberName,45);
+
     }
     public boolean setID(String ID) {
         if (ID.charAt(0) == 'p' && ID.length() == 7) {
