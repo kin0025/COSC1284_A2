@@ -7,7 +7,8 @@
 /*
 *@author - Alex Kinross-Smith
 */
-package lms;
+
+import lms.GUI;
 
 /**
  * Created by akinr on 20/04/2016.

@@ -12,6 +12,7 @@ package lms;
 import lms.util.AdminVerify;
 import lms.util.DateTime;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -71,6 +72,9 @@ public class GUI {
      **/
     private void newPage(String title) {
         //Sets the width of the page.
+        try {
+            Runtime.getRuntime().exec("cls");
+        }catch (IOException e){}
         int pageWidth = 150;
         //Print a new line a bunch to clear the screen. WHY IS THERE NO PLATFORM INDEPENDENT SOLUTION LIKE CLS
         for (int i = 30; i != 0; i--) {
@@ -497,7 +501,17 @@ public class GUI {
         if (verify.authenticated(password)) {
             adminMenu();
         } else {
-            System.out.println("Incorrect Password. Returning to main menu");
+            try {
+                System.out.println("Incorrect Password. Returning to main menu");
+                System.out.print("In 5 seconds");
+                for(int i=5;i != 0 ;i--){
+                    Thread.sleep(1000);
+                    System.out.print("\r");
+                    System.out.print("In " + i  +" seconds");
+
+
+                }
+            }catch (InterruptedException e){}
         }
 
     }
