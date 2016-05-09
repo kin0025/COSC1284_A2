@@ -21,19 +21,22 @@ public abstract class Member implements SystemOperations {
     private String ID;
     private String name;
     private int maxCredit;
-    private int balance;
-    private Holding[] borrowed = new Holding[50];
-    private boolean activeStatus;
-    public Member(String memberID, String fullName, int maxCredit,int balance) {
+    protected int balance;
+    protected Holding[] borrowed = new Holding[50];
+    private boolean active;
+
+    public Member(String memberID, String fullName, int maxCredit, int balance) {
         setID(memberID);
         setName(fullName);
         setCredit(balance);
         this.maxCredit = maxCredit;
     }
-    public Member(String memberID, String fullName, int maxCredit) {
+
+    public Member(String memberID, String fullName, int credit) {
         setID(memberID);
         setName(fullName);
-        this.maxCredit = maxCredit;
+        this.maxCredit = credit;
+        this.balance = credit;
     }
 
     protected Member() {
@@ -63,13 +66,21 @@ public abstract class Member implements SystemOperations {
 
     /* Getters */
 
+    public int getBalance() {
+        return balance;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
     public String getFullName() {
 
         return (name);
     } //Done
 
     public boolean getStatus() {
-        return (activeStatus);
+        return (active);
     } //Done
 
     public String getID() {
@@ -89,20 +100,19 @@ public abstract class Member implements SystemOperations {
     } //Done
 
     public boolean activate() {
-        activeStatus = true;
+        this.active = true;
         return (true);
-    } //todo Add checking for validity
+    }
 
     public boolean deactivate() {
-        this.activeStatus = false;
+        this.active = false;
         return (true);
-    } //todo add checking for validity
+    }
 
     public Holding[] getCurrentHoldings() {
         return (borrowed);
-    } //todo look at using another collection type throughout
+    }
 
-    //    A member must maintain a collection of holdings they currently have on loan. You may implement this collection using an array or one of the Java Collection Framework (JCF) data structures, but regardless of the data structure this data should be returned to the client in the format of an array.
     public boolean updateRemainingCredit(int loanFee) {
         if (balance - loanFee >= 0 && balance - loanFee <= maxCredit) {
             balance -= loanFee;
@@ -110,15 +120,11 @@ public abstract class Member implements SystemOperations {
         } else return false;
     }
 
-    /**
-     * Subtracts number specified to balance. Cannot go above max balance.
-     **/ //todo add overrides for premium members to allow less than 0
-    public boolean checkAllowedCreditOverdraw(int loanFee) {
-        return (false);
-    }//todo what does this mean? Why do we need loan fee?
+    public abstract boolean checkAllowedCreditOverdraw(int loanFee);
+    //todo what does this mean? Why do we need loan fee?
 
     public boolean borrowHolding(Holding holding) {
-        if (balance - holding.getDefaultLoanFee() < 0 && activeStatus) {
+        if (balance - holding.getDefaultLoanFee() > 0 && active) {
             if (holding.borrowHolding()) {
                 borrowed[findFirstEmptyHoldingSlot()] = holding;
                 balance -= holding.getDefaultLoanFee();
@@ -134,18 +140,16 @@ public abstract class Member implements SystemOperations {
      They have enough credit to pay the initial loan fee*/
 
     public boolean returnHolding(Holding holding, DateTime returnDate) {
-        //todo use search function to find the holding
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
-            DateTime currentDate = new DateTime();
-            int lateFee = borrowed[searchedPos].calculateLateFee(currentDate);
+            int lateFee = borrowed[searchedPos].calculateLateFee(returnDate);
             if (lateFee < balance) {
                 balance -= lateFee;
             } else {
                 System.out.println("Balance must be greater than " + lateFee + " to return item");
                 return false;
             }
-            if (borrowed[searchedPos].returnHolding(currentDate)) {
+            if (borrowed[searchedPos].returnHolding(returnDate)) {
                 borrowed[searchedPos] = null;
                 return (true);
             } else {
@@ -156,10 +160,25 @@ public abstract class Member implements SystemOperations {
             System.out.println("User has not borrowed holding");
             return false;
         }
-
     }
 
-    private int findHolding(Holding holding) {
+    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) {
+        int searchedPos = findHolding(holding);
+        if (searchedPos <= 0) {
+            if (borrowed[searchedPos].returnHolding(returnDate)) {
+                borrowed[searchedPos] = null;
+                return (true);
+            } else {
+                System.out.println("Holding could not be returned");
+                return false;
+            }
+        } else {
+            System.out.println("User has not borrowed holding");
+            return false;
+        }
+    }
+
+    protected int findHolding(Holding holding) {
         int index = -1;
         for (int i = 0; i < borrowed.length; i++) {
             if (borrowed[i] != null && borrowed[i].equals(holding)) {
@@ -169,11 +188,22 @@ public abstract class Member implements SystemOperations {
         return index;
     }
 
-    //    The conditions for returning a holding are different depending on the type of member, please see the functional requirements section above.
     public void print() {
-        System.out.println("ID:" + getID());
+        if (active) {
+            System.out.println("ID:" + getID());
+        } else {
+            System.out.println("ID:" + getID() + " : Inactive");
+
+        }
         System.out.println("Name:" + getFullName());
         System.out.println("Max Credit: " + getMaxCredit());
+        System.out.println("Current Balance: " + getBalance());
+        System.out.println("Current Holdings:");
+        for (int i = 0; i < borrowed.length; i++) {
+            if (borrowed[i] != null) {
+                System.out.print(borrowed[i].getTitle() + " (" + borrowed[i].getID() + " )");
+            }
+        }
     }
 
     private int findFirstEmptyHoldingSlot() {
@@ -186,6 +216,15 @@ public abstract class Member implements SystemOperations {
         return (0);
     }
 
+    public int numberOfBorrowedHoldings(){
+        int result = 0;
+        for(int i= 0; i < borrowed.length;i++){
+            if(borrowed[i] != null){
+                result++;
+            }
+        }
+        return result;
+    }
     public String toString() {
         return (getID() + ":" + getFullName() + ":" + calculateRemainingCredit());
     }

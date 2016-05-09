@@ -26,7 +26,6 @@ public class Book extends Holding {
             System.out.println(checkValidity());
             System.out.println("Item has been deactivated due to invalid details.");
         }
-        setUnavailable(false);
         activate();
     }
 
@@ -83,7 +82,7 @@ public class Book extends Holding {
 
     @Override
     public String toFile() {
-        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + getActiveStatus() + "," + getUnavailable() + "," + getAuthor());
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + getActiveStatus() + "," + getAuthor());
     }
 
 }

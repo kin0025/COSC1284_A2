@@ -978,7 +978,7 @@ public class GUI {
             String ID = getExistingID("Member", MEMBER_TYPES);
             if (ID != null) {
                 newPage("Member: " + ID);
-                inv.printHolding(ID);
+                inv.printMember(ID);
                 System.out.println("Press enter to return to menu.");
                 input.nextLine();
             }
@@ -1222,7 +1222,9 @@ public class GUI {
     }
 
     private void returnHoldingNoFee() {
+        String holdingID = getExistingID("Holding",HOLDING_TYPES);
+        String memberID = getExistingID("Member",MEMBER_TYPES);
 
+        inv.returnHoldingNoFee(holdingID,memberID);
     }
-// TODO: 8/05/2016 Needs more functionality
 }

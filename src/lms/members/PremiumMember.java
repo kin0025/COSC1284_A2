@@ -9,15 +9,19 @@
 */
 package lms.members;
 
+import lms.holding.Holding;
+import lms.util.DateTime;
+
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class PremiumMember extends Member {
 
     public PremiumMember(String premiumMemberId, String premiumMemberName) {
-super(premiumMemberId,premiumMemberName,45);
+        super(premiumMemberId, premiumMemberName, 45);
 
     }
+
     public boolean setID(String ID) {
         if (ID.charAt(0) == 'p' && ID.length() == 7) {
             super.setID(ID);
@@ -26,5 +30,44 @@ super(premiumMemberId,premiumMemberName,45);
             return (false);
         }
 
+    }
+
+    /**
+     * @param holding
+     * @param returnDate
+     * @return
+     */
+    @Override
+    public boolean returnHolding(Holding holding, DateTime returnDate) {
+        int searchedPos = findHolding(holding);
+        if (searchedPos <= 0) {
+            DateTime currentDate = new DateTime();
+            int lateFee = borrowed[searchedPos].calculateLateFee(currentDate);
+            balance -= lateFee;
+            if (borrowed[searchedPos].returnHolding(currentDate)) {
+                borrowed[searchedPos] = null;
+                if (balance < 0) {
+                    System.out.println("Balance is less than 0 dollars, you will be unable to borrow any books until it is reloaded.");
+                } else if (lateFee > 0) {
+                    System.out.println("Holding was returned with late fee of:" + lateFee + ". Remaining balance is " + getBalance());
+                } else {
+                    System.out.println("Holding was returned with no late fee. Thank you for returning your books in a timely fashion. Your remaining balance is:" + lateFee);
+                }
+                return true;
+            } else {
+                System.out.println("Holding could not be returned");
+                return false;
+            }
+
+        } else {
+            System.out.println("User has not borrowed holding");
+            return false;
+        }
+
+    }
+
+    @Override // TODO: 9/05/2016 WHAT DOES THIS DO STILL
+    public boolean checkAllowedCreditOverdraw(int loanFee) {
+        return false;
     }
 }

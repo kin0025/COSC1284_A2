@@ -113,6 +113,7 @@ public class Inventory {
 
     /**
      * Finds the array index of the first null value
+     *
      * @param type the type of array to be examined
      * @return returns an array index of the first null value
      */
@@ -135,6 +136,7 @@ public class Inventory {
 
     /**
      * Provides a string form printout of inventory values.
+     *
      * @return Returns "Holdings:"number/max "Members:" Number/max
      */
     public String infoPrintout() {
@@ -143,6 +145,7 @@ public class Inventory {
 
     /**
      * Creates a 6 digit ID that is valid for use and is not already used for a holding of <code>itemType</code>
+     *
      * @param itemType the type of item been examined
      * @return String form 6 digit ID.
      */
@@ -174,6 +177,7 @@ public class Inventory {
 
     /**
      * Searches for the array index of the holding or member with the ID.
+     *
      * @param ID Search for this ID in the arrays.
      * @return array index that has an item that has a matching ID.
      */
@@ -211,6 +215,7 @@ public class Inventory {
 
     /**
      * Creates a member based on provided information.
+     *
      * @param ID
      * @param itemType
      * @param title
@@ -274,15 +279,20 @@ public class Inventory {
 
     public boolean removeMember(String ID) {
         int memberPos = searchArrays(ID);
-        if (memberPos >= 0) {
-            members[memberPos] = null;
-            recalculateStatistics();
+        if (members[memberPos].numberOfBorrowedHoldings() == 0) {
+            if (memberPos >= 0) {
+                members[memberPos] = null;
+                recalculateStatistics();
+            } else {
+                System.out.println("Nothing was removed");
+                return false;
+            }
+            System.out.println("Member " + ID + " was removed. There are " + numberOfMembers + " members still in system");
+            return true;
         } else {
-            System.out.println("Nothing was removed");
+            System.out.println("Member still has borrowed holdings, please remove before attempting to remove member.");
             return false;
         }
-        System.out.println("Member " + ID + " was removed. There are " + numberOfMembers + " members still in system");
-        return true;
     }
 
     public boolean borrowHolding(String holdingID, String memberID) {
@@ -295,12 +305,22 @@ public class Inventory {
         } else return false;
     }
 
+    public boolean returnHoldingNoFee(String holdingID, String memberID) {
+        int holdingPos = searchArrays(holdingID);
+        int memberPos = searchArrays(memberID);
+        DateTime current = new DateTime();
+        if (holdingPos >= 0 && memberPos >= 0) {
+            members[memberPos].returnHoldingNoFee(holdings[holdingPos], current);
+            return true;
+        } else return false;
+
+    }
+
     public boolean returnHolding(String holdingID, String memberID) {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         DateTime current = new DateTime();
         if (holdingPos >= 0 && memberPos >= 0) {
-            holdings[holdingPos].returnHolding(current);
             members[memberPos].returnHolding(holdings[holdingPos], current);
             return true;
         } else return false;

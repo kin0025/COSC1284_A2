@@ -21,7 +21,6 @@ public abstract class Holding implements SystemOperations {
     private int maxLoanPeriod;
     private DateTime borrowDate;
     private boolean active;
-    private boolean unavailable;
 
     protected Holding() {
     }
@@ -34,7 +33,6 @@ public abstract class Holding implements SystemOperations {
             System.out.println(checkValidity());
             System.out.println("Item has been deactivated due to invalid details.");
         }
-        unavailable = false;
         activate();
     }
 
@@ -45,7 +43,6 @@ public abstract class Holding implements SystemOperations {
         setMaxLoanPeriod(maxLoanPeriod);
         this.borrowDate = borrowDate;
         this.active = active;
-        this.unavailable = unavailable;
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
             System.out.println(checkValidity());
@@ -77,9 +74,6 @@ public abstract class Holding implements SystemOperations {
         }
     }
 
-    public void setUnavailable(Boolean unavailable) {
-        this.unavailable = unavailable;
-    }
 
     /* Getters */
     public String getID() {
@@ -113,26 +107,22 @@ public abstract class Holding implements SystemOperations {
         return active;
     }
 
-    protected boolean getUnavailable() {
-        return unavailable;
-    }
+
     /*
             The calculation will depend on the type of lms.model.holding please see the functional requirements above.
     */
 
     /* Functional Methods */
     public boolean borrowHolding() {
-        if (!unavailable && active && getBorrowDate() == null) {
+        if (active && getBorrowDate() == null) {
             borrowDate = new DateTime();
             return true;
-        } else if (unavailable) {
-            System.out.println("Holding was marked as unavailable");
         }
         if (!active) {
-            System.out.println("Holding was marked as inactive");
+            System.out.println("Holding was marked as inactive and could not be borrowed.");
         }
         if (getBorrowDate() != null) {
-            System.out.println("Holding was already borrowed");
+            System.out.println("Holding was already loaned out");
         }
         return (false);
     }
@@ -145,10 +135,9 @@ public abstract class Holding implements SystemOperations {
     */
     public boolean returnHolding(DateTime dateReturned) { /** Returns true if it has been returned, false if issues encountered and not marked as returned**/
         if (isOnLoan() && DateTime.diffDays(dateReturned, borrowDate) >= 0) {
-            if (unavailable) {
-                System.out.println("Item was previously marked as unavailable. It has been marked as returned, but may not be loaned out until changed.");
-            } else if (!active) {
-                System.out.println("Item was previously marked as inactive. It has been marked as returned, but may not be loaned out until changed.");
+            if (!active) {
+                System.out.println("Item was previously marked as inactive. It has not been marked as returned");
+                return false;
             }
             borrowDate = null;
             return true;
@@ -188,7 +177,7 @@ public abstract class Holding implements SystemOperations {
     }
 
     public String toFile() {
-        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active + "," + unavailable);
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active);
     }
 
     /*
@@ -216,7 +205,7 @@ public abstract class Holding implements SystemOperations {
 
     public boolean deactivate() {
         this.active = false;
-        return (false);
+        return true;
     }
 
     public String checkValidity() {
@@ -236,7 +225,7 @@ public abstract class Holding implements SystemOperations {
             System.out.println(result);
             deactivate();
         }
-        return !(unavailable || !active);
+        return active;
     }
 
 

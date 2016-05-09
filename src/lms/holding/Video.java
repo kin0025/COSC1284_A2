@@ -19,7 +19,6 @@ public class Video extends Holding {
         setID(holdingId);
         setLoanCost(loanFee);
         setMaxLoanPeriod(7);
-        setUnavailable(false);
         activate();
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
