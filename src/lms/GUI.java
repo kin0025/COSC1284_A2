@@ -259,6 +259,7 @@ public class GUI {
      **/
     private String getExistingID(String typeID, char[] expectedTypes) {
         System.out.println("Enter " + typeID + " ID:");
+        System.out.print(Utilities.INPUT_MESSAGE);
         String ID = input.nextLine();
         boolean result = inv.idExists(ID);
         if (result) {
@@ -281,6 +282,7 @@ public class GUI {
                 //End the loop either upon entering a correct id, or using up all the tries
                 while (!result && tries < 4) {
                     System.out.println(Utilities.ERROR_MESSAGE + (tries + 1) + ": Enter a valid " + typeID + " ID:");
+                    System.out.print(Utilities.INPUT_MESSAGE);
                     ID = input.nextLine();
                     result = inv.idExists(ID);
                     if (result) {
@@ -340,6 +342,7 @@ public class GUI {
         }
         //Not a choice, requesting input. If they don't enter anything it will be caught below, and one will be generated for them.
         System.out.println("Enter the unique 6 digit ID or press enter to have one generated:");
+        System.out.print(Utilities.INPUT_MESSAGE);
         String ID = input.nextLine();
 
         //Check validity of the entered information
@@ -360,6 +363,7 @@ public class GUI {
                         //Ask for the new ID
                         System.out.println(Utilities.INFORMATION_MESSAGE + "Enter new 6 digit ID number");
                         //Receive the new ID as input
+                        System.out.print(Utilities.INPUT_MESSAGE);
                         ID = input.nextLine();
                         //Print the result
                         System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
@@ -377,6 +381,7 @@ public class GUI {
             case "id contains characters":
                 do {
                     System.out.println(Utilities.WARNING_MESSAGE + "Invalid ID. Can only contain numbers, try again");
+                    System.out.print(Utilities.INPUT_MESSAGE);
                     ID = input.nextLine();
                     System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
@@ -386,6 +391,7 @@ public class GUI {
             default: //Any further errors will be caused by the ID been incorrect, so prompt for it again.
                 do {
                     System.out.println(Utilities.INFORMATION_MESSAGE + "Enter new 6 digit ID number");
+                    System.out.print(Utilities.INPUT_MESSAGE);
                     ID = input.nextLine();
                     System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
@@ -559,6 +565,7 @@ public class GUI {
         AdminVerify verify = new AdminVerify();
         newPage("Admin Verification");
         System.out.println("Please enter your admin password (Password1):");
+        System.out.print(Utilities.INPUT_MESSAGE);
         String password = input.nextLine();
         if (verify.authenticated(password)) {
             adminMenu();
@@ -612,10 +619,12 @@ public class GUI {
             System.out.println("ID: " + type + ID);
             //Now prompt them for the title of the holding
             System.out.println("Enter the title of the " + typeName);
+            System.out.print(Utilities.INPUT_MESSAGE);
             String title = input.nextLine();
             while (title.length() == 0) { //If the title was not entered, prompt the user until they get it right.
                 //Holy shit if they can't even enter a title what are they going to do with a book? How will they know how to put the dvd in?
                 System.out.println(Utilities.INFORMATION_MESSAGE + "Title not entered correctly, try again");
+                System.out.print(Utilities.INPUT_MESSAGE);
                 title = input.nextLine();
             }
 
@@ -650,9 +659,6 @@ public class GUI {
             } else if (choice == 'n') {
                 //If they choose not to continue, return them to to main menu.
                 System.out.println(Utilities.ERROR_MESSAGE + "Creation canceled. No holding was created. Please start from beginning");
-                System.out.println("Press enter to return to main menu");
-                input.nextLine();
-                return;
             }
             choice = receiveStringInput("Do you want to make another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
             if (choice != 'y') {
@@ -660,7 +666,6 @@ public class GUI {
             }
         }
     } //Done
-
 
     /**
      * A menu to receive input that will be passed to the inventory class.
@@ -694,9 +699,11 @@ public class GUI {
             System.out.println("ID: " + type + ID);
             //Now prompt them for the name of the holding
             System.out.println("Enter the name of the " + typeName);
+            System.out.print(Utilities.INPUT_MESSAGE);
             String name = input.nextLine();
             while (name.length() == 0) { //If the name was not entered, prompt the user until they get it right.
                 System.out.println(Utilities.WARNING_MESSAGE + "Name not entered correctly, try again");
+                System.out.print(Utilities.INPUT_MESSAGE);
                 name = input.nextLine();
             }
 
@@ -723,9 +730,6 @@ public class GUI {
             } else if (choice == 'n') {
                 //If they choose not to continue, return them to to main menu.
                 System.out.println("Creation canceled. No member was created. Please start from beginning");
-                System.out.println("Press enter to return to main menu");
-                input.nextLine();
-                return;
             }
             choice = receiveStringInput("Do you want to make another member?", CHOICE_OPTIONS, "n", 1).charAt(0);
             if (choice != 'y') {
@@ -827,16 +831,15 @@ public class GUI {
      */
     private void borrowHolding() {
         boolean keepGoing = true;
+        String memberID = getExistingID("Member", MEMBER_TYPES);
         while (keepGoing) {
             newPage("Borrow");
-            String memberID = getExistingID("Member", MEMBER_TYPES);
             if (memberID != null) {
                 System.out.println(inv.getMemberName(memberID));
                 char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
                 if (choice == 'e') return;
                 if (choice == 'n') {
                     System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed. Press enter to return to menu.");
-                    input.nextLine();
                 } else {
                     String holdingID = getExistingID("Holding", HOLDING_TYPES);
                     if (holdingID != null) {
@@ -848,14 +851,11 @@ public class GUI {
                             boolean result = inv.borrowHolding(holdingID, memberID);
                             if (result) {
                                 System.out.println("Holding " + holdingID + " has been borrowed. Press enter to return to menu.");
-                                input.nextLine();
                             } else {
                                 System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. Press enter to return to menu.");
-                                input.nextLine();
                             }
                         } else {
                             System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed. Press enter to return to menu.");
-                            input.nextLine();
                         }
                     }
                 }
@@ -882,6 +882,7 @@ public class GUI {
                 if (choice == 'n') {
                     System.out.println("No holding was returned. Press enter to return to menu.");
                     input.nextLine();
+                    return;
                 } else {
                     String holdingID = getExistingID("Holding", HOLDING_TYPES);
                     if (holdingID != null) {
@@ -892,15 +893,12 @@ public class GUI {
                         if (choice == 'y') {
                             boolean result = inv.returnHolding(holdingID, memberID);
                             if (result) {
-                                System.out.println("Holding " + holdingID + " has been returned. Press enter to return to menu.");
-                                input.nextLine();
+                                System.out.println("Holding " + holdingID + " has been returned.");
                             } else {
-                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned. Press enter to return to menu.");
-                                input.nextLine();
+                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned.");
                             }
                         } else {
-                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned. Press enter to return to menu.");
-                            input.nextLine();
+                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
                         }
                     }
                 }
@@ -943,8 +941,6 @@ public class GUI {
             if (ID != null) {
                 newPage("Holding: " + ID);
                 inv.printHolding(ID);
-                System.out.println("Press enter to return to menu.");
-                input.nextLine();
             }
             char choice = receiveStringInput("Do you want to print another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
             if (choice != 'y') {
@@ -964,8 +960,6 @@ public class GUI {
             if (ID != null) {
                 newPage("Member: " + ID);
                 inv.printMember(ID);
-                System.out.println("Press enter to return to menu.");
-                input.nextLine();
             }
             char choice = receiveStringInput("Do you want to print another member?", CHOICE_OPTIONS, "n", 1).charAt(0);
             if (choice != 'y') {
@@ -1116,9 +1110,11 @@ public class GUI {
         String oldID = getExistingID(typeName, types);
         if (oldID != null) {
             System.out.println("Please enter replacement title");
+            System.out.print(Utilities.INPUT_MESSAGE);
             String title = input.nextLine();
             while (title.length() == 0) {
                 System.out.println(Utilities.WARNING_MESSAGE + "Please enter at least one character:");
+                System.out.print(Utilities.INPUT_MESSAGE);
                 title = input.nextLine();
             }
             inv.replaceTitle(oldID, title);
@@ -1137,9 +1133,11 @@ public class GUI {
         if (oldID != null) {
 
             System.out.println("Please enter replacement name");
+            System.out.print(Utilities.INPUT_MESSAGE);
             String name = input.nextLine();
             while (name.length() > 0) {
                 System.out.println(Utilities.WARNING_MESSAGE + "Please enter at least one character:");
+                System.out.print(Utilities.INPUT_MESSAGE);
                 name = input.nextLine();
             }
             boolean result = inv.replaceName(oldID, name);

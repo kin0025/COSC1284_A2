@@ -28,6 +28,7 @@ public class Utilities {
     public static final String ERROR_MESSAGE = ANSI_RED + "Error:" +ANSI_RESET;
     public static final String INFORMATION_MESSAGE = ANSI_CYAN + "INFORMATION:" + ANSI_RESET;
     public static final String WARNING_MESSAGE = ANSI_YELLOW + "WARNING:" + ANSI_RESET;
+    public static final String INPUT_MESSAGE = ANSI_GREEN + "INPUT:" + ANSI_RESET;
     public static String randomID() {
         int[] numbers = new int[6];
         Random random = new Random();
