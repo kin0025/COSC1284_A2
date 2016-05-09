@@ -51,6 +51,7 @@ public class GUI {
         }
 
     }
+/* Graphical Elements */
 
     /**
      * Prints a character a number of times, and can terminate the line at the end.
@@ -67,6 +68,119 @@ public class GUI {
         if (newLine) {
             System.out.println();
         }
+    }
+
+    /**
+     * Prints a pretty logo.
+     * Requests what will initialise the inventory
+     * Requests console width for page formatting
+     */
+    public void logoBoot() {
+        System.out.printf("                                                            \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "                                  +                         \n" +
+                "                                ++++'                       \n" +
+                "                               +++ +++                      \n" +
+                "                             '++'   +++;                    \n" +
+                "                            +++       +++                   \n" +
+                "                           +++         +++                  \n" +
+                "                         '++'           '++;                \n" +
+                "                        +++               +++               \n" +
+                "                       +++                 +++              \n" +
+                "                     +++                     +++            \n" +
+                "                    +++                       +++           \n" +
+                "                  '+++                         +++          \n" +
+                "                 +++                             +++        \n" +
+                "                +++                               +++       \n" +
+                "              +++                                  '++'     \n" +
+                "             +++                                     +++    \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "              +++++++    ++++++++  ;++++++++    +++++++     \n" +
+                "              +++++++   +++++++++++++++++++++  '+++++++     \n" +
+                "              +;    +   +'       +++       ++  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +        ;+        '+  '+    '+     \n" +
+                "              +;    +   +         +        '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   +                  '+  '+    '+     \n" +
+                "              +;    +   ++++++++++ ++++++++++  '+    '+     \n" +
+                "              +++++++   ++++';'+++++++';'++++  '+++++++     \n" +
+                "              +++++++   +         +         +   +++++++     \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +                                          '+   \n" +
+                "            +                                          '+   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
+                "                                                            \n" +
+                "                                                            \n" +
+                "                                                            \n");
+        String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "d", 1).charAt(0);
+        if (choice == 'd') {
+            addDefault();
+        } else if (choice == 's') {
+            load();
+        }
+        System.out.println("A terminal width of 100-150 characters is recommended. \nIf the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width.");
+        printCharTimes('-', 150, true);
+        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
+        if (choice == 'y') {
+            System.out.println("Enter the new terminal width:");
+            while (consoleWidth == 150) {
+                try {
+                    consoleWidth = input.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("A number must entered");
+                    throw e;
+                }
+            }
+        } else if (choice == 'e') {
+            System.exit(0);
+        }
+    }
+
+    /**
+     * Used to limit access to admin menu
+     */
+    private void adminMenuVerify() {
+        AdminVerify verify = new AdminVerify();
+        newPage("Admin Verification");
+        System.out.println("Please enter your admin password (Password1):");
+        System.out.print(Utilities.INPUT_MESSAGE);
+        String password = input.nextLine();
+        if (verify.authenticated(password)) {
+            adminMenu();
+        } else {
+            try {
+                System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect Password. Returning to main menu");
+                System.out.print("In 5 seconds");
+                for (int i = 5; i != 0; i--) {
+                    Thread.sleep(1000);
+                    System.out.print("\r");
+                    System.out.print("In " + i + " seconds");
+
+
+                }
+            } catch (InterruptedException e) {
+            }
+        }
+
     }
 
     /**
@@ -119,6 +233,27 @@ public class GUI {
 //Finish off the menu with another border.
         printCharTimes('=', consoleWidth, true);
     }
+/* Functional Methods */
+
+    /**
+     * Adds the default holdings as specified by assignment spec.
+     **/
+    private void addDefault() {
+        String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
+        char[] holdingType = {'b', 'b', 'b', 'b', 'v', 'v', 'v', 'v'};
+        String[] holdingID = {"000001", "000002", "000003", "000004", "000001", "000002", "000003", "000004"};
+        int[] holdingFee = {0, 0, 0, 0, 4, 6, 6, 4};
+        for (int i = 0; i < holdingID.length; i++) {
+            inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
+        }
+        String[] memberID = {"000001", "000001", "000002", "000002"};
+        String[] memberName = {"Joe Bloggs", "Fred Bloggs", "Jane Smith", "Fred Smith"};
+        char[] memberType = {'s', 'p', 's', 'p'};
+        for (int i = 0; i < memberID.length; i++) {
+            inv.addMember(memberID[i], memberType[i], memberName[i]);
+        }
+        //inv.recalculateStatistics();
+    }
 
     /**
      * Returns an array of Strings (for example {a,b,c} as a String in the format (a/b/c)
@@ -139,6 +274,7 @@ public class GUI {
         }
         return (result);
     }
+/* Input methods */
 
     /**
      * Receives an input. Prints the flavourText, then requests input from the user. Will continue requesting input from the user until input matches an entry in the array options. if printOptionText is false will not show the user what options are available.
@@ -307,26 +443,6 @@ public class GUI {
     }
 
     /**
-     * Adds the default holdings as specified by assignment spec.
-     **/
-    private void addDefault() {
-        String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
-        char[] holdingType = {'b', 'b', 'b', 'b', 'v', 'v', 'v', 'v'};
-        String[] holdingID = {"000001", "000002", "000003", "000004", "000001", "000002", "000003", "000004"};
-        int[] holdingFee = {0, 0, 0, 0, 4, 6, 6, 4};
-        for (int i = 0; i < holdingID.length; i++) {
-            inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
-        }
-        String[] memberID = {"000001", "000001", "000002", "000002"};
-        String[] memberName = {"Joe Bloggs", "Fred Bloggs", "Jane Smith", "Fred Smith"};
-        char[] memberType = {'s', 'p', 's', 'p'};
-        for (int i = 0; i < memberID.length; i++) {
-            inv.addMember(memberID[i], memberType[i], memberName[i]);
-        }
-        //inv.recalculateStatistics();
-    }
-
-    /**
      * Prompts the user for a formatting valid ID, conforming to the types possible.
      *
      * @param typeID Used for user input in user facing prompts i.e Enter type of <code>typeID</code> :
@@ -399,92 +515,7 @@ public class GUI {
         return new String[]{"" + type, ID};
     }
 
-    //UI Methods
-
-    /**
-     * Prints a pretty logo.
-     * Requests what will initialise the inventory
-     * Requests console width for page formatting
-     */
-    public void logoBoot() {
-        System.out.printf("                                                            \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "                                  +                         \n" +
-                "                                ++++'                       \n" +
-                "                               +++ +++                      \n" +
-                "                             '++'   +++;                    \n" +
-                "                            +++       +++                   \n" +
-                "                           +++         +++                  \n" +
-                "                         '++'           '++;                \n" +
-                "                        +++               +++               \n" +
-                "                       +++                 +++              \n" +
-                "                     +++                     +++            \n" +
-                "                    +++                       +++           \n" +
-                "                  '+++                         +++          \n" +
-                "                 +++                             +++        \n" +
-                "                +++                               +++       \n" +
-                "              +++                                  '++'     \n" +
-                "             +++                                     +++    \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "              +++++++    ++++++++  ;++++++++    +++++++     \n" +
-                "              +++++++   +++++++++++++++++++++  '+++++++     \n" +
-                "              +;    +   +'       +++       ++  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +        ;+        '+  '+    '+     \n" +
-                "              +;    +   +         +        '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   +                  '+  '+    '+     \n" +
-                "              +;    +   ++++++++++ ++++++++++  '+    '+     \n" +
-                "              +++++++   ++++';'+++++++';'++++  '+++++++     \n" +
-                "              +++++++   +         +         +   +++++++     \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +                                          '+   \n" +
-                "            +                                          '+   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "            +++++++++++++++++++++++++++++++++++++++++++++   \n" +
-                "                                                            \n" +
-                "                                                            \n" +
-                "                                                            \n");
-        String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
-        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "d", 1).charAt(0);
-        if (choice == 'd') {
-            addDefault();
-        } else if (choice == 's') {
-            load();
-        }
-        System.out.println("A terminal width of 100-150 characters is recommended. \nIf the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width.");
-        printCharTimes('-', 150, true);
-        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
-        if (choice == 'y') {
-            System.out.println("Enter the new terminal width:");
-            while (consoleWidth == 150) {
-                try {
-                    consoleWidth = input.nextInt();
-                } catch (InputMismatchException e) {
-                    System.out.println("A number must entered");
-                    throw e;
-                }
-            }
-        } else if (choice == 'e') {
-            System.exit(0);
-        }
-    }
+    /* Menus */
 
     /**
      * Main Menu
@@ -559,34 +590,99 @@ public class GUI {
     }
 
     /**
-     * Used to limit access to admin menu
+     * Secondary menu for admin functions used to choose what admin methods to run.
      */
-    private void adminMenuVerify() {
-        AdminVerify verify = new AdminVerify();
-        newPage("Admin Verification");
-        System.out.println("Please enter your admin password (Password1):");
-        System.out.print(Utilities.INPUT_MESSAGE);
-        String password = input.nextLine();
-        if (verify.authenticated(password)) {
-            adminMenu();
-        } else {
-            try {
-                System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect Password. Returning to main menu");
-                System.out.print("In 5 seconds");
-                for (int i = 5; i != 0; i--) {
-                    Thread.sleep(1000);
-                    System.out.print("\r");
-                    System.out.print("In " + i + " seconds");
+    private void adminMenu() {
+        while (true) {
+            newPage("Admin");
 
-
-                }
-            } catch (InterruptedException e) {
+            System.out.println(" 1. Activate");
+            System.out.println(" 2. Deactivate");
+            System.out.println(" 3. Edit Holding Details");
+            System.out.println(" 4. Reset Member Credit");
+            System.out.println(" 5. Edit Member Details");
+            System.out.println(" 6. Return holding ignoring fees");
+            System.out.println(" 7. Back to Main Menu");
+            printCharTimes('=', 50, true);
+            String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7"};
+            int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
+            switch (options) {
+                case 1:
+                    activate();
+                    break;
+                case 2:
+                    deactivate();
+                    break;
+                case 3:
+                    editHoldingMenu();
+                    break;
+                case 4:
+                    resetMemberCredit();
+                    break;
+                case 5:
+                    editMemberMenu();
+                    break;
+                case 6:
+                    returnHoldingNoFee();
+                    break;
+                case 7:
+                    return;
+                default:
+                    adminMenu();
             }
         }
-
     }
 
-    //Page Main Menu Methods
+    /**
+     * A tertiary menu for editing holdings.
+     */
+    private void editHoldingMenu() {
+
+        newPage("Edit Holding");
+        System.out.println(" 1. ID");
+        System.out.println(" 2. Title");
+        System.out.println(" 3. Loan Cost (Videos Only)");
+        String[] choiceOptions = {"1", "2", "3", "4"};
+        int choice = Integer.parseInt(receiveStringInput("Enter your selection:", choiceOptions, false, 1));
+        switch (choice) {
+            case 1:
+                editID(HOLDING_TYPES, "Holding");
+                break;
+            case 2:
+                editTitle(HOLDING_TYPES, "Holding");
+                break;
+            case 3:
+                editLoanCost();
+                break;
+            default:
+
+        }
+    }
+
+    /**
+     * A tertiary menu for editing members.
+     */
+    private void editMemberMenu() {
+
+        newPage("Edit Member");
+        System.out.println(" 1. ID");
+        System.out.println(" 2. Name");
+        String[] choiceOptions = {"1", "2"};
+        int choice = Integer.parseInt(receiveStringInput("Enter your selection:", choiceOptions, false, 1));
+        switch (choice) {
+            case 1:
+                editID(MEMBER_TYPES, "Member");
+                break;
+            case 2:
+                editName(MEMBER_TYPES, "Member");
+                break;
+            default:
+
+        }
+    }
+
+
+    //Main Menu Methods
 
     /**
      * A menu to receive input that will be passed to the inventory class.
@@ -989,99 +1085,8 @@ public class GUI {
         }
     }
 
-    //Page Admin Menu Pages
+    //Admin Menu Pages
 
-    /**
-     * Secondary menu for admin functions used to choose what admin methods to run.
-     */
-    private void adminMenu() {
-        while (true) {
-            newPage("Admin");
-
-            System.out.println(" 1. Activate");
-            System.out.println(" 2. Deactivate");
-            System.out.println(" 3. Edit Holding Details");
-            System.out.println(" 4. Reset Member Credit");
-            System.out.println(" 5. Edit Member Details");
-            System.out.println(" 6. Return holding ignoring fees");
-            System.out.println(" 7. Back to Main Menu");
-            printCharTimes('=', 50, true);
-            String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7"};
-            int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
-            switch (options) {
-                case 1:
-                    activate();
-                    break;
-                case 2:
-                    deactivate();
-                    break;
-                case 3:
-                    editHoldingMenu();
-                    break;
-                case 4:
-                    resetMemberCredit();
-                    break;
-                case 5:
-                    editMemberMenu();
-                    break;
-                case 6:
-                    returnHoldingNoFee();
-                    break;
-                case 7:
-                    return;
-                default:
-                    adminMenu();
-            }
-        }
-    }
-
-    /**
-     * A tertiary menu for editing holdings.
-     */
-    private void editHoldingMenu() {
-
-        newPage("Edit Holding");
-        System.out.println(" 1. ID");
-        System.out.println(" 2. Title");
-        System.out.println(" 3. Loan Cost (Videos Only)");
-        String[] choiceOptions = {"1", "2", "3", "4"};
-        int choice = Integer.parseInt(receiveStringInput("Enter your selection:", choiceOptions, false, 1));
-        switch (choice) {
-            case 1:
-                editID(HOLDING_TYPES, "Holding");
-                break;
-            case 2:
-                editTitle(HOLDING_TYPES, "Holding");
-                break;
-            case 3:
-                editLoanCost();
-                break;
-            default:
-
-        }
-    }
-
-    /**
-     * A tertiary menu for editing members.
-     */
-    private void editMemberMenu() {
-
-        newPage("Edit Member");
-        System.out.println(" 1. ID");
-        System.out.println(" 2. Name");
-        String[] choiceOptions = {"1", "2"};
-        int choice = Integer.parseInt(receiveStringInput("Enter your selection:", choiceOptions, false, 1));
-        switch (choice) {
-            case 1:
-                editID(MEMBER_TYPES, "Member");
-                break;
-            case 2:
-                editName(MEMBER_TYPES, "Member");
-                break;
-            default:
-
-        }
-    }
 
     /**
      * Edits the ID of either members or holdings.
@@ -1118,7 +1123,7 @@ public class GUI {
                 title = input.nextLine();
             }
             inv.replaceTitle(oldID, title);
-        } else System.out.println(Utilities.INFORMATION_MESSAGE  + "Incorrect ID, nothing was changed.");
+        } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
 
     }
 
@@ -1204,6 +1209,9 @@ public class GUI {
         }
     }
 
+    /**
+     * Returns a holding with no fee.
+     */
     private void returnHoldingNoFee() {
         String holdingID = getExistingID("Holding", HOLDING_TYPES);
         String memberID = getExistingID("Member", MEMBER_TYPES);
