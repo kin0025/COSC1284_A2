@@ -22,7 +22,7 @@ public abstract class Member implements SystemOperations {
     private String name;
     private int maxCredit;
     protected int balance;
-    protected Holding[] borrowed = new Holding[50];
+    protected Holding[] borrowed = new Holding[15];
     private boolean active;
 
     public Member(String memberID, String fullName, int maxCredit, int balance) {
@@ -30,6 +30,7 @@ public abstract class Member implements SystemOperations {
         setName(fullName);
         setCredit(balance);
         this.maxCredit = maxCredit;
+        activate();
     }
 
     public Member(String memberID, String fullName, int credit) {
@@ -37,10 +38,9 @@ public abstract class Member implements SystemOperations {
         setName(fullName);
         this.maxCredit = credit;
         this.balance = credit;
+        activate();
     }
 
-    protected Member() {
-    }
 /* Setters */
 
     protected boolean setID(String ID) {
@@ -204,6 +204,7 @@ public abstract class Member implements SystemOperations {
                 System.out.print(borrowed[i].getTitle() + " (" + borrowed[i].getID() + " )");
             }
         }
+        System.out.println();
     }
 
     private int findFirstEmptyHoldingSlot() {
@@ -216,15 +217,16 @@ public abstract class Member implements SystemOperations {
         return (0);
     }
 
-    public int numberOfBorrowedHoldings(){
+    public int numberOfBorrowedHoldings() {
         int result = 0;
-        for(int i= 0; i < borrowed.length;i++){
-            if(borrowed[i] != null){
+        for (int i = 0; i < borrowed.length; i++) {
+            if (borrowed[i] != null) {
                 result++;
             }
         }
         return result;
     }
+
     public String toString() {
         return (getID() + ":" + getFullName() + ":" + calculateRemainingCredit());
     }

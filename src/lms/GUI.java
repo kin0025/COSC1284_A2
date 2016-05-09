@@ -818,16 +818,13 @@ public class GUI {
                     //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
                     if (result) {
                         System.out.println(ID + " deleted.");
-                        input.nextLine();
                     } else {
                         //If the member is somehow not deleted after all the checks, inform the user.
                         System.out.println("Member deletion failed. Please report to developer and try again.");
-                        input.nextLine();
                     }
                     //If they decide not to delete the member, return them to the menu.
                 } else {
                     System.out.println("Member deletion canceled.");
-                    input.nextLine();
                 }
             }
             choice = receiveStringInput("Do you want to remove another member?", CHOICE_OPTIONS, "n", 1).charAt(0);
@@ -932,7 +929,7 @@ public class GUI {
      */
     private void printAllHoldings() {
         newPage("Holding Listing");
-        inv.printAllHoldings();
+        inv.printAllHoldings(consoleWidth);
         System.out.println("Press enter to return to menu.");
         input.nextLine();
     }
@@ -942,7 +939,7 @@ public class GUI {
      */
     private void printAllMembers() {
         newPage("Members Listing");
-        inv.printAllMembers();
+        inv.printAllMembers(consoleWidth);
         System.out.println("Press enter to return to menu.");
         input.nextLine();
     }
@@ -1224,7 +1221,6 @@ public class GUI {
     private void returnHoldingNoFee() {
         String holdingID = getExistingID("Holding",HOLDING_TYPES);
         String memberID = getExistingID("Member",MEMBER_TYPES);
-
         inv.returnHoldingNoFee(holdingID,memberID);
     }
 }

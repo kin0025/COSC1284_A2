@@ -299,7 +299,6 @@ public class Inventory {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         if (holdingPos >= 0 && memberPos >= 0) {
-            holdings[holdingPos].borrowHolding();
             members[memberPos].borrowHolding(holdings[holdingPos]);
             return true;
         } else return false;
@@ -327,20 +326,20 @@ public class Inventory {
 
     }
 
-    public void printAllHoldings() {
+    public void printAllHoldings(int pageWidth) {
         for (int i = 0; i < holdings.length; i++) {
             if (holdings[i] != null) {
                 holdings[i].print();
-                GUI.printCharTimes('=', 150, true);
+                GUI.printCharTimes('=',pageWidth , true);
             }
         }
     }
 
-    public void printAllMembers() {
+    public void printAllMembers(int pageWidth) {
         for (int i = 0; i < members.length; i++) {
             if (members[i] != null) {
                 members[i].print();
-                GUI.printCharTimes('=', 150, true);
+                GUI.printCharTimes('=', pageWidth, true);
             }
         }
     }
