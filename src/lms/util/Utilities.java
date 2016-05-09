@@ -25,9 +25,9 @@ public class Utilities {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
-    public static final String ERROR_MESSAGE = Utilities.ERROR_MESSAGE;
-    public static final String INFORMATION_MESSAGE = Utilities.INFORMATION_MESSAGE;
-    public static final String WARNING_MESSAGE = Utilities.WARNING_MESSAGE;
+    public static final String ERROR_MESSAGE = ANSI_RED + "Error:" +ANSI_RESET;
+    public static final String INFORMATION_MESSAGE = ANSI_CYAN + "INFORMATION:" + ANSI_RESET;
+    public static final String WARNING_MESSAGE = ANSI_YELLOW + "WARNING:" + ANSI_RESET;
     public static String randomID() {
         int[] numbers = new int[6];
         Random random = new Random();
