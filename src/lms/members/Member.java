@@ -12,6 +12,7 @@ package lms.members;
 import lms.SystemOperations;
 import lms.holding.*;
 import lms.util.DateTime;
+import lms.util.Utilities;
 
 
 /**
@@ -120,7 +121,13 @@ public abstract class Member implements SystemOperations {
         } else return false;
     }
 
-    public abstract boolean checkAllowedCreditOverdraw(int loanFee);
+    public boolean checkAllowedCreditOverdraw(int loanFee){
+        if(getBalance()-loanFee < 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
     //todo what does this mean? Why do we need loan fee?
 
     public boolean borrowHolding(Holding holding) {
@@ -131,8 +138,8 @@ public abstract class Member implements SystemOperations {
                 System.out.print("Borrowed");
                 return true;
             } else
-                System.out.println("Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
-        } else System.out.println("Your account was invalid or balance was insufficient to borrow book");
+                System.out.println(Utilities.WARNING_MESSAGE + " Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
+        } else System.out.println(Utilities.WARNING_MESSAGE + " Your account was invalid or balance was insufficient to borrow book");
         return (false);
     }/*
     A member can only be borrow a holding if:
@@ -146,18 +153,18 @@ public abstract class Member implements SystemOperations {
             if (lateFee < balance) {
                 balance -= lateFee;
             } else {
-                System.out.println("Balance must be greater than " + lateFee + " to return item");
+                System.out.println(Utilities.INFORMATION_MESSAGE + " Balance must be greater than " + lateFee + " to return item");
                 return false;
             }
             if (borrowed[searchedPos].returnHolding(returnDate)) {
                 borrowed[searchedPos] = null;
                 return (true);
             } else {
-                System.out.println("Holding could not be returned");
+                System.out.println(Utilities.ERROR_MESSAGE + " Holding could not be returned");
                 return false;
             }
         } else {
-            System.out.println("User has not borrowed holding");
+            System.out.println(Utilities.WARNING_MESSAGE + " User has not borrowed holding");
             return false;
         }
     }
@@ -169,11 +176,11 @@ public abstract class Member implements SystemOperations {
                 borrowed[searchedPos] = null;
                 return (true);
             } else {
-                System.out.println("Holding could not be returned");
+                System.out.println(Utilities.WARNING_MESSAGE + " Holding could not be returned");
                 return false;
             }
         } else {
-            System.out.println("User has not borrowed holding");
+            System.out.println(Utilities.INFORMATION_MESSAGE + " User has not borrowed holding");
             return false;
         }
     }
@@ -213,7 +220,7 @@ public abstract class Member implements SystemOperations {
                 return (i);
             }
         }
-        System.out.println("Borrower has too many books, return some and try again");
+        System.out.println(Utilities.INFORMATION_MESSAGE + " Borrower has too many books, return some and try again");
         return (0);
     }
 

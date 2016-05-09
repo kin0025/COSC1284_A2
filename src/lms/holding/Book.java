@@ -9,6 +9,7 @@ package lms.holding;/*
 */
 
 import lms.util.DateTime;
+import lms.util.Utilities;
 
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
@@ -17,16 +18,15 @@ public class Book extends Holding {
     private String author;
 
     public Book(String holdingID, String title) {
-        setLoanCost(10);
+        super(holdingID,title);
+        setLoanFee(10);
         setMaxLoanPeriod(28);
-        setTitle(title);
-        setID(holdingID);
+        setLateFee(2);
+        activate();
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
-            System.out.println(checkValidity());
-            System.out.println("Item has been deactivated due to invalid details.");
+            System.out.println(Utilities.WARNING_MESSAGE + " Item " + getID() + " has been deactivated due to invalid details.");
         }
-        activate();
     }
 
     public Book(String ID, String title, String author, int loanCost, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable) {
@@ -68,7 +68,7 @@ public class Book extends Holding {
         if (daysDiff < 0) {
             daysDiff = 0;
         }
-        return (daysDiff * 2);
+        return (int)(daysDiff * getLateFee());
     }
 
     @Override

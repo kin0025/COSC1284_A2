@@ -152,7 +152,7 @@ public class Inventory {
     public String generateValidID(char itemType) {
         String randomID;
         do {
-            randomID = Util.randomID();
+            randomID = Utilities.randomID();
         } while (!checkID(randomID, itemType).equalsIgnoreCase("valid"));
         return randomID;
     }
@@ -191,7 +191,7 @@ public class Inventory {
                     }
                 }
             }
-            System.out.println("Unable to find holding with that ID");
+            System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find holding with that ID");
             return (-1);
         } else if (itemType == 'p' || itemType == 's') {
             for (int i = 0; i < members.length; i++) {
@@ -202,10 +202,10 @@ public class Inventory {
                 }
             }
         } else {
-            System.out.println("Wrong ID format");
+            System.out.println(Utilities.WARNING_MESSAGE + " Wrong ID format");
             return -1;
         }
-        System.out.println("Unable to find member with that ID");
+        System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find member with that ID");
         return -1;
     }
 
@@ -236,9 +236,9 @@ public class Inventory {
                     numberOfHoldings++;
                     return true;
                 }
-            } else System.out.println("Invalid ID");
+            } else System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
         } else
-            System.out.println("All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
+            System.out.println(Utilities.ERROR_MESSAGE + " All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
         return false;
     }
 
@@ -257,9 +257,9 @@ public class Inventory {
                     return true;
                 }
             }
-            System.out.println("Invalid ID");
+            System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
         }
-        System.out.println("All member spots are taken. Please pay for a larger subscription to support more members, or remove exiting members");
+        System.out.println(Utilities.ERROR_MESSAGE + " All member spots are taken. Please pay for a larger subscription to support more members, or remove exiting members");
         return false;
     }
 
@@ -270,10 +270,10 @@ public class Inventory {
             holdings[holdingPos] = null;
             recalculateStatistics();
         } else {
-            System.out.println("Nothing was removed");
+            System.out.println(Utilities.WARNING_MESSAGE + " Nothing was removed");
             return false;
         }
-        System.out.println("Holding " + ID + " was removed. There are " + numberOfHoldings + " holdings still in system");
+        System.out.println(Utilities.INFORMATION_MESSAGE + " Holding " + ID + " was removed. There are " + numberOfHoldings + " holdings still in system");
         return true;
     }
 
@@ -284,13 +284,13 @@ public class Inventory {
                 members[memberPos] = null;
                 recalculateStatistics();
             } else {
-                System.out.println("Nothing was removed");
+                System.out.println(Utilities.WARNING_MESSAGE + " Nothing was removed");
                 return false;
             }
-            System.out.println("Member " + ID + " was removed. There are " + numberOfMembers + " members still in system");
+            System.out.println(Utilities.INFORMATION_MESSAGE + " Member " + ID + " was removed. There are " + numberOfMembers + " members still in system");
             return true;
         } else {
-            System.out.println("Member still has borrowed holdings, please remove before attempting to remove member.");
+            System.out.println(Utilities.INFORMATION_MESSAGE + " Member still has borrowed holdings, please remove before attempting to remove member.");
             return false;
         }
     }
@@ -346,24 +346,24 @@ public class Inventory {
 
     public void printHolding(String ID) {
         if (ID.length() != 7) {
-            System.out.println("Incorrect ID");
+            System.out.println(Utilities.WARNING_MESSAGE + " Incorrect ID");
             return;
         }
         int holdingID = searchArrays(ID);
         if (holdingID < 0) {
-            System.out.println("No Holding Found");
+            System.out.println(Utilities.WARNING_MESSAGE + " No Holding Found");
             return;
         } else holdings[holdingID].print();
     }
 
     public void printMember(String ID) {
         if (ID.length() != 7) {
-            System.out.println("Incorrect ID");
+            System.out.println(Utilities.WARNING_MESSAGE + " Incorrect ID");
             return;
         }
         int memberID = searchArrays(ID);
         if (memberID < 0) {
-            System.out.println("No Member Found");
+            System.out.println(Utilities.WARNING_MESSAGE + " No Member Found");
             return;
         } else members[memberID].print();
     }
@@ -373,7 +373,7 @@ public class Inventory {
         if (ID.charAt(0) == 's' || ID.charAt(0) == 'p') {
             result = idExists(ID);
         } else {
-            System.out.println("ID not a member. Please try again");
+            System.out.println(Utilities.WARNING_MESSAGE + " ID not a member. Please try again");
             return null;
         }
         if (!result) {
@@ -385,11 +385,11 @@ public class Inventory {
 
     public boolean idExists(String ID) {
         if (ID.length() != 7) {
-            System.out.println("Incorrect ID");
+            System.out.println(Utilities.WARNING_MESSAGE + " Incorrect ID");
             return false;
         }
         if (searchArrays(ID) < 0) {
-            System.out.println("Not Found");
+            System.out.println(Utilities.WARNING_MESSAGE + " Not Found");
             return false;
         } else
             return true;
@@ -437,7 +437,7 @@ public class Inventory {
     public void replaceLoan(String ID, int loanFee) {
         int arrayPos = searchArrays(ID);
         Video video = (Video) holdings[arrayPos];
-        video.setLoanCost(loanFee);
+        video.setLoanFee(loanFee);
     }
 
     public void resetMemberCredit(String ID) {
@@ -445,32 +445,14 @@ public class Inventory {
         members[arrayPos].resetCredit();
     }
 
-    public void save() {
+   /* public void save() {
+        FileWriter fileWriter = new FileWriter("Members");
 
     }
+public void loan(){
+    StringTokenizer membersToken = new StringTokenizer();
 
+}*/
 
-/*
-
-    public void importFile() {
-        */
-/* Get first char of holding ID *//*
-
-        String ID;
-        String title;
-        String author;
-        int loanCost;
-        int maxLoanPeriod;
-        DateTime borrowDate;
-        boolean active;
-        boolean unavailable;
-        if (ID.toLowerCase().charAt(0) == 'b') {
-            holdings[currentHoldingPos] = new Book(ID,title,author,loanCost,maxLoanPeriod,borrowDate,active,unavailable);
-        } else if (ID.toLowerCase().charAt(0) == 'v') {
-            holdings[currentHoldingPos] = new Video(ID, title,loanCost, maxLoanPeriod,borrowDate, active, unavailable);
-        } else System.out.println("IMPORT FAILED ON ID DUE TO INCORRECT ID TYPE:" + ID);
-    }
-
-*/
 }
 

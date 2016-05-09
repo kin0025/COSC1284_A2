@@ -11,6 +11,7 @@ package lms;
 
 import lms.util.*;
 
+import javax.rmi.CORBA.Util;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -19,16 +20,6 @@ import java.util.Scanner;
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class GUI {
-    //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_BLACK = "\u001B[30m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
-    private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String ANSI_WHITE = "\u001B[37m";
     private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
@@ -114,7 +105,7 @@ public class GUI {
             rightSpacing = 1;
         }
 //Print the left
-        System.out.print(ANSI_YELLOW);
+        System.out.print(Utilities.ANSI_YELLOW);
         System.out.print(leftText);
         //Print the spacing
         printCharTimes(' ', leftSpacing, false);
@@ -124,7 +115,7 @@ public class GUI {
         printCharTimes(' ', rightSpacing, false);
         //Print the right text
         System.out.println(rightText);
-        System.out.print(ANSI_RESET);
+        System.out.print(Utilities.ANSI_RESET);
 //Finish off the menu with another border.
         printCharTimes('=', consoleWidth, true);
     }
@@ -136,14 +127,14 @@ public class GUI {
      * @return A string in the format of (0/1/2/3/...) of the input array {0,1,2,3,...}
      **/
     private String stringArrayToString(String[] array) {
-        String result = ANSI_YELLOW + "{" + ANSI_RESET;
+        String result = Utilities.ANSI_YELLOW + "{" + Utilities.ANSI_RESET;
         //Add all the things together
         for (int i = 0; i < array.length; i++) {
             //If this isn't the last entry in the array, add a / on as well
             if (i < array.length - 1) {
-                result += array[i] + ANSI_YELLOW + "/" + ANSI_RESET;
+                result += array[i] + Utilities.ANSI_YELLOW + "/" + Utilities.ANSI_RESET;
             } else { //If it is the last entry, add a closing bracket instead.
-                result += array[i] + ANSI_YELLOW + "}" + ANSI_RESET;
+                result += array[i] + Utilities.ANSI_YELLOW + "}" + Utilities.ANSI_RESET;
             }
         }
         return (result);
@@ -175,7 +166,7 @@ public class GUI {
         //If it is too short, prompt for input again.
         while (inputString.length() == 0) {
             //Print the stuff again.
-            System.out.println("Answer needs to be entered");
+            System.out.println(Utilities.INFORMATION_MESSAGE + "Answer needs to be entered");
             System.out.print(flavourText + " ");
             if (printOptionText) {
                 System.out.println(stringArrayToString(options));
@@ -204,7 +195,7 @@ public class GUI {
         if (isCorrect) {
             return (inputChar);
         } else {
-            System.out.println("Input was not an option. Please try again.");
+            System.out.println(Utilities.ERROR_MESSAGE + "Input was not an option. Please try again.");
             inputChar = receiveStringInput(flavourText, options, true, outputLength);//If they didn't get it right the first time, supply options.
         }
         return (inputChar);
@@ -221,7 +212,7 @@ public class GUI {
      **/
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
         //Print a prompt for the user to enter input.
-        System.out.println(flavourText + " " + stringArrayToString(options) + ANSI_RED + "[" + defaultAnswer + "]" + ANSI_RESET);
+        System.out.println(flavourText + " " + stringArrayToString(options) + Utilities.ANSI_RED + "[" + defaultAnswer + "]" + Utilities.ANSI_RESET);
         //Ensure we don't try to access a negative array index.
         if (outputLength <= 0) {
             outputLength = 1;
@@ -251,7 +242,7 @@ public class GUI {
         if (isCorrect) {
             return (inputChar);
         } else {
-            System.out.println("Input was not an option. Please try again.");
+            System.out.println(Utilities.ERROR_MESSAGE + "Input was not an option. Please try again.");
             inputChar = receiveStringInput(flavourText, options, defaultAnswer, outputLength);//If they didn't get it right the first time, supply options.
         }
         return inputChar;
@@ -285,11 +276,11 @@ public class GUI {
             if (choice == 'e') return null;
             //If they want to continue give them 4 tries so they don't get stuck here.
             if (choice == 'y') {
-                System.out.println("You have 4 tries before returning to main menu");
+                System.out.println(Utilities.INFORMATION_MESSAGE + "You have 4 tries before returning to main menu");
                 int tries = 0;
                 //End the loop either upon entering a correct id, or using up all the tries
                 while (!result && tries < 4) {
-                    System.out.println((tries + 1) + ": Enter a valid " + typeID + " ID:");
+                    System.out.println(Utilities.ERROR_MESSAGE + (tries + 1) + ": Enter a valid " + typeID + " ID:");
                     ID = input.nextLine();
                     result = inv.idExists(ID);
                     if (result) {
@@ -343,7 +334,7 @@ public class GUI {
     private String[] getValidID(String typeID, String[] types) {
         char type;
         if (types.length > 1) {
-            type = receiveStringInput("Enter type of" + typeID + ":", types, true, 1).charAt(0);
+            type = receiveStringInput("Enter type of " + typeID + ":", types, true, 1).charAt(0);
         } else {
             type = types[0].charAt(0);
         }
@@ -354,7 +345,6 @@ public class GUI {
         //Check validity of the entered information
         String IDResult = inv.checkID(ID, type);
         //Print the result
-        System.out.println(IDResult);
         switch (IDResult.toLowerCase()) {
             case "wrong number of digits":
             case "already taken":
@@ -368,11 +358,11 @@ public class GUI {
                 } else { //If the user is an idiot and wants to try entering a 6 digit number that they somehow got wrong the first time again, give them the choice.
                     do {
                         //Ask for the new ID
-                        System.out.println("Enter new 6 digit ID number");
+                        System.out.println(Utilities.INFORMATION_MESSAGE + "Enter new 6 digit ID number");
                         //Receive the new ID as input
                         ID = input.nextLine();
                         //Print the result
-                        System.out.println(inv.checkID(ID, type));
+                        System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
                     }
                     while (!inv.checkID(ID, type).equalsIgnoreCase("valid")); //If they somehow still fail to enter a 6 digit number that is different from the other 15 6 digit number, let them try again.
                 }
@@ -381,23 +371,23 @@ public class GUI {
                 //If they entered type is incorrect(somehow, as the input method won't let an incorrect one be entered), request a valid one.
                 do {
                     type = receiveStringInput("Invalid type, try again", HOLDING_OPTIONS, true, 1).charAt(0);
-                    System.out.println(inv.checkID(ID, type));
+                    System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
                 break;
             case "id contains characters":
                 do {
-                    System.out.println("Invalid ID. Can only contain numbers, try again");
+                    System.out.println(Utilities.WARNING_MESSAGE + "Invalid ID. Can only contain numbers, try again");
                     ID = input.nextLine();
-                    System.out.println(inv.checkID(ID, type));
+                    System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
                 break;
             case "valid": //If it is valid, keep going.
                 break;
             default: //Any further errors will be caused by the ID been incorrect, so prompt for it again.
                 do {
-                    System.out.println("Enter new 6 digit ID number");
+                    System.out.println(Utilities.INFORMATION_MESSAGE + "Enter new 6 digit ID number");
                     ID = input.nextLine();
-                    System.out.println(inv.checkID(ID, type));
+                    System.out.println(Utilities.ERROR_MESSAGE + inv.checkID(ID, type));
                 } while (!inv.checkID(ID, type).equalsIgnoreCase("valid"));
         }
         return new String[]{"" + type, ID};
@@ -472,7 +462,7 @@ public class GUI {
         } else if (choice == 's') {
             load();
         }
-        System.out.println("I recommend a terminal width of 150 characters. \nIf the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width.");
+        System.out.println("A terminal width of 100-150 characters is recommended. \nIf the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width.");
         printCharTimes('-', 150, true);
         choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
         if (choice == 'y') {
@@ -574,7 +564,7 @@ public class GUI {
             adminMenu();
         } else {
             try {
-                System.out.println("Incorrect Password. Returning to main menu");
+                System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect Password. Returning to main menu");
                 System.out.print("In 5 seconds");
                 for (int i = 5; i != 0; i--) {
                     Thread.sleep(1000);
@@ -601,8 +591,6 @@ public class GUI {
 
             //Creating the first page
             newPage("Add Holding");
-
-
             String[] infoID = getValidID("Holding", HOLDING_OPTIONS);
             String ID = infoID[1];
             char type = infoID[0].charAt(0);
@@ -627,7 +615,7 @@ public class GUI {
             String title = input.nextLine();
             while (title.length() == 0) { //If the title was not entered, prompt the user until they get it right.
                 //Holy shit if they can't even enter a title what are they going to do with a book? How will they know how to put the dvd in?
-                System.out.println("Title not entered correctly, try again");
+                System.out.println(Utilities.INFORMATION_MESSAGE + "Title not entered correctly, try again");
                 title = input.nextLine();
             }
 
@@ -656,12 +644,12 @@ public class GUI {
                 boolean added = inv.addHolding(ID, type, title, loanFee);
                 //If it failed tell the user.
                 if (!added) {
-                    System.out.println("Adding failed. Please try again.");
-                } else System.out.println("Adding successful. Holding created");
+                    System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
+                } else System.out.println(Utilities.INFORMATION_MESSAGE + "Adding successful. Holding created");
                 //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
             } else if (choice == 'n') {
                 //If they choose not to continue, return them to to main menu.
-                System.out.println("Creation canceled. No holding was created. Please start from beginning");
+                System.out.println(Utilities.ERROR_MESSAGE + "Creation canceled. No holding was created. Please start from beginning");
                 System.out.println("Press enter to return to main menu");
                 input.nextLine();
                 return;
@@ -708,7 +696,7 @@ public class GUI {
             System.out.println("Enter the name of the " + typeName);
             String name = input.nextLine();
             while (name.length() == 0) { //If the name was not entered, prompt the user until they get it right.
-                System.out.println("Name not entered correctly, try again");
+                System.out.println(Utilities.WARNING_MESSAGE + "Name not entered correctly, try again");
                 name = input.nextLine();
             }
 
@@ -728,7 +716,7 @@ public class GUI {
                 boolean added = inv.addMember(ID, type, name);
                 //If it failed tell the user.
                 if (!added) {
-                    System.out.println("Adding failed. Please try again.");
+                    System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
                 } else System.out.println("Adding successful. Member created");
                 //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
 
@@ -775,7 +763,7 @@ public class GUI {
 
                     } else {
                         //If the holding is somehow not deleted after all the checks, inform the user.
-                        System.out.println("Holding deletion failed. Please report to developer and try again.");
+                        System.out.println(Utilities.ERROR_MESSAGE + "Holding deletion failed. Please report to developer and try again.");
 
                     }
                     //If they decide not to delete the holding, return them to the menu.
@@ -820,7 +808,7 @@ public class GUI {
                         System.out.println(ID + " deleted.");
                     } else {
                         //If the member is somehow not deleted after all the checks, inform the user.
-                        System.out.println("Member deletion failed. Please report to developer and try again.");
+                        System.out.println(Utilities.ERROR_MESSAGE + "Member deletion failed. Please report to developer and try again.");
                     }
                     //If they decide not to delete the member, return them to the menu.
                 } else {
@@ -847,7 +835,7 @@ public class GUI {
                 char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
                 if (choice == 'e') return;
                 if (choice == 'n') {
-                    System.out.println("Holding has not been borrowed. Press enter to return to menu.");
+                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed. Press enter to return to menu.");
                     input.nextLine();
                 } else {
                     String holdingID = getExistingID("Holding", HOLDING_TYPES);
@@ -862,11 +850,11 @@ public class GUI {
                                 System.out.println("Holding " + holdingID + " has been borrowed. Press enter to return to menu.");
                                 input.nextLine();
                             } else {
-                                System.out.println("Holding was not been borrowed. Press enter to return to menu.");
+                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. Press enter to return to menu.");
                                 input.nextLine();
                             }
                         } else {
-                            System.out.println("Holding has not been borrowed. Press enter to return to menu.");
+                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed. Press enter to return to menu.");
                             input.nextLine();
                         }
                     }
@@ -907,11 +895,11 @@ public class GUI {
                                 System.out.println("Holding " + holdingID + " has been returned. Press enter to return to menu.");
                                 input.nextLine();
                             } else {
-                                System.out.println("Holding was not been returned. Press enter to return to menu.");
+                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned. Press enter to return to menu.");
                                 input.nextLine();
                             }
                         } else {
-                            System.out.println("Holding has not been returned. Press enter to return to menu.");
+                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned. Press enter to return to menu.");
                             input.nextLine();
                         }
                     }
@@ -1114,7 +1102,7 @@ public class GUI {
             String[] idInfo = getValidID(typeName, options);
             String newID = idInfo[0] + idInfo[1];
             inv.replaceID(oldID, newID);
-        } else System.out.println("Incorrect ID, nothing was changed.");
+        } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
 
     }
 
@@ -1130,11 +1118,11 @@ public class GUI {
             System.out.println("Please enter replacement title");
             String title = input.nextLine();
             while (title.length() == 0) {
-                System.out.println("Please enter at least one character:");
+                System.out.println(Utilities.WARNING_MESSAGE + "Please enter at least one character:");
                 title = input.nextLine();
             }
             inv.replaceTitle(oldID, title);
-        } else System.out.println("Incorrect ID, nothing was changed.");
+        } else System.out.println(Utilities.INFORMATION_MESSAGE  + "Incorrect ID, nothing was changed.");
 
     }
 
@@ -1151,14 +1139,14 @@ public class GUI {
             System.out.println("Please enter replacement name");
             String name = input.nextLine();
             while (name.length() > 0) {
-                System.out.println("Please enter at least one character:");
+                System.out.println(Utilities.WARNING_MESSAGE + "Please enter at least one character:");
                 name = input.nextLine();
             }
             boolean result = inv.replaceName(oldID, name);
             if (!result) {
-                System.out.println("Change failed.");
+                System.out.println(Utilities.ERROR_MESSAGE + "Change failed.");
             }
-        } else System.out.println("Incorrect ID, nothing was changed.");
+        } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
     }
 
     /**
@@ -1171,7 +1159,7 @@ public class GUI {
             String[] choiceOptions = {"4", "6"};
             int newLoan = Integer.parseInt(receiveStringInput("Enter new Loan Fee:", choiceOptions, true, 1));
             inv.replaceLoan(oldID, newLoan);
-        } else System.out.println("Incorrect ID, nothing was changed.");
+        } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
     }
 
     /**
@@ -1183,9 +1171,9 @@ public class GUI {
 
             boolean result = inv.activate(ID);
             if (!result) {
-                System.out.println("Activation failed");
+                System.out.println(Utilities.WARNING_MESSAGE + " Activation failed");
             } else {
-                System.out.println("Activation success");
+                System.out.println(Utilities.INFORMATION_MESSAGE + " Activation success");
             }
         }
     }
@@ -1199,9 +1187,9 @@ public class GUI {
 
             boolean result = inv.deactivate(ID);
             if (!result) {
-                System.out.println("Deactivation failed");
+                System.out.println(Utilities.WARNING_MESSAGE + "Deactivation failed");
             } else {
-                System.out.println("Deactivation success");
+                System.out.println(Utilities.INFORMATION_MESSAGE + "Deactivation success");
             }
         }
     }
@@ -1214,13 +1202,13 @@ public class GUI {
         if (ID != null) {
 
             inv.resetMemberCredit(ID);
-            System.out.println("Credit was reset");
+            System.out.println(Utilities.INFORMATION_MESSAGE + "Credit was reset");
         }
     }
 
     private void returnHoldingNoFee() {
-        String holdingID = getExistingID("Holding",HOLDING_TYPES);
-        String memberID = getExistingID("Member",MEMBER_TYPES);
-        inv.returnHoldingNoFee(holdingID,memberID);
+        String holdingID = getExistingID("Holding", HOLDING_TYPES);
+        String memberID = getExistingID("Member", MEMBER_TYPES);
+        inv.returnHoldingNoFee(holdingID, memberID);
     }
 }

@@ -11,6 +11,7 @@ package lms.members;
 
 import lms.holding.Holding;
 import lms.util.DateTime;
+import lms.util.Utilities;
 
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
@@ -47,27 +48,24 @@ public class PremiumMember extends Member {
             if (borrowed[searchedPos].returnHolding(currentDate)) {
                 borrowed[searchedPos] = null;
                 if (balance < 0) {
-                    System.out.println("Balance is less than 0 dollars, you will be unable to borrow any books until it is reloaded.");
+                    System.out.println(Utilities.INFORMATION_MESSAGE + " Balance is less than 0 dollars, you will be unable to borrow any books until it is reloaded.");
                 } else if (lateFee > 0) {
-                    System.out.println("Holding was returned with late fee of:" + lateFee + ". Remaining balance is " + getBalance());
+                    System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with late fee of:" + lateFee + ". Remaining balance is " + getBalance());
                 } else {
-                    System.out.println("Holding was returned with no late fee. Thank you for returning your books in a timely fashion. Your remaining balance is:" + lateFee);
+                    System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with no late fee. Thank you for returning your books in a timely fashion. Your remaining balance is:" + lateFee);
                 }
                 return true;
             } else {
-                System.out.println("Holding could not be returned");
+                System.out.println(Utilities.ERROR_MESSAGE + " Holding could not be returned");
                 return false;
             }
 
         } else {
-            System.out.println("User has not borrowed holding");
+            System.out.println(Utilities.INFORMATION_MESSAGE + " User has not borrowed holding");
             return false;
         }
 
     }
 
-    @Override // TODO: 9/05/2016 WHAT DOES THIS DO STILL
-    public boolean checkAllowedCreditOverdraw(int loanFee) {
-        return false;
-    }
+
 }

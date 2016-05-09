@@ -32,9 +32,5 @@ public class StandardMember extends Member{
 
     }
 
-    @Override // TODO: 9/05/2016 WHAT DOES THIS DO STILL
-    public boolean checkAllowedCreditOverdraw(int loanFee) {
-        return false;
-    }
 }
 

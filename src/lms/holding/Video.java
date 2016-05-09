@@ -9,21 +9,21 @@ package lms.holding;/*
 */
 
 import lms.util.DateTime;
+import lms.util.Utilities;
 
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class Video extends Holding {
     public Video(String holdingId, String title, int loanFee) {
-        setTitle(title);
-        setID(holdingId);
-        setLoanCost(loanFee);
+        super(holdingId,title);
+        setLoanFee(loanFee);
         setMaxLoanPeriod(7);
         activate();
+        setLateFee(0.5);
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
-            System.out.println(checkValidity());
-            System.out.println("Item has been deactivated due to invalid details.");
+            System.out.println(Utilities.ERROR_MESSAGE + " Item " + getID() + " has been deactivated due to invalid details.");
         }
     }
 
@@ -57,15 +57,15 @@ public class Video extends Holding {
         if (daysDiff < 0) {
             daysDiff = 0;
         }
-        return ((int) (daysDiff * getDefaultLoanFee() * 0.5));
+        return ((int) (daysDiff * getDefaultLoanFee() * getLateFee()));
     }
 
     @Override
-    public void setLoanCost(int loanCost) {
-        if (loanCost == 4 || loanCost == 6) {
-            super.setLoanCost(loanCost);
+    public void setLoanFee(int loanFee) {
+        if (loanFee == 4 || loanFee == 6) {
+            super.setLoanFee(loanFee);
         } else {
-            System.out.println("Invalid loan cost. Holding has been deactivated. ID:" + getID());
+            System.out.println(Utilities.ERROR_MESSAGE + " Invalid loan cost. Holding has been deactivated. ID:" + getID());
             deactivate();
         }
     }
