@@ -44,8 +44,10 @@ public class GUI {
             //Prompt the user for input and use the inputs for the size of the holding and members arrays in inventory.
             System.out.println("Enter an integer for max number of holdings:");
             //We don't check input validity or catch the exceptions. At this stage we are not validating input.
+            System.out.print(Utilities.INPUT_MESSAGE);
             int holdings = input.nextInt();
             System.out.println("Enter an integer for max number of members:");
+            System.out.print(Utilities.INPUT_MESSAGE);
             int members = input.nextInt();
             this.inv = new Inventory(holdings, members);
         }
@@ -144,6 +146,7 @@ public class GUI {
             System.out.println("Enter the new terminal width:");
             while (consoleWidth == 150) {
                 try {
+                    System.out.print(Utilities.INPUT_MESSAGE);
                     consoleWidth = input.nextInt();
                 } catch (InputMismatchException e) {
                     System.out.println("A number must entered");
@@ -298,6 +301,7 @@ public class GUI {
             System.out.println(stringArrayToString(options));
         } else System.out.println(); //Otherwise end the line.
         //Receive input
+        System.out.print(Utilities.INPUT_MESSAGE);
         String inputString = input.nextLine().toLowerCase();
         //If it is too short, prompt for input again.
         while (inputString.length() == 0) {
@@ -308,6 +312,7 @@ public class GUI {
                 System.out.println(stringArrayToString(options));
             } else System.out.println();
             //Request input again.
+            System.out.print(Utilities.INPUT_MESSAGE);
             inputString = input.nextLine().toLowerCase();
         }
         //Ensure input is the same.
@@ -354,6 +359,7 @@ public class GUI {
             outputLength = 1;
         }
         //Actually get input.
+        System.out.print(Utilities.INPUT_MESSAGE);
         String inputString = input.nextLine().toLowerCase();
         //If the user entered nothing, return the default input.
         if (inputString.length() == 0) {

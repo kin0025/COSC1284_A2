@@ -209,8 +209,6 @@ public class Inventory {
         return -1;
     }
 
-
-
     /* Methods that add items to inventory */
 
     /**
