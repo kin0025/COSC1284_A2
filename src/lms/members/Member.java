@@ -9,15 +9,14 @@
 */
 package lms.members;
 
+import lms.exceptions.InsufficientCreditException;
 import lms.SystemOperations;
+import lms.exceptions.ItemInactiveException;
+import lms.exceptions.OnLoanException;
 import lms.holding.*;
 import lms.util.DateTime;
 import lms.util.Utilities;
 
-
-/**
- * Created by akinr on 11/04/2016 as part of s3603437_A2
- */
 public abstract class Member implements SystemOperations {
     private String ID;
     private String name;
@@ -26,7 +25,7 @@ public abstract class Member implements SystemOperations {
     protected Holding[] borrowed = new Holding[15];
     private boolean active;
 
-    public Member(String memberID, String fullName, int maxCredit, int balance) {
+    public Member(String memberID, String fullName, int maxCredit, int balance,boolean active) {
         setID(memberID);
         setName(fullName);
         setCredit(balance);
@@ -76,36 +75,35 @@ public abstract class Member implements SystemOperations {
     }
 
     public String getFullName() {
-
         return (name);
-    } //Done
+    }
 
     public boolean getStatus() {
         return (active);
-    } //Done
+    }
 
     public String getID() {
         return (ID);
-    } //Done
+    }
 
     public int getMaxCredit() {
         return (maxCredit);
-    } //Done
+    }
 
     public int calculateRemainingCredit() {
         return (balance);
-    } //Done
+    }
 
     public void resetCredit() { //Done
         balance = maxCredit;
-    } //Done
+    }
 
     public boolean activate() {
         this.active = true;
         return (true);
     }
 
-    public boolean deactivate() {
+    public boolean deactivate(){
         this.active = false;
         return (true);
     }
@@ -118,19 +116,21 @@ public abstract class Member implements SystemOperations {
         if (balance - loanFee >= 0 && balance - loanFee <= maxCredit) {
             balance -= loanFee;
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
-    public boolean checkAllowedCreditOverdraw(int loanFee){
-        if(getBalance()-loanFee < 0){
+    public boolean checkAllowedCreditOverdraw(int loanFee) {
+        if (getBalance() - loanFee < 0) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
     //todo what does this mean? Why do we need loan fee?
 
-    public boolean borrowHolding(Holding holding) {
+    public boolean borrowHolding(Holding holding) throws InsufficientCreditException,ItemInactiveException,OnLoanException{
         if (balance - holding.getDefaultLoanFee() > 0 && active) {
             if (holding.borrowHolding()) {
                 borrowed[findFirstEmptyHoldingSlot()] = holding;
@@ -139,14 +139,15 @@ public abstract class Member implements SystemOperations {
                 return true;
             } else
                 System.out.println(Utilities.WARNING_MESSAGE + " Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
-        } else System.out.println(Utilities.WARNING_MESSAGE + " Your account was invalid or balance was insufficient to borrow book");
+        } else
+            System.out.println(Utilities.WARNING_MESSAGE + " Your account was invalid or balance was insufficient to borrow book");
         return (false);
     }/*
     A member can only be borrow a holding if:
              They are currently active in the system
      They have enough credit to pay the initial loan fee*/
 
-    public boolean returnHolding(Holding holding, DateTime returnDate) {
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException,ItemInactiveException,OnLoanException{
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
             int lateFee = borrowed[searchedPos].calculateLateFee(returnDate);
@@ -169,7 +170,7 @@ public abstract class Member implements SystemOperations {
         }
     }
 
-    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) {
+    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException,OnLoanException{
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
             if (borrowed[searchedPos].returnHolding(returnDate)) {
