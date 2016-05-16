@@ -150,16 +150,12 @@ public abstract class Holding implements SystemOperations {
     }
 
     public boolean activate() {
-        switch (checkValidity().toLowerCase()) {
-            case "valid":
-                this.active = true;
-                return true;
-            case "invalid id":
-
-            case "invalid title":
-            default:
-                System.out.println(Utilities.ERROR_MESSAGE + " Holding was invalid, could not be activated for reason: " + checkValidity());
-                return (false);
+        if (checkValidity().toLowerCase().equals("valid")) {
+            this.active = true;
+            return true;
+        } else {
+            System.out.println(Utilities.ERROR_MESSAGE + " Holding was invalid, could not be activated for reason: " + checkValidity());
+            return (false);
 
         }
     }

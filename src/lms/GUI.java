@@ -203,14 +203,17 @@ public class GUI {
         }
         //Print the first line, made of equal signs.
         printCharTimes('=', consoleWidth, true);
+
 //Set the three components of a menu screen.
         String leftText = DateTime.getCurrentTime();
         String centreText = "Library Management System: " + title;
         String rightText = inv.infoPrintout();
+
 //Find the length of the menu areas.
         int left = leftText.length();
         int centre = centreText.length();
         int right = rightText.length();
+
 //Find the spacing between the three elements. Total width/2 - the size of left and half of the centre.
         int leftSpacing = consoleWidth / 2 - left - centre / 2;
         //Due to float to int conversion, subtract 1 more than the length.
@@ -423,7 +426,7 @@ public class GUI {
                 int tries = 0;
                 //End the loop either upon entering a correct id, or using up all the tries
                 while (!result && tries < 4) {
-                    System.out.println(Utilities.ERROR_MESSAGE + (tries + 1) + ": Enter a valid " + typeID + " ID:");
+                    System.out.println((tries + 1) + ": Enter a valid " + typeID + " ID:");
                     System.out.print(Utilities.INPUT_MESSAGE);
                     ID = input.nextLine();
                     result = inv.idExists(ID);
@@ -869,8 +872,11 @@ public class GUI {
 
                     } else {
                         //If the holding is somehow not deleted after all the checks, inform the user.
-                        System.out.println(Utilities.ERROR_MESSAGE + "Holding deletion failed. Please report to developer and try again.");
-
+                        System.out.println(Utilities.ERROR_MESSAGE + "Holding deletion failed. This is likely because the holding is borrowed out. ");
+                        choice = receiveStringInput("Do you want to force removal?", CHOICE_OPTIONS, "n", 1).charAt(0);
+                        if (choice == 'y') {
+                            inv.removeHolding(ID, true);
+                        }
                     }
                     //If they decide not to delete the holding, return them to the menu.
                 } else {
@@ -1072,14 +1078,14 @@ public class GUI {
 
     private void save() {
         newPage("Save");
-        System.out.println("Enter Holding ID:");
+        //inv.save();
         // TODO: 19/04/2016 Holding Logic Here
     }
 
     private void load() {
         newPage("Load File");
-        System.out.println("Enter Holding ID:");
-        // TODO: 19/04/2016 Holding Logic Here
+        //inv.load();
+// TODO: 19/04/2016 Holding Logic Here
     }
 
     private void exit() {

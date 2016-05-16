@@ -12,6 +12,9 @@ import lms.holding.*;
 import lms.members.*;
 import lms.util.*;
 
+import java.io.FileWriter;
+import java.util.StringTokenizer;
+
 
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
@@ -262,17 +265,49 @@ public class Inventory {
     }
 
     /* Remove */
-    public boolean removeHolding(String ID) {
+    public boolean removeHolding(String ID){
+        return removeHolding(ID,false);
+    }
+    public boolean removeHolding(String ID, boolean force) {
         int holdingPos = searchArrays(ID);
-        if (holdingPos >= 0) {
-            holdings[holdingPos] = null;
-            recalculateStatistics();
-        } else {
-            System.out.println(Utilities.WARNING_MESSAGE + " Nothing was removed");
-            return false;
+        boolean proceed = true;
+        int[] holdingBorrowed = new int[2];
+        for (int i = 0; i < members.length; i++) {
+            if (proceed) {
+                for (int j = 0; j < members[i].getCurrentHoldings().length; j++) {
+                    Holding holding = members[i].getCurrentHoldings()[j];
+                    if (holding != null) {
+                        if (holding.getID().equals(ID)) {
+                            proceed = false;
+                            holdingBorrowed[0] = i;
+                            holdingBorrowed[1] = j;
+                        }
+                    }
+                }
+            }
         }
-        System.out.println(Utilities.INFORMATION_MESSAGE + " Holding " + ID + " was removed. There are " + numberOfHoldings + " holdings still in system");
-        return true;
+        if (proceed) {
+            if (holdingPos >= 0) {
+                holdings[holdingPos] = null;
+                recalculateStatistics();
+                System.out.println(Utilities.INFORMATION_MESSAGE + " Holding " + ID + " was removed. There are " + numberOfHoldings + " holdings still in system");
+            } else {
+                System.out.println(Utilities.WARNING_MESSAGE + " Nothing was removed");
+                proceed = false;
+            }
+        }else if(force){
+            if (holdingPos >= 0) {
+                holdings[holdingPos] = null;
+                members[holdingBorrowed[0]].getCurrentHoldings()[holdingBorrowed[1]] = null;
+                recalculateStatistics();
+                System.out.println(Utilities.INFORMATION_MESSAGE + " Holding " + ID + " was removed from member and inventory. There are " + numberOfHoldings + " holdings still in system");
+                proceed = true;
+            } else {
+                System.out.println(Utilities.WARNING_MESSAGE + " Nothing was removed");
+                proceed = false;
+            }
+        }
+        return proceed;
     }
 
     public boolean removeMember(String ID) {
@@ -328,7 +363,7 @@ public class Inventory {
         for (int i = 0; i < holdings.length; i++) {
             if (holdings[i] != null) {
                 holdings[i].print();
-                GUI.printCharTimes('=',pageWidth , true);
+                GUI.printCharTimes('=', pageWidth, true);
             }
         }
     }
@@ -443,14 +478,14 @@ public class Inventory {
         members[arrayPos].resetCredit();
     }
 
-   /* public void save() {
-        FileWriter fileWriter = new FileWriter("Members");
+    /**
+     * public void save() {
+     FileWriter;
+     }
+     public void load(){
+     StringTokenizer membersToken = new StringTokenizer();
 
-    }
-public void loan(){
-    StringTokenizer membersToken = new StringTokenizer();
-
-}*/
-
+     }
+     **/
 }
 
