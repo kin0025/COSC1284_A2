@@ -128,7 +128,6 @@ public abstract class Member implements SystemOperations {
             return true;
         }
     }
-    //todo what does this mean? Why do we need loan fee?
 
     public boolean borrowHolding(Holding holding) throws InsufficientCreditException,ItemInactiveException,OnLoanException{
         if (balance - holding.getDefaultLoanFee() > 0 && active) {
@@ -140,14 +139,12 @@ public abstract class Member implements SystemOperations {
                 }
                 borrowed[holdingSlot] = holding;
                 balance -= holding.getDefaultLoanFee();
-                System.out.print("Borrowed");
                 return true;
             } else
-                System.out.println(Utilities.WARNING_MESSAGE + " Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
+            throw new OnLoanException(Utilities.WARNING_MESSAGE + "Holding on Loan: Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
         } else
-            System.out.println(Utilities.WARNING_MESSAGE + " Your account was invalid or balance was insufficient to borrow book");
-        return (false);
-    }/*
+        throw new InsufficientCreditException(Utilities.WARNING_MESSAGE + "Balance was insufficient to borrow book");
+            }/*
     A member can only be borrow a holding if:
              They are currently active in the system
      They have enough credit to pay the initial loan fee*/
