@@ -133,7 +133,12 @@ public abstract class Member implements SystemOperations {
     public boolean borrowHolding(Holding holding) throws InsufficientCreditException,ItemInactiveException,OnLoanException{
         if (balance - holding.getDefaultLoanFee() > 0 && active) {
             if (holding.borrowHolding()) {
-                borrowed[findFirstEmptyHoldingSlot()] = holding;
+                int holdingSlot = findFirstEmptyHoldingSlot();
+                if(holdingSlot < 0){
+                    System.out.println(Utilities.ERROR_MESSAGE + " Your account has too many books borrowed and none can be added.");
+                    return false;
+                }
+                borrowed[holdingSlot] = holding;
                 balance -= holding.getDefaultLoanFee();
                 System.out.print("Borrowed");
                 return true;
@@ -217,12 +222,12 @@ public abstract class Member implements SystemOperations {
 
     private int findFirstEmptyHoldingSlot() {
         for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null) {
+            if(borrowed[i] == null) {
                 return (i);
             }
         }
         System.out.println(Utilities.INFORMATION_MESSAGE + " Borrower has too many books, return some and try again");
-        return (0);
+        return (-1);
     }
 
     public int numberOfBorrowedHoldings() {
