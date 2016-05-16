@@ -872,8 +872,8 @@ public class GUI {
 
                     } else {
                         //If the holding is somehow not deleted after all the checks, inform the user.
-                        System.out.println(Utilities.ERROR_MESSAGE + "Holding deletion failed. This is likely because the holding is borrowed out. ");
-                        choice = receiveStringInput("Do you want to force removal?", CHOICE_OPTIONS, "n", 1).charAt(0);
+                        System.out.println(Utilities.ERROR_MESSAGE + "Holding deletion failed. This is likely because the holding is borrowed out.");
+                        choice = receiveStringInput("Do you want to force removal? No fees will be incurred by the member.", CHOICE_OPTIONS, "n", 1).charAt(0);
                         if (choice == 'y') {
                             inv.removeHolding(ID, true);
                         }
