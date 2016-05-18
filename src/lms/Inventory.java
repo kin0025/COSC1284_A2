@@ -485,26 +485,20 @@ public class Inventory {
         File folder = new File("./" + folderName);
         folder.mkdir();
         File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings.txt");
-        if (!holdingsFile.exists()) {
-            holdingsFile.createNewFile();
-        }
-        File membersFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
-        if (!membersFile.exists()) {
-            membersFile.createNewFile();
-        }
+
+        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members.txt");
+
         File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
-        if (!stateFile.exists()) {
-            stateFile.createNewFile();
-        }
+
         System.out.print(folder.getAbsolutePath());
 
-        FileWriter holdingWriter = new FileWriter(folder.getAbsoluteFile() + "\\holdings.txt");
-        FileWriter membersWriter = new FileWriter(folder.getAbsoluteFile() + "\\members.txt");
-        FileWriter totalWriter = new FileWriter(folder.getAbsoluteFile() + "\\state.txt");
+        FileWriter holdingsWriter = new FileWriter(holdingsFile.getAbsoluteFile());
+        FileWriter membersWriter = new FileWriter(membersFile.getAbsoluteFile());
+        FileWriter stateWriter = new FileWriter(stateFile.getAbsoluteFile());
 
         for (Holding holding : holdings) {
             if (holding != null) {
-                holdingWriter.append(holding.toFile() + "\n");
+                holdingsWriter.append(holding.toFile() + "\n");
             }
         }
         for (Member member : members) {
@@ -512,14 +506,14 @@ public class Inventory {
                 membersWriter.append(member.toFile() + "\n");
             }
         }
-        totalWriter.write(IDManager.toFile());
+        stateWriter.write(IDManager.toFile());
 
-        totalWriter.flush();
-        totalWriter.close();
+        stateWriter.flush();
+        stateWriter.close();
         membersWriter.flush();
         membersWriter.close();
-        holdingWriter.flush();
-        holdingWriter.close();
+        holdingsWriter.flush();
+        holdingsWriter.close();
     }
 
     public void load(String folderName) throws IOException {
