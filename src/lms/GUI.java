@@ -1084,7 +1084,7 @@ public class GUI {
         } catch (IOException e) {
             System.out.println(e);
         }
-        // TODO: 19/04/2016 Holding Logic Here
+
     }
 
     public void save(String folder) {
@@ -1098,8 +1098,11 @@ public class GUI {
 
     private void load() {
         newPage("Load File");
-        //inv.load();
-// TODO: 19/04/2016 Holding Logic Here
+        try {
+            inv.load("save");
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     private void exit() {

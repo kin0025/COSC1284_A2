@@ -147,7 +147,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
      * @return Returns comma sorted values in the order: ID,title,LoanFee,LoanPeriod,BorrowDate,ActiveStatus,UniqueID
      */
     public String toFile() {
-        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active + "," + getUniqueID());
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate().toString() + "," + active + "," + getUniqueID());
     }
 
     public boolean activate() {

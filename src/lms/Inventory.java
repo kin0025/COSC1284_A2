@@ -13,8 +13,10 @@ import lms.members.*;
 import lms.util.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 
@@ -517,25 +519,37 @@ public class Inventory {
     }
 
     public void load(String folderName) throws IOException {
-//        StringTokenizer membersToken = new StringTokenizer();
-//todo Add loading for uniuque id from special file.
         File folder = new File("./" + folderName);
         folder.mkdir();
         File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings.txt");
-        if (!holdingsFile.exists()) {
-            holdingsFile.createNewFile();
-        }
-        File membersFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
-        if (!membersFile.exists()) {
-            membersFile.createNewFile();
-        }
-        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
-        if (!stateFile.exists()) {
-            stateFile.createNewFile();
-        }
-        System.out.print(folder.getAbsolutePath());
-    }
 
+        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members.txt");
+
+        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        System.out.print(folder.getAbsolutePath());
+
+        Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
+        Scanner membersReader = new Scanner(membersFile.getAbsoluteFile());
+        Scanner stateReader = new Scanner(stateFile.getAbsoluteFile());
+        while (holdingsReader.hasNextLine()) {
+            holdingsReader.useDelimiter(",");
+            String identifier = holdingsReader.next();
+            String title = holdingsReader.next();
+            int loanFee = Integer.parseInt(holdingsReader.next());
+            int maxLoanPeriod = Integer.parseInt(holdingsReader.next());
+            DateTime borrowDate = new DateTime(Integer.parseInt(holdingsReader.next())); // FIXME: 19/05/2016 BROKEN
+            boolean active = Boolean.parseBoolean(holdingsReader.next());
+            String uniqueID = holdingsReader.next();
+            if (identifier.charAt(0) == 'b') {
+                holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+            } else if (identifier.charAt(0) == 'v') {
+                holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+            }
+        }
+        stateReader.close();
+        membersReader.close();
+        holdingsReader.close();
+    }
 
 }
 
