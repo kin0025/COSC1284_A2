@@ -7,20 +7,22 @@
 package lms.holding;
 
 import lms.SystemOperations;
+import lms.UniqueID;
 import lms.util.DateTime;
+import lms.util.IDManager;
 import lms.util.Utilities;
 /*
 *@author - Alex Kinross-Smith
 */
 
-public abstract class Holding implements SystemOperations {
+public abstract class Holding implements SystemOperations, UniqueID {
     private String ID;
     private String title;
     private int loanFee;
     private int maxLoanPeriod;
     private DateTime borrowDate;
     private boolean active;
-    private int uniqueID;
+    private String uniqueID;
 
     public Holding(String holdingID, String title) {
         this.ID = holdingID;
@@ -39,6 +41,7 @@ public abstract class Holding implements SystemOperations {
             deactivate();
             System.out.println(Utilities.ERROR_MESSAGE + " Item " + ID + " has been deactivated due to invalid details: " + checkValidity());
         }
+
     }
 
     /* Setters */
@@ -140,6 +143,7 @@ public abstract class Holding implements SystemOperations {
 
     /**
      * Makes a String based representation of the holdings instance variables.
+     *
      * @return Returns comma sorted values in the order: ID,title,LoanFee,LoanPeriod,BorrowDate,ActiveStatus,UniqueID
      */
     public String toFile() {
@@ -173,11 +177,18 @@ public abstract class Holding implements SystemOperations {
         return ("Valid");
     }
 
-    public int getUniqueID() {
+    public String getUniqueID() {
         return uniqueID;
     }
 
-    public void setUniqueID() {
-        this.uniqueID = Utilities.nextUniqueID();
+    public boolean setUniqueID() {
+        if (uniqueID == null) {
+            this.uniqueID = IDManager.generateUniqueID();
+            return true;
+        } else return false;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
     }
 }

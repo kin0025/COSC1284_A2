@@ -9,21 +9,24 @@
 */
 package lms.members;
 
+import lms.UniqueID;
 import lms.exceptions.InsufficientCreditException;
 import lms.SystemOperations;
 import lms.exceptions.ItemInactiveException;
 import lms.exceptions.OnLoanException;
 import lms.holding.*;
 import lms.util.DateTime;
+import lms.util.IDManager;
 import lms.util.Utilities;
 
-public abstract class Member implements SystemOperations {
+public abstract class Member implements SystemOperations, UniqueID {
     private String ID;
     private String name;
     private int maxCredit;
     protected int balance;
     protected Holding[] borrowed = new Holding[15];
     private boolean active;
+    private String uniqueID;
 
     public Member(String memberID, String fullName, int maxCredit, int balance, boolean active, Holding[] borrowed) {
         setID(memberID);
@@ -254,5 +257,20 @@ public abstract class Member implements SystemOperations {
             }
         }
         return result;
+    }
+
+    public String getUniqueID() {
+        return uniqueID;
+    }
+
+    public boolean setUniqueID() {
+        if (uniqueID == null) {
+            this.uniqueID = IDManager.generateUniqueID();
+            return true;
+        } else return false;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
     }
 }
