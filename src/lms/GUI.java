@@ -139,7 +139,7 @@ public class GUI {
         } else if (choice == 's') {
             load();
         }
-        System.out.println("A terminal width of 100-150 characters is recommended. \nIf the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width.");
+        System.out.println("\nA terminal width of 100-150 characters is recommended. \n"  + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width." + Utilities.ANSI_RESET);
         printCharTimes('-', 150, true);
         choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
         if (choice == 'y') {
@@ -366,6 +366,7 @@ public class GUI {
         String inputString = input.nextLine().toLowerCase();
         //If the user entered nothing, return the default input.
         if (inputString.length() == 0) {
+            System.out.println(defaultAnswer);
             return ("" + defaultAnswer);
         }
         String inputChar = inputString.toLowerCase();
@@ -1081,6 +1082,7 @@ public class GUI {
         try {
             inv.save("save");
         } catch (IOException e) {
+            System.out.println(e);
         }
         // TODO: 19/04/2016 Holding Logic Here
     }
@@ -1102,7 +1104,7 @@ public class GUI {
 
     private void exit() {
         newPage("Exit");
-        char choice = receiveStringInput("You you want to exit?", CHOICE_OPTIONS, "y", 1).charAt(0);
+        char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "y", 1).charAt(0);
         if (choice == 'e') return;
         if (choice == 'y') {
             System.exit(0);

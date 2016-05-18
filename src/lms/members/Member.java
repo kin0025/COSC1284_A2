@@ -28,21 +28,23 @@ public abstract class Member implements SystemOperations, UniqueID {
     private boolean active;
     private String uniqueID;
 
-    public Member(String memberID, String fullName, int maxCredit, int balance, boolean active, Holding[] borrowed) {
-        setID(memberID);
-        setName(fullName);
-        setCredit(balance);
+    public Member(String ID, String name, int maxCredit, int balance, Holding[] borrowed, boolean active, String uniqueID) {
+        this.ID = ID;
+        this.name = name;
         this.maxCredit = maxCredit;
-        this.active = active;
+        this.balance = balance;
         this.borrowed = borrowed;
+        this.active = active;
+        this.uniqueID = uniqueID;
     }
-
+    
     public Member(String memberID, String fullName, int credit) {
         setID(memberID);
         setName(fullName);
         this.maxCredit = credit;
         this.balance = credit;
         activate();
+        setUniqueID();
     }
 
 /* Setters */
@@ -246,7 +248,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     public String toFile() {
-        return (getID() + "," + getFullName() + "," + calculateRemainingCredit() + "," + balance + "," + active + "," + borrowedToString());
+        return (getID() + "," + getFullName() + "," + calculateRemainingCredit() + "," + balance + "," + active + "," + borrowedToString() + "," + getUniqueID());
     }
 
     private String borrowedToString() {

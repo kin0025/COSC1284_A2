@@ -42,8 +42,9 @@ public class IDManager {
         for (int i = 0; i < identifiers.size(); i++) {
             String actualID = identifiers.get(i);
             if (actualID != null && testID != null) {
-                actualID.equals(testID);
-                return i;
+                if(actualID.equals(testID)) {
+                    return i;
+                }
             }
         }
         return -1;

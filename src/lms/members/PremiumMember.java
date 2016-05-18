@@ -23,6 +23,10 @@ public class PremiumMember extends Member {
 
     }
 
+    public PremiumMember(String ID, String name, int maxCredit, int balance, Holding[] borrowed, boolean active, String uniqueID) {
+        super(ID, name, maxCredit, balance, borrowed, active, uniqueID);
+    }
+
     public boolean setID(String ID) {
         if (ID.charAt(0) == 'p' && ID.length() == 7) {
             super.setID(ID);

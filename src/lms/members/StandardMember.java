@@ -22,6 +22,10 @@ public class StandardMember extends Member{
 
     }
 
+    public StandardMember(String ID, String name, int maxCredit, int balance, Holding[] borrowed, boolean active, String uniqueID) {
+        super(ID, name, maxCredit, balance, borrowed, active, uniqueID);
+    }
+
     public boolean setID(String ID) {
         if(ID.charAt(0) == 's' && ID.length() == 7){
             super.setID(ID);

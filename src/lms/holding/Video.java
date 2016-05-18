@@ -27,8 +27,8 @@ public class Video extends Holding {
         }
     }
 
-    public Video(String ID, String title, int loanCost, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable) {
-        super(ID, title, loanCost, maxLoanPeriod, borrowDate, active, unavailable);
+    public Video(String ID, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, String uniqueID) {
+        super(ID, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
     }
 
     @Override

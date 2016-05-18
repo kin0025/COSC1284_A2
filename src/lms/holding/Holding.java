@@ -30,18 +30,18 @@ public abstract class Holding implements SystemOperations, UniqueID {
         setUniqueID();
     }
 
-    public Holding(String ID, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable) {
-        setID(ID);
+    public Holding(String ID, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, String uniqueID) {
+        this.ID = ID;
         this.title = title;
-        setLoanFee(loanFee);
-        setMaxLoanPeriod(maxLoanPeriod);
+        this.loanFee = loanFee;
+        this.maxLoanPeriod = maxLoanPeriod;
         this.borrowDate = borrowDate;
         this.active = active;
+        this.uniqueID = uniqueID;
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
             System.out.println(Utilities.ERROR_MESSAGE + " Item " + ID + " has been deactivated due to invalid details: " + checkValidity());
         }
-
     }
 
     /* Setters */

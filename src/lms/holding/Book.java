@@ -29,10 +29,8 @@ public class Book extends Holding {
         }
     }
 
-    public Book(String ID, String title, String author, int loanCost, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable) {
-        super(ID, title, loanCost, maxLoanPeriod, borrowDate, active, unavailable);
-        setAuthor(author);
-
+    public Book(String ID, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, String uniqueID) {
+        super(ID, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
     }
 
     @Override
@@ -79,10 +77,4 @@ public class Book extends Holding {
         }
         return (result);
     }
-
-    @Override
-    public String toFile() {
-        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + getActiveStatus() + "," + getAuthor());
-    }
-
 }

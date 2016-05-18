@@ -12,6 +12,7 @@ import lms.holding.*;
 import lms.members.*;
 import lms.util.*;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -480,28 +481,65 @@ public class Inventory {
         members[arrayPos].resetCredit();
     }
 
-    public void save(String folder) throws IOException {
-        //Block out stuff
-        FileWriter holdingWriter = new FileWriter("\\" + folder + "\\holdings.txt");
-        FileWriter membersWriter = new FileWriter("\\" + folder + "\\members.txt");
-        FileWriter totalWriter = new FileWriter("\\" + folder + "\\state.txt");
+    public void save(String folderName) throws IOException {
+        File folder = new File("./" + folderName);
+        folder.mkdir();
+        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings.txt");
+        if (!holdingsFile.exists()) {
+            holdingsFile.createNewFile();
+        }
+        File membersFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        if (!membersFile.exists()) {
+            membersFile.createNewFile();
+        }
+        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        if (!stateFile.exists()) {
+            stateFile.createNewFile();
+        }
+        System.out.print(folder.getAbsolutePath());
 
-        for (int i = 0; i < holdings.length; i++) {
-            if (holdings[i] != null) {
-                holdingWriter.append(holdings[i].toFile());
+        FileWriter holdingWriter = new FileWriter(folder.getAbsoluteFile() + "\\holdings.txt");
+        FileWriter membersWriter = new FileWriter(folder.getAbsoluteFile() + "\\members.txt");
+        FileWriter totalWriter = new FileWriter(folder.getAbsoluteFile() + "\\state.txt");
+
+        for (Holding holding : holdings) {
+            if (holding != null) {
+                holdingWriter.append(holding.toFile() + "\n");
             }
         }
-        for (int i = 0; i < members.length; i++) {
-            if (members[i] != null) {
-                membersWriter.append(members[i].toFile());
+        for (Member member : members) {
+            if (member != null) {
+                membersWriter.append(member.toFile() + "\n");
             }
         }
-        totalWriter.write(Utilities.currentID);
+        totalWriter.write(IDManager.toFile());
+
+        totalWriter.flush();
+        totalWriter.close();
+        membersWriter.flush();
+        membersWriter.close();
+        holdingWriter.flush();
+        holdingWriter.close();
     }
 
-    public void load() {
+    public void load(String folderName) throws IOException {
 //        StringTokenizer membersToken = new StringTokenizer();
 //todo Add loading for uniuque id from special file.
+        File folder = new File("./" + folderName);
+        folder.mkdir();
+        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings.txt");
+        if (!holdingsFile.exists()) {
+            holdingsFile.createNewFile();
+        }
+        File membersFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        if (!membersFile.exists()) {
+            membersFile.createNewFile();
+        }
+        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        if (!stateFile.exists()) {
+            stateFile.createNewFile();
+        }
+        System.out.print(folder.getAbsolutePath());
     }
 
 
