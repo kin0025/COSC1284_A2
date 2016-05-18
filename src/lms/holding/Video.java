@@ -20,7 +20,7 @@ public class Video extends Holding {
         setLoanFee(loanFee);
         setMaxLoanPeriod(7);
         activate();
-        setLateFee(0.5);
+//        setLateFee(0.5);
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
             System.out.println(Utilities.ERROR_MESSAGE + " Item " + getID() + " has been deactivated due to invalid details.");
@@ -57,7 +57,7 @@ public class Video extends Holding {
         if (daysDiff < 0) {
             daysDiff = 0;
         }
-        return ((int) (daysDiff * getDefaultLoanFee() * getLateFee()));
+        return ((int) (daysDiff * getDefaultLoanFee()  /*getLateFee()*/));// FIXME: 18/05/2016
     }
 
     @Override

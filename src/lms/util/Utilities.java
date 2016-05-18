@@ -29,12 +29,25 @@ public class Utilities {
     public static final String INFORMATION_MESSAGE = ANSI_CYAN + "INFORMATION:" + ANSI_RESET;
     public static final String WARNING_MESSAGE = ANSI_YELLOW + "WARNING:" + ANSI_RESET;
     public static final String INPUT_MESSAGE = ANSI_GREEN + ":" + ANSI_RESET;
-    public static String randomID() {
+public static int currentID = 0;
+        public static String randomID() {
         int[] numbers = new int[6];
         Random random = new Random();
         for (int i = 0; i < 5; i++) {
             numbers[i] = random.nextInt(10);
         }
         return (numbers[0] + "" + numbers[1] + numbers[2] + numbers[3] + numbers[4] + numbers[5]);
+    }
+    public static int nextUniqueID(){
+        currentID++;
+        return (currentID);
+    }
+
+    public static int getCurrentID() {
+        return currentID;
+    }
+
+    public static void setCurrentID(int currentID) {
+        Utilities.currentID = currentID;
     }
 }

@@ -25,12 +25,13 @@ public abstract class Member implements SystemOperations {
     protected Holding[] borrowed = new Holding[15];
     private boolean active;
 
-    public Member(String memberID, String fullName, int maxCredit, int balance,boolean active) {
+    public Member(String memberID, String fullName, int maxCredit, int balance, boolean active, Holding[] borrowed) {
         setID(memberID);
         setName(fullName);
         setCredit(balance);
         this.maxCredit = maxCredit;
-        activate();
+        this.active = active;
+        this.borrowed = borrowed;
     }
 
     public Member(String memberID, String fullName, int credit) {
@@ -103,7 +104,7 @@ public abstract class Member implements SystemOperations {
         return (true);
     }
 
-    public boolean deactivate(){
+    public boolean deactivate() {
         this.active = false;
         return (true);
     }
@@ -129,11 +130,11 @@ public abstract class Member implements SystemOperations {
         }
     }
 
-    public boolean borrowHolding(Holding holding) throws InsufficientCreditException,ItemInactiveException,OnLoanException{
+    public boolean borrowHolding(Holding holding) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
         if (balance - holding.getDefaultLoanFee() > 0 && active) {
             if (holding.borrowHolding()) {
                 int holdingSlot = findFirstEmptyHoldingSlot();
-                if(holdingSlot < 0){
+                if (holdingSlot < 0) {
                     System.out.println(Utilities.ERROR_MESSAGE + " Your account has too many books borrowed and none can be added.");
                     return false;
                 }
@@ -141,15 +142,15 @@ public abstract class Member implements SystemOperations {
                 balance -= holding.getDefaultLoanFee();
                 return true;
             } else
-            throw new OnLoanException(Utilities.WARNING_MESSAGE + "Holding on Loan: Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
+                throw new OnLoanException(Utilities.WARNING_MESSAGE + "Holding on Loan: Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
         } else
-        throw new InsufficientCreditException(Utilities.WARNING_MESSAGE + "Balance was insufficient to borrow book");
-            }/*
+            throw new InsufficientCreditException(Utilities.WARNING_MESSAGE + "Balance was insufficient to borrow book");
+    }/*
     A member can only be borrow a holding if:
              They are currently active in the system
      They have enough credit to pay the initial loan fee*/
 
-    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException,ItemInactiveException,OnLoanException{
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
             int lateFee = borrowed[searchedPos].calculateLateFee(returnDate);
@@ -172,7 +173,7 @@ public abstract class Member implements SystemOperations {
         }
     }
 
-    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException,OnLoanException{
+    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, OnLoanException {
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
             if (borrowed[searchedPos].returnHolding(returnDate)) {
@@ -219,7 +220,7 @@ public abstract class Member implements SystemOperations {
 
     private int findFirstEmptyHoldingSlot() {
         for (int i = 0; i < borrowed.length; i++) {
-            if(borrowed[i] == null) {
+            if (borrowed[i] == null) {
                 return (i);
             }
         }
@@ -240,8 +241,18 @@ public abstract class Member implements SystemOperations {
     public String toString() {
         return (getID() + ":" + getFullName() + ":" + calculateRemainingCredit());
     }
-  /*  The member class and its sub-classes should override the toString() method to provide a pre-determined string representation of the member. The format for the member representation separates each attribute via the use of a colon ‘:’
-    member_id:full_name:remaining_credit
-    e.g. p00001:Joe Bloggs:25
-*/
+
+    public String toFile() {
+        return (getID() + "," + getFullName() + "," + calculateRemainingCredit() + "," + balance + "," + active + "," + borrowedToString());
+    }
+
+    private String borrowedToString() {
+        String result = null;
+        for (int i = 0; i < borrowed.length; i++) {
+            if (borrowed[i] != null) {
+                result += borrowed[i].getUniqueID() + ":";
+            }
+        }
+        return result;
+    }
 }

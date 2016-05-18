@@ -1078,7 +1078,19 @@ public class GUI {
 
     private void save() {
         newPage("Save");
-        //inv.save();
+        try {
+            inv.save("save");
+        } catch (IOException e) {
+        }
+        // TODO: 19/04/2016 Holding Logic Here
+    }
+
+    public void save(String folder) {
+        newPage("Save");
+        try {
+            inv.save(folder);
+        } catch (IOException e) {
+        }
         // TODO: 19/04/2016 Holding Logic Here
     }
 

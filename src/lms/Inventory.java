@@ -13,6 +13,7 @@ import lms.members.*;
 import lms.util.*;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.StringTokenizer;
 
 
@@ -265,9 +266,10 @@ public class Inventory {
     }
 
     /* Remove */
-    public boolean removeHolding(String ID){
-        return removeHolding(ID,false);
+    public boolean removeHolding(String ID) {
+        return removeHolding(ID, false);
     }
+
     public boolean removeHolding(String ID, boolean force) {
         int holdingPos = searchArrays(ID);
         boolean proceed = true;
@@ -295,7 +297,7 @@ public class Inventory {
                 System.out.println(Utilities.WARNING_MESSAGE + " Nothing was removed");
                 proceed = false;
             }
-        }else if(force){
+        } else if (force) {
             if (holdingPos >= 0) {
                 holdings[holdingPos] = null;
                 members[holdingBorrowed[0]].getCurrentHoldings()[holdingBorrowed[1]] = null;
@@ -478,14 +480,30 @@ public class Inventory {
         members[arrayPos].resetCredit();
     }
 
-    /**
-     * public void save() {
-     FileWriter;
-     }
-     public void load(){
-     StringTokenizer membersToken = new StringTokenizer();
+    public void save(String folder) throws IOException {
+        //Block out stuff
+        FileWriter holdingWriter = new FileWriter("\\" + folder + "\\holdings.txt");
+        FileWriter membersWriter = new FileWriter("\\" + folder + "\\members.txt");
+        FileWriter totalWriter = new FileWriter("\\" + folder + "\\state.txt");
 
-     }
-     **/
+        for (int i = 0; i < holdings.length; i++) {
+            if (holdings[i] != null) {
+                holdingWriter.append(holdings[i].toFile());
+            }
+        }
+        for (int i = 0; i < members.length; i++) {
+            if (members[i] != null) {
+                membersWriter.append(members[i].toFile());
+            }
+        }
+        totalWriter.write(Utilities.currentID);
+    }
+
+    public void load() {
+//        StringTokenizer membersToken = new StringTokenizer();
+//todo Add loading for uniuque id from special file.
+    }
+
+
 }
 

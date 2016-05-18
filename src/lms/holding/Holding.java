@@ -18,21 +18,14 @@ public abstract class Holding implements SystemOperations {
     private String title;
     private int loanFee;
     private int maxLoanPeriod;
-    private double lateFee;
     private DateTime borrowDate;
     private boolean active;
-
-    protected double getLateFee() {
-        return lateFee;
-    }
-
-    protected void setLateFee(double lateFee) {
-        this.lateFee = lateFee;
-    }
+    private int uniqueID;
 
     public Holding(String holdingID, String title) {
         this.ID = holdingID;
         this.title = title;
+        setUniqueID();
     }
 
     public Holding(String ID, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, boolean unavailable) {
@@ -145,8 +138,12 @@ public abstract class Holding implements SystemOperations {
         return (getID() + ":" + getTitle() + ":" + getDefaultLoanFee() + ":" + getMaxLoanPeriod());
     }
 
+    /**
+     * Makes a String based representation of the holdings instance variables.
+     * @return Returns comma sorted values in the order: ID,title,LoanFee,LoanPeriod,BorrowDate,ActiveStatus,UniqueID
+     */
     public String toFile() {
-        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active);
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + getBorrowDate() + "," + active + "," + getUniqueID());
     }
 
     public boolean activate() {
@@ -176,4 +173,11 @@ public abstract class Holding implements SystemOperations {
         return ("Valid");
     }
 
+    public int getUniqueID() {
+        return uniqueID;
+    }
+
+    public void setUniqueID() {
+        this.uniqueID = Utilities.nextUniqueID();
+    }
 }

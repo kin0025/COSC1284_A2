@@ -21,7 +21,7 @@ public class Book extends Holding {
         super(holdingID,title);
         setLoanFee(10);
         setMaxLoanPeriod(28);
-        setLateFee(2);
+        //setLateFee(2);
         activate();
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
@@ -68,7 +68,7 @@ public class Book extends Holding {
         if (daysDiff < 0) {
             daysDiff = 0;
         }
-        return (int)(daysDiff * getLateFee());
+        return (int)(daysDiff /* getLateFee()*/);
     }
 
     @Override
