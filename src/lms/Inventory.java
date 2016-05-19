@@ -557,8 +557,8 @@ public class Inventory {
         holdingsWriter.close();
     }
 
-    public String loadLastHash() {
-        File stateFile = new File("./" + "\\lastrun\\state.txt");
+    public String loadLastHash(String folder) {
+        File stateFile = new File("./" + "\\" + folder + "\\state.txt");
         Scanner state = null;
         try {
             state = new Scanner(stateFile);
@@ -613,7 +613,7 @@ public class Inventory {
             int maxLoanPeriod = Integer.parseInt(holdingToken.nextToken());
             String borrowTime = holdingToken.nextToken();
             DateTime borrowDate;
-            if (!borrowTime.equals("null") && borrowTime != null) {
+            if (!borrowTime.equals("null")) {
                 StringTokenizer dateSplit = new StringTokenizer(borrowTime, "-");
                 int year = Integer.parseInt(dateSplit.nextToken());
                 int month = Integer.parseInt(dateSplit.nextToken());
@@ -625,10 +625,15 @@ public class Inventory {
             }
             boolean active = Boolean.parseBoolean(holdingToken.nextToken());
             String uniqueID = holdingToken.nextToken();
-            if (identifier.charAt(0) == 'b') {
-                holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
-            } else if (identifier.charAt(0) == 'v') {
-                holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+
+            if (!IDManager.isAlreadyTaken(uniqueID)) {
+                if (identifier.charAt(0) == 'b') {
+                    holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+                } else if (identifier.charAt(0) == 'v') {
+                    holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+                }
+            } else {
+                System.out.println("Holding with the ID: " + identifier + " and the title: + " + title + "was not added due to a duplicate unique identifier.");
             }
         }
         while (membersReader.hasNextLine()) {
@@ -647,11 +652,14 @@ public class Inventory {
             }
             boolean active = Boolean.parseBoolean(membersToken.nextToken());
             String uniqueID = membersToken.nextToken();
-            if (identifier.charAt(0) == 's') {
-                members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
-            } else if (identifier.charAt(0) == 'p') {
-                members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
-
+            if (!IDManager.isAlreadyTaken(uniqueID)) {
+                if (identifier.charAt(0) == 's') {
+                    members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+                } else if (identifier.charAt(0) == 'p') {
+                    members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+                }
+            } else {
+                System.out.println("Member with the ID: " + identifier + " and the name: + " + name + "was not added due to a duplicate unique identifier.");
             }
         }
 
@@ -662,7 +670,21 @@ public class Inventory {
         stateReader.close();
         membersReader.close();
         holdingsReader.close();
-        recalculateStatistics();
+        recalculateStatistics();try {
+            if (loadLastHash(folderName).equals(outputState())) {
+                System.out.println("Program state was preserved across boot");
+            } else {
+                System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE.");
+                // TODO: 19/05/2016 Add support for loading from backups and stuff on boot
+                // TODO: 19/05/2016 Add error checking for all loads.
+                // TODO: 19/05/2016 More advanced save load function-  append to database (if same unique ID don't import)
+                System.out.println("LAST HASH: " + loadLastHash(folderName));
+                System.out.println("CURRENT HASH: " + outputState());
+            }
+        } catch (NullPointerException e) {
+            System.out.println("There was no state saved last time.");
+        }
+
     }
 
     private Holding uniqueIDToHolding(String uniqueID) {

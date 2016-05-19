@@ -148,19 +148,9 @@ public class GUI {
             } catch (IOException e) {
                 System.out.println("No folder or files were found with the name. Files were not loaded.");
             }
-            try {
-                if (inv.loadLastHash().equals(inv.outputState())) {
-                    System.out.println("Program state was preserved across boot");
-                } else {
-                    System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE");
-                    System.out.println("LAST HASH: " + inv.loadLastHash());
-                    System.out.println("CURRENT HASH: " + inv.outputState());
-                }
-            }catch (NullPointerException e ){
-                System.out.println("There was no state saved last time.");
-            }
+
         }
-        System.out.println("\nA terminal width of 100-150 characters is recommended. \n" + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width." + Utilities.ANSI_RESET);
+        System.out.println("\nA terminal width of 100-150 characters is recommended. \n" + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or choosing another console width." + Utilities.ANSI_RESET);
         printCharTimes('-', 150, true);
         choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
         if (choice == 'y') {
@@ -788,7 +778,15 @@ public class GUI {
                 if (!added) {
                     System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
                 } else System.out.println(Utilities.INFORMATION_MESSAGE + "Adding successful. Holding created");
-                //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
+                choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                if (choice == 'y') {
+                    try {
+                        inv.save("save");
+                    } catch (IOException e) {
+
+                    }
+                }
+                //Done. Return to main menu.
             } else if (choice == 'n') {
                 //If they choose not to continue, return them to to main menu.
                 System.out.println(Utilities.ERROR_MESSAGE + "Creation canceled. No holding was created. Please start from beginning");
@@ -858,8 +856,14 @@ public class GUI {
                 if (!added) {
                     System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
                 } else System.out.println("Adding successful. Member created");
-                //Done. Return to main menu. // TODO: 2/05/2016 Prompt the user to save database to file here.
+                choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                if (choice == 'y') {
+                    try {
+                        inv.save("save");
+                    } catch (IOException e) {
 
+                    }
+                }
             } else if (choice == 'n') {
                 //If they choose not to continue, return them to to main menu.
                 System.out.println("Creation canceled. No member was created. Please start from beginning");
@@ -897,6 +901,14 @@ public class GUI {
                     //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
                     if (result) {
                         System.out.println(ID + " deleted.");
+                        choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                        if (choice == 'y') {
+                            try {
+                                inv.save("save");
+                            } catch (IOException e) {
+
+                            }
+                        }
 
                     } else {
                         //If the holding is somehow not deleted after all the checks, inform the user.
@@ -946,6 +958,14 @@ public class GUI {
                     //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
                     if (result) {
                         System.out.println(ID + " deleted.");
+                        choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                        if (choice == 'y') {
+                            try {
+                                inv.save("save");
+                            } catch (IOException e) {
+
+                            }
+                        }
                     } else {
                         //If the member is somehow not deleted after all the checks, inform the user.
                         System.out.println(Utilities.ERROR_MESSAGE + "Member deletion failed. Please report to developer and try again.");
@@ -1126,6 +1146,9 @@ public class GUI {
         }
     }
 
+    /**
+     *
+     */
     private void load() {
         newPage("Load File");
         char choice = receiveStringInput("Do you want to use the default save location?", CHOICE_OPTIONS, "y", 1).charAt(0);
@@ -1312,7 +1335,7 @@ public class GUI {
             byte[] bytesOfMessage = state.getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
             hash = md.digest(bytesOfMessage);
-            outputHash = new BigInteger(1,md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
+            outputHash = new BigInteger(1, md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
         } catch (UnsupportedEncodingException uee) {
             System.out.print(uee);
         } catch (NoSuchAlgorithmException nsae) {
@@ -1322,9 +1345,9 @@ public class GUI {
         System.out.println(state);
         System.out.println("Enter past MD5");
         String pastHash = input.nextLine();
-        if(pastHash.equals(outputHash)){
+        if (pastHash.equals(outputHash)) {
             System.out.println("State was preserved");
-        }else{
+        } else {
             System.out.println("State was changed.");
         }
     }
