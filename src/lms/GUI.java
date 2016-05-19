@@ -1272,8 +1272,8 @@ public class GUI {
 
     private void exit() {
         newPage("Exit");
-        char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "y", 1, 30).charAt(0);
-        if (choice == 'e') return;
+        char choice = receiveStringInput("Do you want to exit? \"y\" for save and exit, \"e\" for exit.", CHOICE_OPTIONS, "y", 1, 30).charAt(0);
+        if (choice == 'e') System.exit(0);
         if (choice == 'y') {
             try {
                 inv.save("lastrun");

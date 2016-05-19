@@ -40,7 +40,7 @@ public abstract class Member implements SystemOperations, UniqueID {
         this.uniqueID = uniqueID;
         IDManager.addIdentifier(uniqueID);
     }
-    
+
     public Member(String memberID, String fullName, int credit) {
         setID(memberID);
         setName(fullName);
@@ -251,7 +251,8 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     private String borrowedToString() {
-        String result = null;
+        //This code works. Replaced with more concise code.
+        /*String result = null;
         for (int i = 0; i < borrowed.length;i++) {
             Holding holding = borrowed[i];
             if (holding != null) {
@@ -261,7 +262,18 @@ public abstract class Member implements SystemOperations, UniqueID {
                     result += holding.getUniqueID();
                 }
             }
+        }*/
+
+        //http://stackoverflow.com/questions/1978933/a-quick-and-easy-way-to-join-array-elements-with-a-separator-the-opposite-of-sp
+        String[] borrowedUniqueID = new String[borrowed.length];
+        for (int i = 0; i < borrowed.length; i++) {
+            if (borrowed[i] != null) {
+                borrowedUniqueID[i] = borrowed[i].getUniqueID();
+            }
         }
+
+
+        String result = String.join(":", borrowedUniqueID);
         return result;
     }
 
