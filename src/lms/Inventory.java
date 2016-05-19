@@ -30,7 +30,7 @@ public class Inventory {
     private Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-
+private static final String fileExtension = ".csv";
     /**
      * Creates holding and member arrays of size 15
      */
@@ -526,11 +526,11 @@ public class Inventory {
     public void save(String folderName) throws IOException {
         File folder = new File("./" + folderName);
         folder.mkdir();
-        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings.txt");
+        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings" + fileExtension);
 
-        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members.txt");
+        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members" + fileExtension);
 
-        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state" + fileExtension);
 
         System.out.println(folder.getAbsolutePath());
 
@@ -558,7 +558,7 @@ public class Inventory {
     }
 
     public String loadLastHash(String folder) {
-        File stateFile = new File("./" + "\\" + folder + "\\state.txt");
+        File stateFile = new File("./" + "\\" + folder + "\\state" + fileExtension);
         Scanner state = null;
         try {
             state = new Scanner(stateFile);
@@ -595,11 +595,11 @@ public class Inventory {
     public void load(String folderName) throws IOException {
         File folder = new File("./" + folderName);
         folder.mkdir();
-        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings.txt");
+        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings" + fileExtension);
 
-        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members.txt");
+        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members" + fileExtension);
 
-        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
+        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state" + fileExtension);
         System.out.println(folder.getAbsolutePath());
 
         Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
@@ -670,14 +670,12 @@ public class Inventory {
         stateReader.close();
         membersReader.close();
         holdingsReader.close();
-        recalculateStatistics();try {
+        recalculateStatistics();
+        try {
             if (loadLastHash(folderName).equals(outputState())) {
-                System.out.println("Program state was preserved across boot");
+                System.out.println("Program state was preserved since last save.");//If loading a database into an already populated database please ignore.
             } else {
-                System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE.");
-                // TODO: 19/05/2016 Add support for loading from backups and stuff on boot
-                // TODO: 19/05/2016 Add error checking for all loads.
-                // TODO: 19/05/2016 More advanced save load function-  append to database (if same unique ID don't import)
+                System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE. ");
                 System.out.println("LAST HASH: " + loadLastHash(folderName));
                 System.out.println("CURRENT HASH: " + outputState());
             }

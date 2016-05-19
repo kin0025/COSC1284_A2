@@ -12,9 +12,7 @@ package lms;
 import lms.util.*;
 
 import javax.rmi.CORBA.Util;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -31,6 +29,7 @@ public class GUI {
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
     private static final char[] MEMBER_TYPES = {'s', 'p'};
     private static final char[] HOLDING_TYPES = {'b', 'v'};
+    private File runStatus = new File("./running");
     private static int consoleWidth = 150;
     private Scanner input = new Scanner(System.in);
     private Inventory inv;
@@ -138,13 +137,45 @@ public class GUI {
                 "                                                            \n" +
                 "                                                            \n" +
                 "                                                            \n");
+        String saveLocation = "lastrun";
+        boolean result = false;
+        try {
+            result = runStatus.createNewFile();
+            if (!result) {
+                System.out.println(Utilities.WARNING_MESSAGE + "The program was not closed correctly last time. We recommend loading from backup save.");
+            }
+        } catch (IOException e) {
+        }
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
         char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "s", 1).charAt(0);
+        // TODO: 19/05/2016 Add support for loading from backups and stuff on boot
+
         if (choice == 'd') {
             addDefault();
         } else if (choice == 's') {
+            if (!result) {
+                saveLocation = "backup";
+            }
+            choice = receiveStringInput("What do folder do you want to use?", new String[]{"c (custom)", "b (backup)", "s (save)", "l (lastrun)"}, saveLocation, 1).charAt(0);
+
+            switch (choice) {
+                case 'b':
+                    saveLocation = "backup";
+                    break;
+                case 's':
+                    saveLocation = "save";
+                    break;
+                case 'l':
+                    saveLocation = "lastrun";
+                    break;
+                case 'c':
+                default:
+                    System.out.println("Enter the name of the folder to load from.");
+                    saveLocation = input.nextLine();
+            }
+
             try {
-                inv.load("lastrun");
+                inv.load(saveLocation);
             } catch (IOException e) {
                 System.out.println("No folder or files were found with the name. Files were not loaded.");
             }
@@ -165,6 +196,7 @@ public class GUI {
                 }
             }
         } else if (choice == 'e') {
+            runStatus.delete();
             System.exit(0);
         }
     }
@@ -374,7 +406,7 @@ public class GUI {
         }
         //Actually get input.
         System.out.print(Utilities.INPUT_MESSAGE);
-        String inputString = input.nextLine().toLowerCase();
+        String inputString = returnWaitInput(15, defaultAnswer).toLowerCase();
         //If the user entered nothing, return the default input.
         if (inputString.length() == 0) {
             System.out.println(defaultAnswer);
@@ -1128,14 +1160,46 @@ public class GUI {
         }
     }
 
-    private void save() {
+    private void save() { //http://stackoverflow.com/questions/10059068/set-timeout-for-users-input (Jeffrey's answer)
         newPage("Save");
+        String folderName = "save";
+        System.out.println("Enter the folder that you want to save to. You have 5 seconds to comply or a default will be chosen:");
+        System.out.print(Utilities.INPUT_MESSAGE);
+        folderName = returnWaitInput(5, "save");
+
         try {
-            inv.save("save");
+            inv.save(folderName);
         } catch (IOException e) {
             System.out.println(e);
         }
+        System.out.println("Press enter to return to menu");
+        input.nextLine();
 
+    }
+
+    public String returnWaitInput(int waitTime, String defaultResult) {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        long startTime = System.currentTimeMillis();
+        String result;
+
+        System.out.println("You have " + waitTime + "seconds until answer is chosen for you");
+        try {
+            while ((System.currentTimeMillis() - startTime) < waitTime * 1000
+                    && !in.ready()) {
+            }
+            if (in.ready()) {
+                result = in.readLine();
+            } else {
+                System.out.println("No input was detected and a default answer has been selected");
+                result = defaultResult;
+            }
+            return defaultResult;
+        } catch (IOException e) {
+            System.out.println(e);
+            result = defaultResult;
+
+        }
+        return result;
     }
 
     public void save(String folder) {
@@ -1177,7 +1241,8 @@ public class GUI {
                 inv.save("lastrun");
             } catch (IOException e) {
                 System.out.print("An error occurred and state could not be saved.");
-            }//todo add prompt here.
+            }
+            runStatus.delete();
             System.exit(0);
         }
     }
