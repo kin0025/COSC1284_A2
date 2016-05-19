@@ -19,6 +19,8 @@ import lms.util.DateTime;
 import lms.util.IDManager;
 import lms.util.Utilities;
 
+import java.util.StringTokenizer;
+
 public abstract class Member implements SystemOperations, UniqueID {
     private String ID;
     private String name;
@@ -250,13 +252,19 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     private String borrowedToString() {
         String result = null;
-        for (Holding holding : borrowed) {
+        for (int i = 0; i < borrowed.length;i++) {
+            Holding holding = borrowed[i];
             if (holding != null) {
-                result += holding.getUniqueID() + ":";
+                if(i < borrowed.length-1) {
+                    result += ":" + holding.getUniqueID();
+                }else{
+                    result += holding.getUniqueID();
+                }
             }
         }
         return result;
     }
+
 
     public String getUniqueID() {
         return uniqueID;

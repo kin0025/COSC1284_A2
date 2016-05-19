@@ -1225,6 +1225,9 @@ public class GUI {
                 System.out.println(Utilities.INFORMATION_MESSAGE + "No input was detected and a default answer has been selected");
                 result = defaultResult;
             }
+            if(result == null){
+                result = defaultResult;
+            }
             return result;
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -1265,7 +1268,7 @@ public class GUI {
         }
         System.out.println("Press enter to return to main menu.");
         input.nextLine();
-    }
+    }// FIXME: 20/05/2016 We lose a borrowed holding per member every save/load.
 
     private void exit() {
         newPage("Exit");
@@ -1440,7 +1443,7 @@ public class GUI {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-
+System.out.println(outputHash);
         System.out.println("Enter past MD5");
         String pastHash = input.nextLine();
         if (pastHash.equals(outputHash)) {

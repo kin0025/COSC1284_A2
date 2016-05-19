@@ -29,7 +29,8 @@ public class Inventory {
     private Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-private static final String fileExtension = ".csv";
+    private static final String fileExtension = ".csv";
+
     /**
      * Creates holding and member arrays of size 15
      */
@@ -568,7 +569,7 @@ private static final String fileExtension = ".csv";
             if (state.hasNextLine()) {
                 return state.nextLine();
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
