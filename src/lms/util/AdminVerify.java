@@ -12,6 +12,7 @@ package lms.util;
 /**
  * Created by akinr on 28/04/2016 as part of s3603437_A2
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class AdminVerify {
     private final String masterPassword = "Password1";
 

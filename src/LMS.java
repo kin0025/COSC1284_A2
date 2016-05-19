@@ -22,7 +22,7 @@ public class LMS {
                 state.mainMenu();
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             throw e;
         }finally {
             System.out.println("Saving program state to backup directory.");

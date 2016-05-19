@@ -15,7 +15,6 @@ import lms.util.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -171,13 +170,13 @@ private static final String fileExtension = ".csv";
     private void recalculateStatistics() {
         numberOfHoldings = 0;
         numberOfMembers = 0;
-        for (int i = 0; i < holdings.length; i++) {
-            if (holdings[i] != null) {
+        for (Holding holding : holdings) {
+            if (holding != null) {
                 numberOfHoldings++;
             }
         }
-        for (int i = 0; i < members.length; i++) {
-            if (members[i] != null) {
+        for (Member member : members) {
+            if (member != null) {
                 numberOfMembers++;
             }
         }
@@ -318,10 +317,11 @@ private static final String fileExtension = ".csv";
         return proceed;
     }
 
-    public void addDeleted(Holding deleted) {
-        for (int i = deletedHoldings.length - 1; 0 < i; i--) {
+    private void addDeleted(Holding deleted) {
+        System.arraycopy(deletedHoldings, 0, deletedHoldings, 1, deletedHoldings.length - 1); //So I had the code below, and my IDE was like "Performance Issues", so I performed its recommended fix.
+        /*for (int i = deletedHoldings.length - 1; 0 < i; i--) {
             deletedHoldings[i] = deletedHoldings[i - 1];
-        }
+        }*/
         deletedHoldings[0] = deleted;
     }
 
@@ -399,18 +399,18 @@ private static final String fileExtension = ".csv";
     }
 
     public void printAllHoldings(int pageWidth) {
-        for (int i = 0; i < holdings.length; i++) {
-            if (holdings[i] != null) {
-                holdings[i].print();
+        for (Holding holding : holdings) {
+            if (holding != null) {
+                holding.print();
                 GUI.printCharTimes('=', pageWidth, true);
             }
         }
     }
 
     public void printAllMembers(int pageWidth) {
-        for (int i = 0; i < members.length; i++) {
-            if (members[i] != null) {
-                members[i].print();
+        for (Member member : members) {
+            if (member != null) {
+                member.print();
                 GUI.printCharTimes('=', pageWidth, true);
             }
         }
@@ -424,7 +424,6 @@ private static final String fileExtension = ".csv";
         int holdingID = searchArrays(ID);
         if (holdingID < 0) {
             System.out.println(Utilities.WARNING_MESSAGE + " No Holding Found");
-            return;
         } else holdings[holdingID].print();
     }
 
@@ -436,7 +435,6 @@ private static final String fileExtension = ".csv";
         int memberID = searchArrays(ID);
         if (memberID < 0) {
             System.out.println(Utilities.WARNING_MESSAGE + " No Member Found");
-            return;
         } else members[memberID].print();
     }
 
@@ -540,12 +538,12 @@ private static final String fileExtension = ".csv";
 
         for (Holding holding : holdings) {
             if (holding != null) {
-                holdingsWriter.append(holding.toFile() + '\n');
+                holdingsWriter.append(holding.toFile()).append('\n');//Again IDE said performance issue without extra append, as I used to have a concat there.
             }
         }
         for (Member member : members) {
             if (member != null) {
-                membersWriter.append(member.toFile() + "\n");
+                membersWriter.append(member.toFile()).append("\n");
             }
         }
         stateWriter.append(outputState());
@@ -557,21 +555,27 @@ private static final String fileExtension = ".csv";
         holdingsWriter.close();
     }
 
-    public String loadLastHash(String folder) {
+    private String loadLastHash(String folder) {
         File stateFile = new File("./" + "\\" + folder + "\\state" + fileExtension);
         Scanner state = null;
         try {
             state = new Scanner(stateFile);
         } catch (FileNotFoundException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-        if (state.hasNextLine()) {
-            return state.nextLine();
+        try {
+            if (state.hasNextLine()) {
+                return state.nextLine();
+            }
+        }catch (NullPointerException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
 
-    public String outputState() {
+    private String outputState() {
         String state = toString();
         byte[] hash = null;
         String outputHash = null;
@@ -581,7 +585,8 @@ private static final String fileExtension = ".csv";
             hash = md.digest(bytesOfMessage);
             outputHash = new BigInteger(1, md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
         } catch (Exception e) {
-            System.out.print(e);
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return outputHash;
     }

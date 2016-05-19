@@ -129,11 +129,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     public boolean checkAllowedCreditOverdraw(int loanFee) {
-        if (getBalance() - loanFee < 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return getBalance() - loanFee >= 0;
     }
 
     public boolean borrowHolding(Holding holding) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
@@ -216,9 +212,9 @@ public abstract class Member implements SystemOperations, UniqueID {
         System.out.println("Max Credit: " + getMaxCredit());
         System.out.println("Current Balance: " + getBalance());
         System.out.println("Current Holdings:");
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null) {
-                System.out.print(borrowed[i].getTitle() + " (" + borrowed[i].getID() + " )");
+        for (Holding holding : borrowed) {
+            if (holding != null) {
+                System.out.print(holding.getTitle() + " (" + holding.getID() + " )");
             }
         }
         System.out.println();
@@ -236,8 +232,8 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     public int numberOfBorrowedHoldings() {
         int result = 0;
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null) {
+        for (Holding holding : borrowed) {
+            if (holding != null) {
                 result++;
             }
         }
@@ -254,9 +250,9 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     private String borrowedToString() {
         String result = null;
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null) {
-                result += borrowed[i].getUniqueID() + ":";
+        for (Holding holding : borrowed) {
+            if (holding != null) {
+                result += holding.getUniqueID() + ":";
             }
         }
         return result;

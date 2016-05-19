@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Created by Emily on 18/05/2016 as part of s3603437_A2
  */
 public class IDManager{
-    private static ArrayList<String> identifiers = new ArrayList<String>();
+    private static ArrayList<String> identifiers = new ArrayList<>();
 public static boolean addIdentifier(String identifier){
     if(!isAlreadyTaken(identifier)){
         identifiers.add(identifier);
@@ -39,13 +39,10 @@ public static boolean addIdentifier(String identifier){
     }
 
     public static boolean isAlreadyTaken(String testID) {
-        if (findIdentifier(testID) >= 0) {
-            return true;
-        }
-        return false;
+        return findIdentifier(testID) >= 0;
     }
 
-    public static int findIdentifier(String testID) {
+    private static int findIdentifier(String testID) {
         for (int i = 0; i < identifiers.size(); i++) {
             String actualID = identifiers.get(i);
             if (actualID != null && testID != null) {

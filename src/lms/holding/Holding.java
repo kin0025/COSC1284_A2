@@ -23,6 +23,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
     private DateTime borrowDate;
     private boolean active;
     private String uniqueID;
+    private double lateFee;
 
     public Holding(String holdingID, String title) {
         this.ID = holdingID;
@@ -49,6 +50,14 @@ public abstract class Holding implements SystemOperations, UniqueID {
     public boolean setID(String ID) {
         this.ID = ID;
         return true;
+    }
+
+    public double getLateFee() {
+        return lateFee;
+    }
+
+    public void setLateFee(double lateFee) {
+        this.lateFee = lateFee;
     }
 
     protected void setLoanFee(int loanFee) {

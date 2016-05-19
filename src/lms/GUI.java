@@ -11,12 +11,9 @@ package lms;
 
 import lms.util.*;
 
-import javax.rmi.CORBA.Util;
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -29,7 +26,7 @@ public class GUI {
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
     private static final char[] MEMBER_TYPES = {'s', 'p'};
     private static final char[] HOLDING_TYPES = {'b', 'v'};
-    private File runStatus = new File("./running");
+    private final File RUN_STATUS = new File("./running");
     private static int consoleWidth = 150;
     private Scanner input = new Scanner(System.in);
     private Inventory inv;
@@ -41,7 +38,7 @@ public class GUI {
      */
     public GUI() {
         String[] choiceOptions = {"y", "n"};
-        char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1).charAt(0);
+        char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1,5).charAt(0);
         //Create a normal inventory object with 15 members and 15 holdings.
         if (choice == 'n') {
             inv = new Inventory();
@@ -137,18 +134,20 @@ public class GUI {
                 "                                                            \n" +
                 "                                                            \n" +
                 "                                                            \n");
+        newPage("Initialise Database");
         String saveLocation = "lastrun";
         boolean result = false;
         try {
-            result = runStatus.createNewFile();
+            result = RUN_STATUS.createNewFile();
             if (!result) {
                 System.out.println(Utilities.WARNING_MESSAGE + "The program was not closed correctly last time. We recommend loading from backup save.");
             }
         } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
         char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "s", 1).charAt(0);
-        // TODO: 19/05/2016 Add support for loading from backups and stuff on boot
 
         if (choice == 'd') {
             addDefault();
@@ -181,9 +180,11 @@ public class GUI {
             }
 
         }
+
+        newPage("Terminal Settings");
         System.out.println("\nA terminal width of 100-150 characters is recommended. \n" + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or choosing another console width." + Utilities.ANSI_RESET);
         printCharTimes('-', 150, true);
-        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
+        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1,5).charAt(0);
         if (choice == 'y') {
             System.out.println("Enter the new terminal width:");
             while (consoleWidth == 150) {
@@ -196,7 +197,7 @@ public class GUI {
                 }
             }
         } else if (choice == 'e') {
-            runStatus.delete();
+            RUN_STATUS.delete();
             System.exit(0);
         }
     }
@@ -223,7 +224,7 @@ public class GUI {
 
 
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
 
@@ -238,7 +239,7 @@ public class GUI {
         //Sets the width of the page.
         try {
             Runtime.getRuntime().exec("cls");
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         //Print a new line a bunch to clear the screen. WHY IS THERE NO PLATFORM INDEPENDENT SOLUTION LIKE CLS
         for (int i = 30; i != 0; i--) {
@@ -362,10 +363,10 @@ public class GUI {
             inputString = input.nextLine().toLowerCase();
         }
         //Ensure input is the same.
-        String inputChar = inputString.toLowerCase();
+        inputString = inputString.toLowerCase();
         //If the input we are given is longer than the specified maximum output, make it shorter.
-        if (inputChar.length() >= outputLength) {
-            inputChar = inputChar.substring(0, outputLength);
+        if (inputString.length() >= outputLength) {
+            inputString = inputString.substring(0, outputLength);
         }
         boolean isCorrect = false;
         int i = 0;
@@ -374,18 +375,18 @@ public class GUI {
             if (options[i].length() >= outputLength) {
                 currentExamined = options[i].substring(0, outputLength);
             } else currentExamined = options[i];
-            if (currentExamined.equals(inputChar)) {
+            if (currentExamined.equals(inputString)) {
                 isCorrect = true;
             }
             i++;
         }
         if (isCorrect) {
-            return (inputChar);
+            return (inputString);
         } else {
             System.out.println(Utilities.ERROR_MESSAGE + "Input was not an option. Please try again.");
-            inputChar = receiveStringInput(flavourText, options, true, outputLength);//If they didn't get it right the first time, supply options.
+            inputString = receiveStringInput(flavourText, options, true, outputLength);//If they didn't get it right the first time, supply options.
         }
-        return (inputChar);
+        return (inputString);
     }
 
     /**
@@ -397,7 +398,7 @@ public class GUI {
      * @param outputLength  The length of input that will be validated and output.
      * @return The final validated chosen user input of the first <code>int outputLength</code> positions.
      **/
-    private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
+    private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength, int waitTime) {
         //Print a prompt for the user to enter input.
         System.out.println(flavourText + " " + stringArrayToString(options) + Utilities.ANSI_RED + "[" + defaultAnswer + "]" + Utilities.ANSI_RESET);
         //Ensure we don't try to access a negative array index.
@@ -405,16 +406,21 @@ public class GUI {
             outputLength = 1;
         }
         //Actually get input.
-        System.out.print(Utilities.INPUT_MESSAGE);
-        String inputString = returnWaitInput(15, defaultAnswer).toLowerCase();
-        //If the user entered nothing, return the default input.
+        String inputString;
+        if(waitTime == 0){
+            System.out.print(Utilities.INPUT_MESSAGE);
+            inputString = input.nextLine().toLowerCase();
+        }else {
+            inputString = returnWaitInput(waitTime, defaultAnswer).toLowerCase();
+
+        }//If the user entered nothing, return the default input.
         if (inputString.length() == 0) {
             System.out.println(defaultAnswer);
             return ("" + defaultAnswer);
         }
-        String inputChar = inputString.toLowerCase();
-        if (inputChar.length() >= outputLength) {
-            inputChar = inputChar.substring(0, outputLength);
+        inputString = inputString.toLowerCase();
+        if (inputString.length() >= outputLength) {
+            inputString = inputString.substring(0, outputLength);
         }
         boolean isCorrect = false;
         int i = 0;
@@ -423,20 +429,23 @@ public class GUI {
             if (options[i].length() >= outputLength) {
                 currentExamined = options[i].substring(0, outputLength);
             } else currentExamined = options[i];
-            if (currentExamined.equals(inputChar)) {
+            if (currentExamined.equals(inputString)) {
                 isCorrect = true;
             }
             i++;
         }
         if (isCorrect) {
-            return (inputChar);
+            return (inputString);
         } else {
             System.out.println(Utilities.ERROR_MESSAGE + "Input was not an option. Please try again.");
-            inputChar = receiveStringInput(flavourText, options, defaultAnswer, outputLength);//If they didn't get it right the first time, supply options.
+            inputString = receiveStringInput(flavourText, options, defaultAnswer, outputLength);//If they didn't get it right the first time, supply options.
         }
-        return inputChar;
+        return inputString;
     }
 
+    private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength){
+        return receiveStringInput(flavourText,options,defaultAnswer,outputLength,0);
+    }
     /**
      * Prompts the user for an ID that already exists.
      * TypeID is a string that will be displayed when asking the user for and ID, and expectedTypes restricts input(i.e if someone enters s000001, but the user is searching for a holding it wont work.
@@ -453,8 +462,8 @@ public class GUI {
         boolean result = inv.idExists(ID);
         if (result) {
             result = false;
-            for (int i = 0; i < expectedTypes.length; i++)
-                if (ID.charAt(0) == expectedTypes[i]) {
+            for (char expectedType : expectedTypes)
+                if (ID.charAt(0) == expectedType) {
                     result = true;
                 }
         }
@@ -476,8 +485,8 @@ public class GUI {
                     result = inv.idExists(ID);
                     if (result) {
                         result = false;
-                        for (int i = 0; i < expectedTypes.length; i++)
-                            if (ID.charAt(0) == expectedTypes[i]) {
+                        for (char expectedType : expectedTypes)
+                            if (ID.charAt(0) == expectedType) {
                                 result = true;
                             }
                     }
@@ -810,11 +819,13 @@ public class GUI {
                 if (!added) {
                     System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
                 } else System.out.println(Utilities.INFORMATION_MESSAGE + "Adding successful. Holding created");
-                choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1,5).charAt(0);
                 if (choice == 'y') {
                     try {
                         inv.save("save");
                     } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
 
                     }
                 }
@@ -893,6 +904,8 @@ public class GUI {
                     try {
                         inv.save("save");
                     } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
 
                     }
                 }
@@ -930,7 +943,7 @@ public class GUI {
                 //If they do, remove the holding.
                 if (choice == 'y') {
                     result = inv.removeHolding(ID);
-                    //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
+                    //If successful, inform them it was, and return them to the menu.
                     if (result) {
                         System.out.println(ID + " deleted.");
                         choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
@@ -938,6 +951,8 @@ public class GUI {
                             try {
                                 inv.save("save");
                             } catch (IOException e) {
+                                System.out.println(e.getMessage());
+                                e.printStackTrace();
 
                             }
                         }
@@ -987,7 +1002,7 @@ public class GUI {
                 //If they do, remove the member.
                 if (choice == 'y') {
                     result = inv.removeMember(ID);
-                    //If successful, inform them it was, and return them to the menu. // TODO: 2/05/2016 Add save functionality.
+                    //If successful, inform them it was, and return them to the menu.
                     if (result) {
                         System.out.println(ID + " deleted.");
                         choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1).charAt(0);
@@ -995,6 +1010,8 @@ public class GUI {
                             try {
                                 inv.save("save");
                             } catch (IOException e) {
+                                System.out.println(e.getMessage());
+                                e.printStackTrace();
 
                             }
                         }
@@ -1164,25 +1181,26 @@ public class GUI {
         newPage("Save");
         String folderName = "save";
         System.out.println("Enter the folder that you want to save to. You have 5 seconds to comply or a default will be chosen:");
-        System.out.print(Utilities.INPUT_MESSAGE);
-        folderName = returnWaitInput(5, "save");
+        folderName = returnWaitInput(10, "save");
 
         try {
             inv.save(folderName);
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         System.out.println("Press enter to return to menu");
         input.nextLine();
 
     }
 
-    public String returnWaitInput(int waitTime, String defaultResult) {
+    private String returnWaitInput(int waitTime, String defaultResult) {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         long startTime = System.currentTimeMillis();
         String result;
 
-        System.out.println("You have " + waitTime + "seconds until answer is chosen for you");
+        System.out.println(Utilities.INFORMATION_MESSAGE+"You have " + waitTime + " seconds until an answer is chosen for you. You can press enter to choose the default." + Utilities.ANSI_GREEN + "Press enter once you have entered your input" + Utilities.ANSI_RESET);
+        System.out.print(Utilities.INPUT_MESSAGE);
         try {
             while ((System.currentTimeMillis() - startTime) < waitTime * 1000
                     && !in.ready()) {
@@ -1190,13 +1208,13 @@ public class GUI {
             if (in.ready()) {
                 result = in.readLine();
             } else {
-                System.out.println("No input was detected and a default answer has been selected");
+                System.out.println(Utilities.INFORMATION_MESSAGE+"No input was detected and a default answer has been selected");
                 result = defaultResult;
             }
-            return defaultResult;
+            return result;
         } catch (IOException e) {
-            System.out.println(e);
-            result = defaultResult;
+            System.out.println(e.getMessage());
+            e.printStackTrace();            result = defaultResult;
 
         }
         return result;
@@ -1207,6 +1225,8 @@ public class GUI {
         try {
             inv.save(folder);
         } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -1234,7 +1254,7 @@ public class GUI {
 
     private void exit() {
         newPage("Exit");
-        char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "y", 1).charAt(0);
+        char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "n", 1,30).charAt(0);
         if (choice == 'e') return;
         if (choice == 'y') {
             try {
@@ -1242,7 +1262,7 @@ public class GUI {
             } catch (IOException e) {
                 System.out.print("An error occurred and state could not be saved.");
             }
-            runStatus.delete();
+            RUN_STATUS.delete();
             System.exit(0);
         }
     }
@@ -1401,13 +1421,11 @@ public class GUI {
             MessageDigest md = MessageDigest.getInstance("MD5");
             hash = md.digest(bytesOfMessage);
             outputHash = new BigInteger(1, md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
-        } catch (UnsupportedEncodingException uee) {
-            System.out.print(uee);
-        } catch (NoSuchAlgorithmException nsae) {
-            System.out.print(nsae);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
-        System.out.println(state);
         System.out.println("Enter past MD5");
         String pastHash = input.nextLine();
         if (pastHash.equals(outputHash)) {
