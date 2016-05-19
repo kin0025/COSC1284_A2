@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Created by Emily on 18/05/2016 as part of s3603437_A2
  */
-public class IDManager {
+public class IDManager{
     private static ArrayList<String> identifiers = new ArrayList<String>();
 public static boolean addIdentifier(String identifier){
     if(!isAlreadyTaken(identifier)){

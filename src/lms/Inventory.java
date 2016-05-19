@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 public class Inventory {
     //Start Screen
     private Holding[] holdings;
+    private Holding[] deletedHoldings = new Holding[5];
     private Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
@@ -290,6 +291,7 @@ public class Inventory {
         }
         if (proceed) {
             if (holdingPos >= 0) {
+                addDeleted(holdings[holdingPos]);
                 holdings[holdingPos] = null;
                 recalculateStatistics();
                 System.out.println(Utilities.INFORMATION_MESSAGE + " Holding " + ID + " was removed. There are " + numberOfHoldings + " holdings still in system");
@@ -299,6 +301,7 @@ public class Inventory {
             }
         } else if (force) {
             if (holdingPos >= 0) {
+                addDeleted(holdings[holdingPos]);
                 holdings[holdingPos] = null;
                 members[holdingBorrowed[0]].getCurrentHoldings()[holdingBorrowed[1]] = null;
                 recalculateStatistics();
@@ -310,6 +313,36 @@ public class Inventory {
             }
         }
         return proceed;
+    }
+
+    public void addDeleted(Holding deleted) {
+        for (int i = deletedHoldings.length - 1; 0 < i; i++) {
+            holdings[i] = holdings[i - 1];
+        }
+        deletedHoldings[0] = deleted;
+    }
+
+    public boolean undeleteHolding(int deletedIndex) {
+        int index = firstNullArray('b');
+        if (index < 0) {
+            return false;
+        }
+        Holding deleted = deletedHoldings[deletedIndex];
+        if (deleted == null) {
+            return false;
+        } else {
+            holdings[index] = deleted;
+            return true;
+        }
+    }
+
+    public void printDeleted() {
+        for (int i = 0;i < deletedHoldings.length;i++  ) {
+            if (deletedHoldings[i] != null) {
+                System.out.print(i + ":");
+                System.out.println(deletedHoldings[i]);
+            }
+        }
     }
 
     public boolean removeMember(String ID) {
@@ -480,6 +513,12 @@ public class Inventory {
         members[arrayPos].resetCredit();
     }
 
+    /**
+     * Saves the program state to holdings.txt, members.txt and state.txt
+     *
+     * @param folderName
+     * @throws IOException
+     */
     public void save(String folderName) throws IOException {
         File folder = new File("./" + folderName);
         folder.mkdir();
@@ -515,6 +554,12 @@ public class Inventory {
         holdingsWriter.close();
     }
 
+    /**
+     * Loads the holdings.txt, members.txt and state.txt files from the folder specified relative to the location.
+     *
+     * @param folderName
+     * @throws IOException
+     */
     public void load(String folderName) throws IOException {
         File folder = new File("./" + folderName);
         folder.mkdir();
@@ -528,9 +573,8 @@ public class Inventory {
         Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
         Scanner membersReader = new Scanner(membersFile.getAbsoluteFile());
         Scanner stateReader = new Scanner(stateFile.getAbsoluteFile());
-        while (holdingsReader.hasNextLine()) { // TODO: 19/05/2016 Add Tokeniser here
+        while (holdingsReader.hasNextLine()) {
             StringTokenizer holdingToken = new StringTokenizer(holdingsReader.nextLine(), ",");
-            // holdingsReader.useDelimiter(",");
             String identifier = holdingToken.nextToken();
             String title = holdingToken.nextToken();
             int loanFee = Integer.parseInt(holdingToken.nextToken());
@@ -579,7 +623,7 @@ public class Inventory {
             }
         }
 
-        while(stateReader.hasNext()){
+        while (stateReader.hasNext()) {
             stateReader.useDelimiter(",");
             IDManager.addIdentifier(stateReader.next());
         }

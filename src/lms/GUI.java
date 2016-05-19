@@ -874,7 +874,7 @@ public class GUI {
                     } else {
                         //If the holding is somehow not deleted after all the checks, inform the user.
                         System.out.println(Utilities.ERROR_MESSAGE + "Holding deletion failed. This is likely because the holding is borrowed out.");
-                        choice = receiveStringInput("Do you want to force removal? No fees will be incurred by the member.", CHOICE_OPTIONS, "n", 1).charAt(0);
+                        choice = receiveStringInput("Do you want to force removal? No fees will be incurred by the member. If holding is restored member will not get holding back.", CHOICE_OPTIONS, "n", 1).charAt(0);
                         if (choice == 'y') {
                             inv.removeHolding(ID, true);
                         }
@@ -1093,7 +1093,6 @@ public class GUI {
             inv.save(folder);
         } catch (IOException e) {
         }
-        // TODO: 19/04/2016 Holding Logic Here
     }
 
     private void load() {
@@ -1113,7 +1112,7 @@ public class GUI {
             try {
                 inv.save("lastrun");
             }catch(IOException e){
-                System.out.print("An error occured and state could not be saved.");
+                System.out.print("An error occurred and state could not be saved.");
             }//todo add prompt here.
             System.exit(0);
         }
@@ -1250,5 +1249,18 @@ public class GUI {
         String holdingID = getExistingID("Holding", HOLDING_TYPES);
         String memberID = getExistingID("Member", MEMBER_TYPES);
         inv.returnHoldingNoFee(holdingID, memberID);
+    }
+
+    private void undeleteHolding(){
+        inv.printDeleted();
+int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete",new String[] {"0","1","2","3","4"},true,1));
+
+            boolean result = inv.undeleteHolding(selection);
+            if (!result) {
+                System.out.println(Utilities.WARNING_MESSAGE + "R failed");
+            } else {
+                System.out.println(Utilities.INFORMATION_MESSAGE + "Deactivation success");
+            }
+        }
     }
 }
