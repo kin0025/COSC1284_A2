@@ -38,7 +38,7 @@ public class GUI {
      */
     public GUI() {
         String[] choiceOptions = {"y", "n"};
-        char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1,5).charAt(0);
+        char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1, 5).charAt(0);
         //Create a normal inventory object with 15 members and 15 holdings.
         if (choice == 'n') {
             inv = new Inventory();
@@ -184,7 +184,7 @@ public class GUI {
         newPage("Terminal Settings");
         System.out.println("\nA terminal width of 100-150 characters is recommended. \n" + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or choosing another console width." + Utilities.ANSI_RESET);
         printCharTimes('-', 150, true);
-        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1,5).charAt(0);
+        choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1, 5).charAt(0);
         if (choice == 'y') {
             System.out.println("Enter the new terminal width:");
             while (consoleWidth == 150) {
@@ -407,10 +407,10 @@ public class GUI {
         }
         //Actually get input.
         String inputString;
-        if(waitTime == 0){
+        if (waitTime == 0) {
             System.out.print(Utilities.INPUT_MESSAGE);
             inputString = input.nextLine().toLowerCase();
-        }else {
+        } else {
             inputString = returnWaitInput(waitTime, defaultAnswer).toLowerCase();
 
         }//If the user entered nothing, return the default input.
@@ -443,9 +443,10 @@ public class GUI {
         return inputString;
     }
 
-    private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength){
-        return receiveStringInput(flavourText,options,defaultAnswer,outputLength,0);
+    private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
+        return receiveStringInput(flavourText, options, defaultAnswer, outputLength, 0);
     }
+
     /**
      * Prompts the user for an ID that already exists.
      * TypeID is a string that will be displayed when asking the user for and ID, and expectedTypes restricts input(i.e if someone enters s000001, but the user is searching for a holding it wont work.
@@ -601,7 +602,7 @@ public class GUI {
         System.out.println("13. Exit");
         System.out.println("14. Admin");
         printCharTimes('=', consoleWidth, true);
-        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "211"};
+        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "211", "301", "404"};
         int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 16)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         switch (choice) {
             case 1:
@@ -648,6 +649,12 @@ public class GUI {
                 break;
             case 211:
                 printState();
+                break;
+            case 301:
+                debugInventory();
+                break;
+            case 404:
+                consoleWidthEdit();
             default:
                 break;
         }
@@ -749,7 +756,14 @@ public class GUI {
         }
     }
 
+    private void debugInventory() {
+        //inv.debug(); // TODO: 20/05/2016 Add debug support.
+    }
 
+    private void consoleWidthEdit() {
+        System.out.println("Enter console width:");
+        consoleWidth = input.nextInt();
+    }
     //Main Menu Methods
 
     /**
@@ -819,7 +833,7 @@ public class GUI {
                 if (!added) {
                     System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
                 } else System.out.println(Utilities.INFORMATION_MESSAGE + "Adding successful. Holding created");
-                choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1,5).charAt(0);
+                choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1, 5).charAt(0);
                 if (choice == 'y') {
                     try {
                         inv.save("save");
@@ -1199,7 +1213,7 @@ public class GUI {
         long startTime = System.currentTimeMillis();
         String result;
 
-        System.out.println(Utilities.INFORMATION_MESSAGE+"You have " + waitTime + " seconds until an answer is chosen for you. You can press enter to choose the default." + Utilities.ANSI_GREEN + "Press enter once you have entered your input" + Utilities.ANSI_RESET);
+        System.out.println(Utilities.INFORMATION_MESSAGE + "You have " + waitTime + " seconds until an answer is chosen for you. You can press enter to choose the default." + Utilities.ANSI_GREEN + "Press enter once you have entered your input" + Utilities.ANSI_RESET);
         System.out.print(Utilities.INPUT_MESSAGE);
         try {
             while ((System.currentTimeMillis() - startTime) < waitTime * 1000
@@ -1208,13 +1222,14 @@ public class GUI {
             if (in.ready()) {
                 result = in.readLine();
             } else {
-                System.out.println(Utilities.INFORMATION_MESSAGE+"No input was detected and a default answer has been selected");
+                System.out.println(Utilities.INFORMATION_MESSAGE + "No input was detected and a default answer has been selected");
                 result = defaultResult;
             }
             return result;
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();            result = defaultResult;
+            e.printStackTrace();
+            result = defaultResult;
 
         }
         return result;
@@ -1254,7 +1269,7 @@ public class GUI {
 
     private void exit() {
         newPage("Exit");
-        char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "n", 1,30).charAt(0);
+        char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "y", 1, 30).charAt(0);
         if (choice == 'e') return;
         if (choice == 'y') {
             try {
