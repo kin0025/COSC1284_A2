@@ -1110,6 +1110,11 @@ public class GUI {
         char choice = receiveStringInput("Do you want to exit?", CHOICE_OPTIONS, "y", 1).charAt(0);
         if (choice == 'e') return;
         if (choice == 'y') {
+            try {
+                inv.save("lastrun");
+            }catch(IOException e){
+                System.out.print("An error occured and state could not be saved.");
+            }//todo add prompt here.
             System.exit(0);
         }
     }

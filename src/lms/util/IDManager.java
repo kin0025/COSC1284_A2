@@ -13,7 +13,13 @@ import java.util.ArrayList;
  */
 public class IDManager {
     private static ArrayList<String> identifiers = new ArrayList<String>();
-
+public static boolean addIdentifier(String identifier){
+    if(!isAlreadyTaken(identifier)){
+        identifiers.add(identifier);
+        return true;
+    }
+    return false;
+}
        public static boolean removeIdentifier(String identifier) {
         int index = findIdentifier(identifier);
         if (index >= 0) {

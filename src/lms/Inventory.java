@@ -12,10 +12,7 @@ import lms.holding.*;
 import lms.members.*;
 import lms.util.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -500,7 +497,7 @@ public class Inventory {
 
         for (Holding holding : holdings) {
             if (holding != null) {
-                holdingsWriter.append(holding.toFile() + "\n");
+                holdingsWriter.append(holding.toFile() + '\n');
             }
         }
         for (Member member : members) {
@@ -531,24 +528,77 @@ public class Inventory {
         Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
         Scanner membersReader = new Scanner(membersFile.getAbsoluteFile());
         Scanner stateReader = new Scanner(stateFile.getAbsoluteFile());
-        while (holdingsReader.hasNextLine()) {
-            holdingsReader.useDelimiter(",");
-            String identifier = holdingsReader.next();
-            String title = holdingsReader.next();
-            int loanFee = Integer.parseInt(holdingsReader.next());
-            int maxLoanPeriod = Integer.parseInt(holdingsReader.next());
-            DateTime borrowDate = new DateTime(Integer.parseInt(holdingsReader.next())); // FIXME: 19/05/2016 BROKEN
-            boolean active = Boolean.parseBoolean(holdingsReader.next());
-            String uniqueID = holdingsReader.next();
+        while (holdingsReader.hasNextLine()) { // TODO: 19/05/2016 Add Tokeniser here
+            StringTokenizer holdingToken = new StringTokenizer(holdingsReader.nextLine(), ",");
+            // holdingsReader.useDelimiter(",");
+            String identifier = holdingToken.nextToken();
+            String title = holdingToken.nextToken();
+            int loanFee = Integer.parseInt(holdingToken.nextToken());
+            int maxLoanPeriod = Integer.parseInt(holdingToken.nextToken());
+            String borrowTime = holdingToken.nextToken();
+            DateTime borrowDate;
+            if (!borrowTime.equals("null") && borrowTime != null) {
+                StringTokenizer dateSplit = new StringTokenizer(borrowTime, "-");
+                int year = Integer.parseInt(dateSplit.nextToken());
+                int month = Integer.parseInt(dateSplit.nextToken());
+                int day = Integer.parseInt(dateSplit.nextToken());
+
+                borrowDate = new DateTime(day, month, year);
+            } else {
+                borrowDate = null;
+            }
+            boolean active = Boolean.parseBoolean(holdingToken.nextToken());
+            String uniqueID = holdingToken.nextToken();
             if (identifier.charAt(0) == 'b') {
                 holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
             } else if (identifier.charAt(0) == 'v') {
                 holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
             }
         }
+        while (membersReader.hasNextLine()) {
+            StringTokenizer membersToken = new StringTokenizer(membersReader.nextLine(), ",");
+            String identifier = membersToken.nextToken();
+            String name = membersToken.nextToken();
+            int maxCredit = Integer.parseInt(membersToken.nextToken());
+            int balance = Integer.parseInt(membersToken.nextToken());
+            String holdingsString = membersToken.nextToken();
+            Holding[] borrowed = new Holding[15];
+            StringTokenizer borrowedTokens = new StringTokenizer(holdingsString, ":");
+            for (int i = 0; i < borrowed.length; i++) {
+                if (borrowedTokens.hasMoreTokens()) {
+                    borrowed[i] = uniqueIDToHolding(borrowedTokens.nextToken());
+                }
+            }
+            boolean active = Boolean.parseBoolean(membersToken.nextToken());
+            String uniqueID = membersToken.nextToken();
+            if (identifier.charAt(0) == 's') {
+                members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+            } else if (identifier.charAt(0) == 'p') {
+                members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+
+            }
+        }
+
+        while(stateReader.hasNext()){
+            stateReader.useDelimiter(",");
+            IDManager.addIdentifier(stateReader.next());
+        }
         stateReader.close();
         membersReader.close();
         holdingsReader.close();
+        recalculateStatistics();
+    }
+
+    private Holding uniqueIDToHolding(String uniqueID) {
+        for (Holding h : holdings
+                ) {
+            if (h != null) {
+                if (h.getUniqueID().equals(uniqueID)) {
+                    return h;
+                }
+            }
+        }
+        return null;
     }
 
 }

@@ -248,7 +248,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     public String toFile() {
-        return (getID() + "," + getFullName() + "," + calculateRemainingCredit() + "," + balance + "," + active + "," + borrowedToString() + "," + getUniqueID());
+        return (getID() + "," + getFullName() + "," + calculateRemainingCredit() + "," + balance + "," + borrowedToString() + "," + active + "," + getUniqueID());
     }
 
     private String borrowedToString() {
