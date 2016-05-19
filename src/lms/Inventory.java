@@ -13,6 +13,9 @@ import lms.members.*;
 import lms.util.*;
 
 import java.io.*;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -276,7 +279,7 @@ public class Inventory {
         boolean proceed = true;
         int[] holdingBorrowed = new int[2];
         for (int i = 0; i < members.length; i++) {
-            if (proceed) {
+            if (proceed && members[i] != null) {
                 for (int j = 0; j < members[i].getCurrentHoldings().length; j++) {
                     Holding holding = members[i].getCurrentHoldings()[j];
                     if (holding != null) {
@@ -316,8 +319,8 @@ public class Inventory {
     }
 
     public void addDeleted(Holding deleted) {
-        for (int i = deletedHoldings.length - 1; 0 < i; i++) {
-            holdings[i] = holdings[i - 1];
+        for (int i = deletedHoldings.length - 1; 0 < i; i--) {
+            deletedHoldings[i] = deletedHoldings[i - 1];
         }
         deletedHoldings[0] = deleted;
     }
@@ -332,14 +335,15 @@ public class Inventory {
             return false;
         } else {
             holdings[index] = deleted;
+            deletedHoldings[deletedIndex] = null;
             return true;
         }
     }
 
     public void printDeleted() {
-        for (int i = 0;i < deletedHoldings.length;i++  ) {
+        for (int i = 0; i < deletedHoldings.length; i++) {
             if (deletedHoldings[i] != null) {
-                System.out.print(i + ":");
+                System.out.print(i + Utilities.ANSI_RED + ": " + Utilities.ANSI_RESET);
                 System.out.println(deletedHoldings[i]);
             }
         }
@@ -528,7 +532,7 @@ public class Inventory {
 
         File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
 
-        System.out.print(folder.getAbsolutePath());
+        System.out.println(folder.getAbsolutePath());
 
         FileWriter holdingsWriter = new FileWriter(holdingsFile.getAbsoluteFile());
         FileWriter membersWriter = new FileWriter(membersFile.getAbsoluteFile());
@@ -544,14 +548,42 @@ public class Inventory {
                 membersWriter.append(member.toFile() + "\n");
             }
         }
-        stateWriter.write(IDManager.toFile());
-
+        stateWriter.append(outputState());
         stateWriter.flush();
         stateWriter.close();
         membersWriter.flush();
         membersWriter.close();
         holdingsWriter.flush();
         holdingsWriter.close();
+    }
+
+    public String loadLastHash() {
+        File stateFile = new File("./" + "\\lastrun\\state.txt");
+        Scanner state = null;
+        try {
+            state = new Scanner(stateFile);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        if (state.hasNextLine()) {
+            return state.nextLine();
+        }
+        return null;
+    }
+
+    public String outputState() {
+        String state = toString();
+        byte[] hash = null;
+        String outputHash = null;
+        try {
+            byte[] bytesOfMessage = state.getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            hash = md.digest(bytesOfMessage);
+            outputHash = new BigInteger(1, md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return outputHash;
     }
 
     /**
@@ -568,7 +600,7 @@ public class Inventory {
         File membersFile = new File(folder.getAbsolutePath() + "\\" + "members.txt");
 
         File stateFile = new File(folder.getAbsolutePath() + "\\" + "state.txt");
-        System.out.print(folder.getAbsolutePath());
+        System.out.println(folder.getAbsolutePath());
 
         Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
         Scanner membersReader = new Scanner(membersFile.getAbsoluteFile());
@@ -643,6 +675,31 @@ public class Inventory {
             }
         }
         return null;
+    }
+
+    public int returnHoldingTime(String ID) {
+        int holdingPos = searchArrays(ID);
+        if (holdingPos >= 0) {
+            return holdings[holdingPos].getMaxLoanPeriod();
+        } else return 0;
+    }
+
+    public String toString() {
+        String megaString = null;
+        for (Holding h : holdings
+                ) {
+            if (h != null) {
+                megaString += h.toString();
+            }
+        }
+        for (Member m : members
+                ) {
+            if (m != null) {
+                megaString += m.toString();
+            }
+        }
+        megaString += IDManager.stateString();
+        return megaString;
     }
 
 }

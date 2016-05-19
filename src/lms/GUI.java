@@ -13,6 +13,12 @@ import lms.util.*;
 
 import javax.rmi.CORBA.Util;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -133,13 +139,28 @@ public class GUI {
                 "                                                            \n" +
                 "                                                            \n");
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
-        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "d", 1).charAt(0);
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "s", 1).charAt(0);
         if (choice == 'd') {
             addDefault();
         } else if (choice == 's') {
-            load();
+            try {
+                inv.load("lastrun");
+            } catch (IOException e) {
+                System.out.println("No folder or files were found with the name. Files were not loaded.");
+            }
+            try {
+                if (inv.loadLastHash().equals(inv.outputState())) {
+                    System.out.println("Program state was preserved across boot");
+                } else {
+                    System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE");
+                    System.out.println("LAST HASH: " + inv.loadLastHash());
+                    System.out.println("CURRENT HASH: " + inv.outputState());
+                }
+            }catch (NullPointerException e ){
+                System.out.println("There was no state saved last time.");
+            }
         }
-        System.out.println("\nA terminal width of 100-150 characters is recommended. \n"  + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width." + Utilities.ANSI_RESET);
+        System.out.println("\nA terminal width of 100-150 characters is recommended. \n" + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or decreasing choosing another console width." + Utilities.ANSI_RESET);
         printCharTimes('-', 150, true);
         choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1).charAt(0);
         if (choice == 'y') {
@@ -549,8 +570,8 @@ public class GUI {
         System.out.println("13. Exit");
         System.out.println("14. Admin");
         printCharTimes('=', consoleWidth, true);
-        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
-        int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 2)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
+        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "211"};
+        int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 16)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         switch (choice) {
             case 1:
                 addHolding();
@@ -594,6 +615,8 @@ public class GUI {
             case 14:
                 adminMenuVerify();
                 break;
+            case 211:
+                printState();
             default:
                 break;
         }
@@ -612,9 +635,10 @@ public class GUI {
             System.out.println(" 4. Reset Member Credit");
             System.out.println(" 5. Edit Member Details");
             System.out.println(" 6. Return holding ignoring fees");
-            System.out.println(" 7. Back to Main Menu");
+            System.out.println(" 7. Undelete holdings");
+            System.out.println(" 8. Back to Main Menu");
             printCharTimes('=', 50, true);
-            String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7"};
+            String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7", "8"};
             int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
             switch (options) {
                 case 1:
@@ -636,6 +660,9 @@ public class GUI {
                     returnHoldingNoFee();
                     break;
                 case 7:
+                    undeleteHolding();
+                    break;
+                case 8:
                     return;
                 default:
                     adminMenu();
@@ -948,12 +975,16 @@ public class GUI {
                 char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
                 if (choice == 'e') return;
                 if (choice == 'n') {
-                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed. Press enter to return to menu.");
+                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
+                    memberID = getExistingID("Member", MEMBER_TYPES);
+                    System.out.println("Press yes at the next prompt to borrow a holding for this new member.");
                 } else {
                     String holdingID = getExistingID("Holding", HOLDING_TYPES);
                     if (holdingID != null) {
 
                         inv.printHolding(holdingID);
+                        DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
+                        System.out.println("You will have to return holding by the " + returnDate.getFormattedDate());
                         choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
                         if (choice == 'e') return;
                         if (choice == 'y') {
@@ -1097,11 +1128,21 @@ public class GUI {
 
     private void load() {
         newPage("Load File");
-        try {
-            inv.load("save");
-        } catch (IOException e) {
-            System.out.println(e);
+        char choice = receiveStringInput("Do you want to use the default save location?", CHOICE_OPTIONS, "y", 1).charAt(0);
+        String folder;
+        if (choice == 'y') {
+            folder = "save";
+        } else {
+            System.out.println("Enter the relative folder path");
+            folder = input.nextLine();
         }
+        try {
+            inv.load(folder);
+        } catch (IOException e) {
+            System.out.println("No folder or files were found with the name. Files were not loaded.");
+        }
+        System.out.println("Press enter to return to main menu.");
+        input.nextLine();
     }
 
     private void exit() {
@@ -1111,7 +1152,7 @@ public class GUI {
         if (choice == 'y') {
             try {
                 inv.save("lastrun");
-            }catch(IOException e){
+            } catch (IOException e) {
                 System.out.print("An error occurred and state could not be saved.");
             }//todo add prompt here.
             System.exit(0);
@@ -1251,16 +1292,41 @@ public class GUI {
         inv.returnHoldingNoFee(holdingID, memberID);
     }
 
-    private void undeleteHolding(){
+    private void undeleteHolding() {
         inv.printDeleted();
-int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete",new String[] {"0","1","2","3","4"},true,1));
+        int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete", new String[]{"0", "1", "2", "3", "4"}, true, 1));
 
-            boolean result = inv.undeleteHolding(selection);
-            if (!result) {
-                System.out.println(Utilities.WARNING_MESSAGE + "R failed");
-            } else {
-                System.out.println(Utilities.INFORMATION_MESSAGE + "Deactivation success");
-            }
+        boolean result = inv.undeleteHolding(selection);
+        if (!result) {
+            System.out.println(Utilities.WARNING_MESSAGE + "Retrieval Failed");
+        } else {
+            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was retrieved");
         }
     }
+
+    private void printState() {
+        String state = inv.toString();
+        byte[] hash = null;
+        String outputHash = null;
+        try {
+            byte[] bytesOfMessage = state.getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            hash = md.digest(bytesOfMessage);
+            outputHash = new BigInteger(1,md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
+        } catch (UnsupportedEncodingException uee) {
+            System.out.print(uee);
+        } catch (NoSuchAlgorithmException nsae) {
+            System.out.print(nsae);
+        }
+
+        System.out.println(state);
+        System.out.println("Enter past MD5");
+        String pastHash = input.nextLine();
+        if(pastHash.equals(outputHash)){
+            System.out.println("State was preserved");
+        }else{
+            System.out.println("State was changed.");
+        }
+    }
+
 }

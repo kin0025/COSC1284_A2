@@ -20,6 +20,15 @@ public static boolean addIdentifier(String identifier){
     }
     return false;
 }
+    public static String stateString(){
+
+        String megaString = null;
+        for (String a:identifiers
+             ) {
+            megaString += a;
+        }
+        return megaString;
+    }
        public static boolean removeIdentifier(String identifier) {
         int index = findIdentifier(identifier);
         if (index >= 0) {
@@ -27,14 +36,6 @@ public static boolean addIdentifier(String identifier){
             return true;
         }
         return false;
-    }
-
-    public static String toFile() {
-        String aggregateID = null;
-        for (String currentID : identifiers) {
-            aggregateID += "," + currentID;
-        }
-        return aggregateID;
     }
 
     public static boolean isAlreadyTaken(String testID) {

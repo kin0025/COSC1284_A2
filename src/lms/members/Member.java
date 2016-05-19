@@ -36,12 +36,13 @@ public abstract class Member implements SystemOperations, UniqueID {
         this.borrowed = borrowed;
         this.active = active;
         this.uniqueID = uniqueID;
+        IDManager.addIdentifier(uniqueID);
     }
     
     public Member(String memberID, String fullName, int credit) {
         setID(memberID);
         setName(fullName);
-        this.maxCredit = credit;
+        setCredit(credit);
         this.balance = credit;
         activate();
         setUniqueID();

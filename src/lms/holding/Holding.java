@@ -38,6 +38,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
         this.borrowDate = borrowDate;
         this.active = active;
         this.uniqueID = uniqueID;
+        IDManager.addIdentifier(uniqueID);
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
             System.out.println(Utilities.ERROR_MESSAGE + " Item " + ID + " has been deactivated due to invalid details: " + checkValidity());
