@@ -21,7 +21,7 @@ import java.util.Scanner;
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
-public class GUI {
+public class UI {
     private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
@@ -34,16 +34,18 @@ public class GUI {
     //Functional Methods
 
     /**
-     * Runs on creation of a GUI object.
+     * Runs on creation of a UI object.
      * Prompts user for inventory size input.
      */
-    public GUI() {
+    public UI() {
         String[] choiceOptions = {"y", "n"};
         char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1, 5).charAt(0);
+
         //Create a normal inventory object with 15 members and 15 holdings.
         if (choice == 'n') {
             inv = new Inventory();
         } else {
+
             //Prompt the user for input and use the inputs for the size of the holding and members arrays in inventory.
             System.out.println("Enter an integer for max number of holdings:");
             //We don't check input validity or catch the exceptions. At this stage we are not validating input.
@@ -136,20 +138,28 @@ public class GUI {
                 "                                                            \n" +
                 "                                                            \n");
         newPage("Initialise Database");
+
+        //Set the default load location. This is used if there is no last run detected or the program closed correctly.
         String saveLocation = "lastrun";
         String defaultChoice = "s";
         boolean result = false;
+
+        //Checks for incorrect closing of the program.
         try {
-            File lastRun = new File("./backup");
-            result = lastRun.exists();
+            //try to create the file to tell program status. This will be deleted before close. If file already exists, close must have been completed incorrectly, and assume crash.
+            result = RUN_STATUS.createNewFile();
             if (result) {
                 System.out.println("Program did not close correctly last run.");
-                result = RUN_STATUS.createNewFile();
-                if (!result) {
+                //check if a backup folder exists.
+                File lastRun = new File("./backup");
+                result = lastRun.exists();
+
+                //If it exists set default load location to the backup.
+                if (result) {
                     System.out.println(Utilities.WARNING_MESSAGE + "We recommend loading from backup save.");
                     saveLocation = "backup";
-                }else{
-                    System.out.println("No backup was found. If there are issues with lastrun we recommend restoring a backup.");
+                } else {
+                    System.out.println("No backup was found. If there are issues with lastrun we recommend restoring a daily backup.");
                 }
             }
         } catch (Exception e) {
@@ -161,6 +171,8 @@ public class GUI {
         try {
             File lastRun = new File("./lastrun");
             result = lastRun.exists();
+
+            //if there is no lastrun folder assume first launch. Recommend default inventory
             if (!result) {
                 System.out.println(Utilities.WARNING_MESSAGE + "Detecting first run. We recommend loading from a default.");
                 defaultChoice = "d";
@@ -170,6 +182,7 @@ public class GUI {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
         char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, defaultChoice, 1).charAt(0);
 
@@ -782,6 +795,9 @@ public class GUI {
         //inv.debug(); // TODO: 20/05/2016 Add debug support.
     }
 
+    /**
+     * Requests input for a change in console width for formatting.
+     */
     private void consoleWidthEdit() {
         System.out.println("Enter console width:");
         consoleWidth = input.nextInt();
@@ -1442,6 +1458,9 @@ public class GUI {
         inv.returnHoldingNoFee(holdingID, memberID);
     }
 
+    /**
+     * A UI method for retrieving deleted holdings.
+     */
     private void undeleteHolding() {
         inv.printDeleted();
         int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete", new String[]{"0", "1", "2", "3", "4"}, true, 1));
@@ -1454,19 +1473,11 @@ public class GUI {
         }
     }
 
+    /**
+     * Compares the program md5 state to an input md5.
+     */
     private void printState() {
-        String state = inv.toString();
-        byte[] hash = null;
-        String outputHash = null;
-        try {
-            byte[] bytesOfMessage = state.getBytes("UTF-8");
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            hash = md.digest(bytesOfMessage);
-            outputHash = new BigInteger(1, md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+        String outputHash = inv.outputState();
         System.out.println(outputHash);
         System.out.println("Enter past MD5");
         String pastHash = input.nextLine();

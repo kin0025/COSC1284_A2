@@ -403,7 +403,7 @@ public class Inventory {
         for (Holding holding : holdings) {
             if (holding != null) {
                 holding.print();
-                GUI.printCharTimes('=', pageWidth, true);
+                UI.printCharTimes('=', pageWidth, true);
             }
         }
     }
@@ -412,7 +412,7 @@ public class Inventory {
         for (Member member : members) {
             if (member != null) {
                 member.print();
-                GUI.printCharTimes('=', pageWidth, true);
+                UI.printCharTimes('=', pageWidth, true);
             }
         }
     }
@@ -586,7 +586,7 @@ public class Inventory {
         return null;
     }
 
-    private String outputState() {
+    public String outputState() {
         String state = toString();
         byte[] hash = null;
         String outputHash = null;
