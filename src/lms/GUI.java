@@ -14,6 +14,7 @@ import lms.util.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -136,25 +137,46 @@ public class GUI {
                 "                                                            \n");
         newPage("Initialise Database");
         String saveLocation = "lastrun";
+        String defaultChoice = "s";
         boolean result = false;
         try {
-            result = RUN_STATUS.createNewFile();
-            if (!result) {
-                System.out.println(Utilities.WARNING_MESSAGE + "The program was not closed correctly last time. We recommend loading from backup save.");
+            File lastRun = new File("./backup");
+            result = lastRun.exists();
+            if (result) {
+                System.out.println("Program did not close correctly last run.");
+                result = RUN_STATUS.createNewFile();
+                if (!result) {
+                    System.out.println(Utilities.WARNING_MESSAGE + "We recommend loading from backup save.");
+                    saveLocation = "backup";
+                }else{
+                    System.out.println("No backup was found. If there are issues with lastrun we recommend restoring a backup.");
+                }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+
+        try {
+            File lastRun = new File("./lastrun");
+            result = lastRun.exists();
+            if (!result) {
+                System.out.println(Utilities.WARNING_MESSAGE + "Detecting first run. We recommend loading from a default.");
+                defaultChoice = "d";
+
+            }
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
-        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, "s", 1).charAt(0);
+        char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, defaultChoice, 1).charAt(0);
 
         if (choice == 'd') {
             addDefault();
         } else if (choice == 's') {
-            if (!result) {
-                saveLocation = "backup";
-            }
+
             choice = receiveStringInput("What do folder do you want to use?", new String[]{"c (custom)", "b (backup)", "s (save)", "l (lastrun)"}, saveLocation, 1).charAt(0);
 
             switch (choice) {
@@ -1073,7 +1095,7 @@ public class GUI {
                         if (choice == 'y') {
                             boolean result = inv.borrowHolding(holdingID, memberID);
                             if (result) {
-                                System.out.println("Holding " + holdingID + " has been borrowed. Press enter to return to menu.");
+                                System.out.println("Holding " + holdingID + " has been borrowed. Your balance is " + inv.getMemberBalance(memberID) + " Press enter to return to menu.");
                             } else {
                                 System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. Press enter to return to menu.");
                             }
@@ -1225,7 +1247,7 @@ public class GUI {
                 System.out.println(Utilities.INFORMATION_MESSAGE + "No input was detected and a default answer has been selected");
                 result = defaultResult;
             }
-            if(result == null){
+            if (result == null) {
                 result = defaultResult;
             }
             return result;
@@ -1277,6 +1299,8 @@ public class GUI {
         if (choice == 'y') {
             try {
                 inv.save("lastrun");
+                DateTime currentDay = new DateTime();
+                inv.save("backup\\" + currentDay.toString());
             } catch (IOException e) {
                 System.out.print("An error occurred and state could not be saved.");
             }
@@ -1443,7 +1467,7 @@ public class GUI {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-System.out.println(outputHash);
+        System.out.println(outputHash);
         System.out.println("Enter past MD5");
         String pastHash = input.nextLine();
         if (pastHash.equals(outputHash)) {

@@ -515,6 +515,16 @@ public class Inventory {
         int arrayPos = searchArrays(ID);
         members[arrayPos].resetCredit();
     }
+    public int getMemberBalance(String ID){
+        int balance;
+        try {
+            balance = members[searchArrays(ID)].getBalance();
+        }catch (Exception e){
+            System.out.println(Utilities.WARNING_MESSAGE + " No member found with that ID.");
+            balance = 0;
+        }
+        return balance;
+    }
 
     /**
      * Saves the program state to holdings.txt, members.txt and state.txt
@@ -524,7 +534,7 @@ public class Inventory {
      */
     public void save(String folderName) throws IOException {
         File folder = new File("./" + folderName);
-        folder.mkdir();
+        folder.mkdirs();
         File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings" + fileExtension);
 
         File membersFile = new File(folder.getAbsolutePath() + "\\" + "members" + fileExtension);
