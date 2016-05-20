@@ -558,7 +558,9 @@ public class UI {
         System.out.println("Enter the unique 6 digit ID or press enter to have one generated:");
         System.out.print(Utilities.INPUT_MESSAGE);
         String ID = input.nextLine();
-
+if(ID != null && ID.toLowerCase().equals("e")){
+    return null;
+}
         //Check validity of the entered information
         String IDResult = inv.checkID(ID, type);
         //Print the result
@@ -815,6 +817,9 @@ public class UI {
             //Creating the first page
             newPage("Add Holding");
             String[] infoID = getValidID("Holding", HOLDING_OPTIONS);
+            if(infoID == null){
+                return;
+            }
             String ID = infoID[1];
             char type = infoID[0].charAt(0);
             //The ID is done now.
@@ -905,6 +910,9 @@ public class UI {
             newPage("Add Member");
             //Using the the method to take input.
             String[] infoID = getValidID("Member", MEMBER_OPTIONS);
+            if(infoID == null){
+                return;
+            }
             String ID = infoID[1];
             char type = infoID[0].charAt(0);
             //The ID is done now.
@@ -1339,6 +1347,9 @@ public class UI {
         if (oldID != null) {
             String[] options = {oldID.substring(0, 1)};
             String[] idInfo = getValidID(typeName, options);
+            if(idInfo == null){
+                return;
+            }
             String newID = idInfo[0] + idInfo[1];
             inv.replaceID(oldID, newID);
         } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
