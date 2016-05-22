@@ -11,6 +11,8 @@ package lms;
 
 import lms.util.*;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -32,7 +34,6 @@ public class UI {
     private Scanner input = new Scanner(System.in);
     private Inventory inv;
     //Functional Methods
-
     /**
      * Runs on creation of a UI object.
      * Prompts user for inventory size input.
@@ -55,6 +56,8 @@ public class UI {
             System.out.print(Utilities.INPUT_MESSAGE);
             int members = input.nextInt();
             this.inv = new Inventory(holdings, members);
+
+
         }
 
     }
