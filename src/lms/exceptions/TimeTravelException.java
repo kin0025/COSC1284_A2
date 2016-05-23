@@ -11,7 +11,7 @@ import lms.util.Utilities;
 /**
  * Created by Emily on 23/05/2016 as part of s3603437_A2
  */
-public class TimeTravelException extends RuntimeException {
+public class TimeTravelException extends Exception {
     public TimeTravelException() {
     }
 

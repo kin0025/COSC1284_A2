@@ -8,14 +8,20 @@ package lms;/*
 *@author - Alex Kinross-Smith
 */
 
-import lms.holding.*;
-import lms.members.*;
-import lms.util.*;
-import sun.reflect.generics.tree.VoidDescriptor;
+import lms.holding.Book;
+import lms.holding.Holding;
+import lms.holding.Video;
+import lms.members.Member;
+import lms.members.PremiumMember;
+import lms.members.StandardMember;
+import lms.util.DateTime;
+import lms.util.IDManager;
+import lms.util.Utilities;
 
-import java.io.*;
-import java.math.BigInteger;
-import java.security.MessageDigest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -526,12 +532,9 @@ public class Inventory {
 
     public int getMemberBalance(String ID) {
         int balance;
-        try {
+
             balance = (int) members[searchArrays(ID)].getBalance();
-        } catch (Exception e) {
-            System.out.println(Utilities.WARNING_MESSAGE + " No member found with that ID.");
-            balance = 0;
-        }
+
         return balance;
     }
 
@@ -541,6 +544,7 @@ public class Inventory {
      * @param folderName
      * @throws IOException
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void save(String folderName) throws IOException {
         File folder = new File("./" + folderName);
         folder.mkdirs();
@@ -585,7 +589,7 @@ public class Inventory {
             e.printStackTrace();
         }
         try {
-            if (state.hasNextLine()) {
+            if (state != null && state.hasNextLine()) {
                 return state.nextLine();
             }
         } catch (NullPointerException e) {

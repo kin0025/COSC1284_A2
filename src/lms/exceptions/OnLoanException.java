@@ -11,7 +11,7 @@ import lms.util.Utilities;
 /**
  * Created by Emily on 12/05/2016 as part of s3603437_A2
  */
-public class OnLoanException extends RuntimeException {
+public class OnLoanException extends Exception {
     public OnLoanException() {
     }
 

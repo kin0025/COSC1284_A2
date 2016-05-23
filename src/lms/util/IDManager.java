@@ -17,7 +17,6 @@ public class IDManager {
     public static void addIdentifier(String identifier) {
         if (!isAlreadyTaken(identifier)) {
             identifiers.add(identifier);
-            return;
         }
     }
 

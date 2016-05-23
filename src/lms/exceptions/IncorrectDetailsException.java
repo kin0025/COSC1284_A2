@@ -9,7 +9,7 @@ package lms.exceptions;
 /**
  * Created by Emily on 23/05/2016 as part of s3603437_A2
  */
-public class IncorrectDetailsException extends RuntimeException {
+public class IncorrectDetailsException extends Exception {
     public IncorrectDetailsException() {
     }
 

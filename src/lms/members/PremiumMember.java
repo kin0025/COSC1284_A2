@@ -9,6 +9,7 @@
 */
 package lms.members;
 
+import lms.exceptions.OnLoanException;
 import lms.holding.Holding;
 import lms.util.DateTime;
 import lms.util.Utilities;
@@ -44,13 +45,12 @@ public class PremiumMember extends Member {
      */
     @Override
     public boolean returnHolding(Holding holding, DateTime returnDate) {
-        int searchedPos = findHolding(holding);
-        if (searchedPos <= 0) {
+        if (borrowed.contains(holding)) {
             DateTime currentDate = new DateTime();
-            int lateFee = borrowed[searchedPos].calculateLateFee(currentDate);
+            int lateFee = holding.calculateLateFee(currentDate);
             balance -= lateFee;
-            if (borrowed[searchedPos].returnHolding(currentDate)) {
-                borrowed[searchedPos] = null;
+            if (holding.returnHolding(currentDate)) {
+                borrowed.remove(holding);
                 if (balance < 0) {
                     System.out.println(Utilities.INFORMATION_MESSAGE + " Balance is less than 0 dollars, you will be unable to borrow any books until it is reloaded.");
                 } else if (lateFee > 0) {
@@ -60,13 +60,10 @@ public class PremiumMember extends Member {
                 }
                 return true;
             } else {
-                System.out.println(Utilities.ERROR_MESSAGE + " Holding could not be returned");
                 return false;
             }
-
         } else {
-            System.out.println(Utilities.INFORMATION_MESSAGE + " User has not borrowed holding");
-            return false;
+            throw new OnLoanException("User has not borrowed holding");
         }
 
     }

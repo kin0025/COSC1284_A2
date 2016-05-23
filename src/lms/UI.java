@@ -9,14 +9,14 @@
 */
 package lms;
 
-import lms.util.*;
+import lms.util.AdminVerify;
+import lms.util.DateTime;
+import lms.util.Utilities;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.*;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.util.Date;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -146,7 +146,7 @@ public class UI {
         //Set the default load location. This is used if there is no last run detected or the program closed correctly.
         String saveLocation = "lastrun";
         String defaultChoice = "s";
-        boolean result = false;
+        boolean result;
 
         //Checks for incorrect closing of the program.
         try {
@@ -1243,7 +1243,7 @@ public class UI {
 
     private void save() { //http://stackoverflow.com/questions/10059068/set-timeout-for-users-input (Jeffrey's answer)
         newPage("Save");
-        String folderName = "save";
+        String folderName;
         System.out.println("Enter the folder that you want to save to. You have 5 seconds to comply or a default will be chosen:");
         folderName = returnWaitInput(10, "save");
 
@@ -1266,6 +1266,7 @@ public class UI {
         System.out.println(Utilities.INFORMATION_MESSAGE + "You have " + waitTime + " seconds until an answer is chosen for you. You can press enter to choose the default." + Utilities.ANSI_GREEN + "Press enter once you have entered your input" + Utilities.ANSI_RESET);
         System.out.print(Utilities.INPUT_MESSAGE);
         try {
+            //noinspection StatementWithEmptyBody
             while ((System.currentTimeMillis() - startTime) < waitTime * 1000
                     && !in.ready()) {
             }

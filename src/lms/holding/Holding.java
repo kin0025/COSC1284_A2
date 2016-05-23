@@ -346,8 +346,8 @@ public abstract class Holding implements SystemOperations, UniqueID {
     }
 
     /**
-     * Sets unique ID for the item, and adds it to IDmanager.
-     * @param uniqueID
+     * Sets unique ID for the item, and adds it to IDManager.
+     * @param uniqueID The unique ID to be set.
      */
     public void setUniqueID(String uniqueID) {
         this.uniqueID = uniqueID;
