@@ -19,6 +19,8 @@ import lms.util.DateTime;
 import lms.util.IDManager;
 import lms.util.Utilities;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 @SuppressWarnings("WeakerAccess")
@@ -27,16 +29,29 @@ public abstract class Member implements SystemOperations, UniqueID {
     private String name;
     private int maxCredit;
     protected double balance;
-    protected Holding[] borrowed = new Holding[15];
+    protected ArrayList<Holding> borrowed = new ArrayList<Holding>();
     private boolean active;
     private String uniqueID;
 
+    /**
+     * Used for restoring state. Allows all instance variables to be loaded at once.
+     * @param ID 7 long identifier starting with a character, and ending with 6 digits.
+     * @param name the full name of the member
+     * @param maxCredit the maximum amount of credit.
+     * @param balance the member's current balance.
+     * @param borrowed an array of holdings that are currently borrowed.
+     * @param active the active status of the member
+     * @param uniqueID a unique id that is never changed. Identifies the member if id or details are changed.
+     */
     public Member(String ID, String name, int maxCredit, int balance, Holding[] borrowed, boolean active, String uniqueID) {
         this.ID = ID;
         this.name = name;
         this.maxCredit = maxCredit;
         this.balance = balance;
-        this.borrowed = borrowed;
+        for (Holding h:borrowed
+             ) {
+            this.borrowed.add(h);
+        }
         this.active = active;
         this.uniqueID = uniqueID;
         IDManager.addIdentifier(uniqueID);
@@ -119,7 +134,8 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     public Holding[] getCurrentHoldings() {
-        return (borrowed);
+        Holding[] holdings = new Holding[15];
+        return (borrowed.toArray(holdings));
     }
 
     public boolean updateRemainingCredit(int loanFee) {
@@ -138,12 +154,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     public boolean borrowHolding(Holding holding) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
         if (balance - holding.getDefaultLoanFee() > 0 && active) {
             if (holding.borrowHolding()) {
-                int holdingSlot = findFirstEmptyHoldingSlot();
-                if (holdingSlot < 0) {
-                    System.out.println(Utilities.ERROR_MESSAGE + " Your account has too many books borrowed and none can be added.");
-                    return false;
-                }
-                borrowed[holdingSlot] = holding;
+                borrowed.add(holding);
                 balance -= holding.getDefaultLoanFee();
                 return true;
             } else
@@ -158,15 +169,15 @@ public abstract class Member implements SystemOperations, UniqueID {
     public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
-            int lateFee = borrowed[searchedPos].calculateLateFee(returnDate);
+            int lateFee = borrowed.get(searchedPos).calculateLateFee(returnDate);
             if (lateFee < balance) {
                 balance -= lateFee;
             } else {
                 System.out.println(Utilities.INFORMATION_MESSAGE + " Balance must be greater than " + lateFee + " to return item");
                 return false;
             }
-            if (borrowed[searchedPos].returnHolding(returnDate)) {
-                borrowed[searchedPos] = null;
+            if (borrowed.get(searchedPos).returnHolding(returnDate)) {
+                borrowed.remove(searchedPos);
                 return (true);
             } else {
                 System.out.println(Utilities.ERROR_MESSAGE + " Holding could not be returned");
@@ -181,8 +192,8 @@ public abstract class Member implements SystemOperations, UniqueID {
     public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, OnLoanException {
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
-            if (borrowed[searchedPos].returnHolding(returnDate)) {
-                borrowed[searchedPos] = null;
+            if (borrowed.get(searchedPos).returnHolding(returnDate)) {
+                borrowed.remove(searchedPos);
                 return (true);
             } else {
                 System.out.println(Utilities.WARNING_MESSAGE + " Holding could not be returned");
@@ -195,13 +206,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     protected int findHolding(Holding holding) {
-        int index = -1;
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null && borrowed[i].equals(holding)) {
-                index = i;
-            }
-        }
-        return index;
+           return borrowed.indexOf(holding);
     }
 
     public void print() {
@@ -223,17 +228,7 @@ public abstract class Member implements SystemOperations, UniqueID {
         System.out.println();
     }
 
-    private int findFirstEmptyHoldingSlot() {
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] == null) {
-                return (i);
-            }
-        }
-        System.out.println(Utilities.INFORMATION_MESSAGE + " Borrower has too many books, return some and try again");
-        return (-1);
-    }
-
-    public int numberOfBorrowedHoldings() {
+        public int numberOfBorrowedHoldings() {
         int result = 0;
         for (Holding holding : borrowed) {
             if (holding != null) {
@@ -253,21 +248,21 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     private String borrowedToString() {
         //http://stackoverflow.com/questions/1978933/a-quick-and-easy-way-to-join-array-elements-with-a-separator-the-opposite-of-sp
-        String[] borrowedUniqueID = new String[borrowed.length];
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null) {
-                borrowedUniqueID[i] = borrowed[i].getUniqueID();
-            }
+        ArrayList<String> borrowedUniqueID = new ArrayList<String>();
+        for (Holding h:borrowed
+             ) {
+            borrowedUniqueID.add(h.getUniqueID());
         }
 
         //  This requires java 1.8. A version that is less performant is commented out below and should work on 1.7
         String result = String.join(":", borrowedUniqueID);
+
         //This code works. Replaced with more concise code.
         /*String result = null;
-        for (int i = 0; i < borrowed.length;i++) {
-            Holding holding = borrowed[i];
+        for (int i = 0; i < borrowed.size();i++) {
+            Holding holding = borrowed.get(i);
             if (holding != null) {
-                if(i < borrowed.length-1) {
+                if(i < borrowed.size()-1) {
                     result += ":" + holding.getUniqueID();
                 }else{
                     result += holding.getUniqueID();

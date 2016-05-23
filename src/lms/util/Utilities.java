@@ -9,6 +9,8 @@
 */
 package lms.util;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.Random;
 
 /**
@@ -55,5 +57,21 @@ public class Utilities {
             return (false);
         }
 
+    }
+    public static String hashString(String input){
+        byte[] hash = null;
+        String outputHash = null;
+        //https://dzone.com/articles/get-md5-hash-few-lines-java
+        try {
+            byte[] bytesOfMessage = input.getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            hash = md.digest(bytesOfMessage);
+            outputHash = new BigInteger(1, md.digest()).toString(16);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return outputHash;
     }
 }

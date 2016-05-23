@@ -595,20 +595,10 @@ public class Inventory {
         return null;
     }
 
+
+
     public String outputState() {
-        String state = toString();
-        byte[] hash = null;
-        String outputHash = null;
-        try {
-            byte[] bytesOfMessage = state.getBytes("UTF-8");
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            hash = md.digest(bytesOfMessage);
-            outputHash = new BigInteger(1, md.digest()).toString(16); //https://dzone.com/articles/get-md5-hash-few-lines-java
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        return outputHash;
+        return Utilities.hashString(toString());
     }
 
     /**

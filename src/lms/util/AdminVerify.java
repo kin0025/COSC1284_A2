@@ -14,9 +14,13 @@ package lms.util;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class AdminVerify {
-    private final String masterPassword = "Password1";
+    //Wow! Such magic
+    private final String masterPassword = "d41d8cd98f00b204e9800998ecf8427e";
 
     public boolean authenticated(String passcode) {
-        return passcode.equals(masterPassword);
+        String hash = Utilities.hashString(passcode);
+        System.out.println(hash);
+        System.out.println(masterPassword);
+        return masterPassword.equals(hash);
     }
 }
