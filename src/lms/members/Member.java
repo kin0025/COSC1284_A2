@@ -21,6 +21,7 @@ import lms.util.Utilities;
 
 import java.util.StringTokenizer;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class Member implements SystemOperations, UniqueID {
     private String ID;
     private String name;
@@ -100,7 +101,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     public int calculateRemainingCredit() {
-        return ((int)balance);
+        return ((int) balance);
     }
 
     public void resetCredit() { //Done
@@ -251,6 +252,16 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     private String borrowedToString() {
+        //http://stackoverflow.com/questions/1978933/a-quick-and-easy-way-to-join-array-elements-with-a-separator-the-opposite-of-sp
+        String[] borrowedUniqueID = new String[borrowed.length];
+        for (int i = 0; i < borrowed.length; i++) {
+            if (borrowed[i] != null) {
+                borrowedUniqueID[i] = borrowed[i].getUniqueID();
+            }
+        }
+
+        //  This requires java 1.8. A version that is less performant is commented out below and should work on 1.7
+        String result = String.join(":", borrowedUniqueID);
         //This code works. Replaced with more concise code.
         /*String result = null;
         for (int i = 0; i < borrowed.length;i++) {
@@ -263,17 +274,6 @@ public abstract class Member implements SystemOperations, UniqueID {
                 }
             }
         }*/
-
-        //http://stackoverflow.com/questions/1978933/a-quick-and-easy-way-to-join-array-elements-with-a-separator-the-opposite-of-sp
-        String[] borrowedUniqueID = new String[borrowed.length];
-        for (int i = 0; i < borrowed.length; i++) {
-            if (borrowed[i] != null) {
-                borrowedUniqueID[i] = borrowed[i].getUniqueID();
-            }
-        }
-
-
-        String result = String.join(":", borrowedUniqueID);
         return result;
     }
 

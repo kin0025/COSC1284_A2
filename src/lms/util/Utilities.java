@@ -14,6 +14,7 @@ import java.util.Random;
 /**
  * Created by akinr on 20/04/2016 as part of s3603437_A2
  */
+@SuppressWarnings("WeakerAccess")
 public class Utilities {
     //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
     //Un comment if the console you are using supports ANSI colours and stuff.

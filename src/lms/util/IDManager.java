@@ -12,14 +12,13 @@ import java.util.ArrayList;
  * Created by Emily on 18/05/2016 as part of s3603437_A2
  */
 public class IDManager {
-    private static ArrayList<String> identifiers = new ArrayList<>();
+    private static final ArrayList<String> identifiers = new ArrayList<>();
 
-    public static boolean addIdentifier(String identifier) {
+    public static void addIdentifier(String identifier) {
         if (!isAlreadyTaken(identifier)) {
             identifiers.add(identifier);
-            return true;
+            return;
         }
-        return false;
     }
 
     public static String stateString() {

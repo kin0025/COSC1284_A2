@@ -25,9 +25,9 @@ import java.util.StringTokenizer;
  */
 public class Inventory {
     //Start Screen
-    private Holding[] holdings;
-    private Holding[] deletedHoldings = new Holding[5];
-    private Member[] members;
+    private final Holding[] holdings;
+    private final Holding[] deletedHoldings = new Holding[5];
+    private final Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
     private static final String fileExtension = ".txt";
@@ -320,6 +320,10 @@ public class Inventory {
     }
 
     private void addDeleted(Holding deleted) {
+        if(deletedHoldings[deletedHoldings.length-1] != null){
+            IDManager.removeIdentifier(deletedHoldings[deletedHoldings.length -1].getUniqueID());
+        }
+        //Reference IntelliJ IDEA code analyse.
         System.arraycopy(deletedHoldings, 0, deletedHoldings, 1, deletedHoldings.length - 1); //So I had the code below, and my IDE was like "Performance Issues", so I performed its recommended fix.
         /*for (int i = deletedHoldings.length - 1; 0 < i; i--) {
             deletedHoldings[i] = deletedHoldings[i - 1];
@@ -328,6 +332,7 @@ public class Inventory {
     }
 
     public boolean undeleteHolding(int deletedIndex) {
+
         int index = firstNullArray('b');
         if (index < 0) {
             return false;
@@ -340,6 +345,7 @@ public class Inventory {
             deletedHoldings[deletedIndex] = null;
             return true;
         }
+
     }
 
     public void printDeleted() {
@@ -355,6 +361,7 @@ public class Inventory {
         int memberPos = searchArrays(ID);
         if (members[memberPos].numberOfBorrowedHoldings() == 0) {
             if (memberPos >= 0) {
+                IDManager.removeIdentifier(members[memberPos].getUniqueID());
                 members[memberPos] = null;
                 recalculateStatistics();
             } else {
@@ -516,11 +523,12 @@ public class Inventory {
         int arrayPos = searchArrays(ID);
         members[arrayPos].resetCredit();
     }
-    public int getMemberBalance(String ID){
+
+    public int getMemberBalance(String ID) {
         int balance;
         try {
-            balance = (int)members[searchArrays(ID)].getBalance();
-        }catch (Exception e){
+            balance = (int) members[searchArrays(ID)].getBalance();
+        } catch (Exception e) {
             System.out.println(Utilities.WARNING_MESSAGE + " No member found with that ID.");
             balance = 0;
         }

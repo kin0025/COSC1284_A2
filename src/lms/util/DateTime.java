@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.sql.Date;
 
+@SuppressWarnings("WeakerAccess")
 public class DateTime
 {
 

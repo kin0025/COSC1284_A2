@@ -31,8 +31,8 @@ public class UI {
     private static final char[] HOLDING_TYPES = {'b', 'v'};
     private final File RUN_STATUS = new File("./running");
     private static int consoleWidth = 150;
-    private Scanner input = new Scanner(System.in);
-    private Inventory inv;
+    private final Scanner input = new Scanner(System.in);
+    private final Inventory inv;
     //Functional Methods
 
     /**
@@ -1318,7 +1318,7 @@ public class UI {
         }
         System.out.println("Press enter to return to main menu.");
         input.nextLine();
-    }// FIXME: 20/05/2016 We lose a borrowed holding per member every save/load.
+    }
 
     private void exit() {
         newPage("Exit");

@@ -8,6 +8,7 @@ import lms.util.DateTime;
 /**
  * Created by akinr on 26/04/2016 as part of s3603437_A2
  */
+@SuppressWarnings("WeakerAccess")
 public class HoldingTesting {
     public static void main(String[] args) {
         Book book = new Book("b123456", "Book Title");

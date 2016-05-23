@@ -19,6 +19,7 @@ import lms.util.Utilities;
 *@author - Alex Kinross-Smith
 */
 
+@SuppressWarnings("WeakerAccess")
 public abstract class Holding implements SystemOperations, UniqueID {
     private String ID;
     private String title;
