@@ -11,6 +11,7 @@ package lms;/*
 import lms.holding.*;
 import lms.members.*;
 import lms.util.*;
+import sun.reflect.generics.tree.VoidDescriptor;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -29,7 +30,7 @@ public class Inventory {
     private Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-    private static final String fileExtension = ".csv";
+    private static final String fileExtension = ".txt";
 
     /**
      * Creates holding and member arrays of size 15
@@ -518,7 +519,7 @@ public class Inventory {
     public int getMemberBalance(String ID){
         int balance;
         try {
-            balance = members[searchArrays(ID)].getBalance();
+            balance = (int)members[searchArrays(ID)].getBalance();
         }catch (Exception e){
             System.out.println(Utilities.WARNING_MESSAGE + " No member found with that ID.");
             balance = 0;

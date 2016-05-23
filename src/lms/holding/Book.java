@@ -15,55 +15,84 @@ import lms.util.Utilities;
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class Book extends Holding {
-    private String author;
+    private static final int LOAN_FEE = 10;
+    private static final int LOAN_PERIOD = 28;
+    private static final int LATE_FEE = 2;
 
+    /**
+     * Construct the holding using the default values and the ID and title passed through.
+     *
+     * @param holdingID The id of the holding.
+     * @param title the title of the holding.
+     */
     public Book(String holdingID, String title) {
-        super(holdingID,title);
-        setLoanFee(10);
-        setMaxLoanPeriod(28);
-        setLateFee(2);
+        super(holdingID, title);
+        setLoanFee(LOAN_FEE);
+        setMaxLoanPeriod(LOAN_PERIOD);
+        //Checks validity and activates/deactivates.
         activate();
-        if (!checkValidity().equalsIgnoreCase("valid")) {
-            deactivate();
-            System.out.println(Utilities.WARNING_MESSAGE + " Item " + getID() + " has been deactivated due to invalid details.");
-        }
     }
 
+    /**
+     * Used to reconstruct all instance variables for loading.
+     *
+     * @param ID            The ID of the item
+     * @param title         The title of the item
+     * @param loanFee       the loan fee of the item
+     * @param maxLoanPeriod the loan period of the item
+     * @param borrowDate    the date that the item was borrowed. If it is null the holding is not borrowed.
+     * @param active        the active status of the item
+     * @param uniqueID      the unique identifier of the item. As ID can be changed, this is used to identify the holding when saving.
+     */
     public Book(String ID, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, String uniqueID) {
         super(ID, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
     }
 
+    /**
+     * Sets the ID of the holding after validating it.
+     *
+     * @param ID The string form ID to be set for the holding.
+     * @return returns the success state of setting the ID. If false, ID was not set.
+     */
     @Override
     public boolean setID(String ID) {
-        boolean validID = true;
-        int i = 1;
-        while (ID.length() > i && validID) {
-            if (!((int) ID.charAt(i) >= 48 && (int) ID.charAt(i) <= 58)) { //Ascii codes for numbers are between 48 and 58 (including 0). If each character is between these values, they are numbers.
-                validID = false;
-            }
-            i++;
-        }
-        if (ID.charAt(0) == 'b' && ID.length() == 7 && validID) {
+        if (Utilities.isIDValid('b', ID)) {
             super.setID(ID);
-            return (true);
+            return true;
         } else {
-            return (false);
+            return false;
         }
     }
 
+    /**
+     * Calculates the late fee of the holding and returns it.
+     *
+     * @param dateReturned The date the holding was returned.
+     * @return The late fee in dollars. Will always be a whole number.
+     */
     @Override
     public int calculateLateFee(DateTime dateReturned) {
         int daysOut = DateTime.diffDays(dateReturned, getBorrowDate());
+
+        //Calculate how far beyond the max loan date the holding has been out.
         int daysDiff = daysOut - getMaxLoanPeriod();
-        if (daysDiff < 0) {
-            daysDiff = 0;
+
+        if (daysDiff <= 0) {
+            //If they haven't had the holding for longer than max loan period, there is no late fee.
+            return 0;
         }
-        return (int)(daysDiff  * getLateFee());
+        //Return the late fee.
+        return (daysDiff * LATE_FEE);
     }
 
+    /**
+     * Checks the validity of title, ID and loan fee.
+     *
+     * @return A string representation of the result.
+     */
     @Override
     public String checkValidity() {
-        String result = super.checkValidity();
+        String result = super.checkValidity('v');
         if (getDefaultLoanFee() != 10) {
             return ("Invalid Fee");
         }

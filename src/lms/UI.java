@@ -34,6 +34,7 @@ public class UI {
     private Scanner input = new Scanner(System.in);
     private Inventory inv;
     //Functional Methods
+
     /**
      * Runs on creation of a UI object.
      * Prompts user for inventory size input.
@@ -561,9 +562,9 @@ public class UI {
         System.out.println("Enter the unique 6 digit ID or press enter to have one generated:");
         System.out.print(Utilities.INPUT_MESSAGE);
         String ID = input.nextLine();
-if(ID != null && ID.toLowerCase().equals("e")){
-    return null;
-}
+        if (ID != null && ID.toLowerCase().equals("e")) {
+            return null;
+        }
         //Check validity of the entered information
         String IDResult = inv.checkID(ID, type);
         //Print the result
@@ -820,7 +821,7 @@ if(ID != null && ID.toLowerCase().equals("e")){
             //Creating the first page
             newPage("Add Holding");
             String[] infoID = getValidID("Holding", HOLDING_OPTIONS);
-            if(infoID == null){
+            if (infoID == null) {
                 return;
             }
             String ID = infoID[1];
@@ -913,7 +914,7 @@ if(ID != null && ID.toLowerCase().equals("e")){
             newPage("Add Member");
             //Using the the method to take input.
             String[] infoID = getValidID("Member", MEMBER_OPTIONS);
-            if(infoID == null){
+            if (infoID == null) {
                 return;
             }
             String ID = infoID[1];
@@ -1350,7 +1351,7 @@ if(ID != null && ID.toLowerCase().equals("e")){
         if (oldID != null) {
             String[] options = {oldID.substring(0, 1)};
             String[] idInfo = getValidID(typeName, options);
-            if(idInfo == null){
+            if (idInfo == null) {
                 return;
             }
             String newID = idInfo[0] + idInfo[1];

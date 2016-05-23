@@ -6,6 +6,8 @@
 
 package lms.exceptions;
 
+import lms.util.Utilities;
+
 /**
  * Created by Emily on 12/05/2016 as part of s3603437_A2
  */
@@ -14,6 +16,6 @@ public class ItemInactiveException extends RuntimeException{
     }
 
     public ItemInactiveException(String message) {
-        super(message);
+        super(Utilities.ERROR_MESSAGE + message);
     }
 }

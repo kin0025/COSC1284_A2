@@ -25,7 +25,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     private String ID;
     private String name;
     private int maxCredit;
-    protected int balance;
+    protected double balance;
     protected Holding[] borrowed = new Holding[15];
     private boolean active;
     private String uniqueID;
@@ -75,7 +75,7 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     /* Getters */
 
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
 
@@ -100,7 +100,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     public int calculateRemainingCredit() {
-        return (balance);
+        return ((int)balance);
     }
 
     public void resetCredit() { //Done

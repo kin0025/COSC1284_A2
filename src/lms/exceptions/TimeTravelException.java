@@ -9,13 +9,13 @@ package lms.exceptions;
 import lms.util.Utilities;
 
 /**
- * Created by Emily on 12/05/2016 as part of s3603437_A2
+ * Created by Emily on 23/05/2016 as part of s3603437_A2
  */
-public class OnLoanException extends RuntimeException {
-    public OnLoanException() {
+public class TimeTravelException extends RuntimeException {
+    public TimeTravelException() {
     }
 
-    public OnLoanException(String message) {
+    public TimeTravelException(String message) {
         super(Utilities.ERROR_MESSAGE + message);
     }
 }

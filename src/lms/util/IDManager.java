@@ -11,25 +11,28 @@ import java.util.ArrayList;
 /**
  * Created by Emily on 18/05/2016 as part of s3603437_A2
  */
-public class IDManager{
+public class IDManager {
     private static ArrayList<String> identifiers = new ArrayList<>();
-public static boolean addIdentifier(String identifier){
-    if(!isAlreadyTaken(identifier)){
-        identifiers.add(identifier);
-        return true;
+
+    public static boolean addIdentifier(String identifier) {
+        if (!isAlreadyTaken(identifier)) {
+            identifiers.add(identifier);
+            return true;
+        }
+        return false;
     }
-    return false;
-}
-    public static String stateString(){
+
+    public static String stateString() {
 
         String megaString = null;
-        for (String a:identifiers
-             ) {
+        for (String a : identifiers
+                ) {
             megaString += a;
         }
         return megaString;
     }
-       public static boolean removeIdentifier(String identifier) {
+
+    public static boolean removeIdentifier(String identifier) {
         int index = findIdentifier(identifier);
         if (index >= 0) {
             identifiers.remove(index);
@@ -46,7 +49,7 @@ public static boolean addIdentifier(String identifier){
         for (int i = 0; i < identifiers.size(); i++) {
             String actualID = identifiers.get(i);
             if (actualID != null && testID != null) {
-                if(actualID.equals(testID)) {
+                if (actualID.equals(testID)) {
                     return i;
                 }
             }
@@ -61,7 +64,7 @@ public static boolean addIdentifier(String identifier){
             test = Utilities.randomID();
             result = isAlreadyTaken(test);
         } while (result);
-   identifiers.add(test);
+        identifiers.add(test);
         return test;
     }
 }
