@@ -8,6 +8,7 @@ package lms.holding;/*
 *@author - Alex Kinross-Smith
 */
 
+import lms.exceptions.IncorrectDetailsException;
 import lms.util.DateTime;
 import lms.util.Utilities;
 
@@ -25,7 +26,7 @@ public class Book extends Holding {
      * @param holdingID The id of the holding.
      * @param title the title of the holding.
      */
-    public Book(String holdingID, String title) {
+    public Book(String holdingID, String title) throws IncorrectDetailsException{
         super(holdingID, title);
         setLoanFee(LOAN_FEE);
         setMaxLoanPeriod(LOAN_PERIOD);

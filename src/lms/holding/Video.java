@@ -20,7 +20,7 @@ public class Video extends Holding {
     private static final int LOAN_PERIOD = 7;
     private static final int[] LOAN_FEES = {4, 6};
 
-    public Video(String holdingId, String title, int loanFee) {
+    public Video(String holdingId, String title, int loanFee) throws IncorrectDetailsException{
         super(holdingId, title);
         setLoanFee(loanFee);
         setMaxLoanPeriod(LOAN_PERIOD);

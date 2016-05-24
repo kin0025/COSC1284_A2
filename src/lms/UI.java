@@ -9,6 +9,8 @@
 */
 package lms;
 
+import lms.exceptions.IncorrectDetailsException;
+import lms.exceptions.OnLoanException;
 import lms.util.AdminVerify;
 import lms.util.DateTime;
 import lms.util.Utilities;
@@ -333,7 +335,11 @@ public class UI {
         String[] holdingID = {"000001", "000002", "000003", "000004", "000001", "000002", "000003", "000004"};
         int[] holdingFee = {0, 0, 0, 0, 4, 6, 6, 4};
         for (int i = 0; i < holdingID.length; i++) {
-            inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
+            try {
+                inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
+            } catch (IncorrectDetailsException details) {
+                System.out.println("The details for the holding were incorrect, and the holding was not added." + holdingID[i]);
+            }
         }
         String[] memberID = {"000001", "000001", "000002", "000002"};
         String[] memberName = {"Joe Bloggs", "Fred Bloggs", "Jane Smith", "Fred Smith"};
@@ -875,20 +881,20 @@ public class UI {
             if (choice == 'e') return;
             if (choice == 'y') {
                 //If they say yes add the method, record its success.
-                boolean added = inv.addHolding(ID, type, title, loanFee);
+                try {
+                    boolean added = inv.addHolding(ID, type, title, loanFee);
+                    if (!added) {
+                        System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
+                    } else System.out.println(Utilities.INFORMATION_MESSAGE + "Adding successful. Holding created");
+                } catch (IncorrectDetailsException details) {
+                    System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + details + " with error message: \n" + details.getMessage());
+                }
                 //If it failed tell the user.
-                if (!added) {
-                    System.out.println(Utilities.ERROR_MESSAGE + "Adding failed. Please try again.");
-                } else System.out.println(Utilities.INFORMATION_MESSAGE + "Adding successful. Holding created");
+
                 choice = receiveStringInput("Do you want to save?", CHOICE_OPTIONS, "y", 1, 5).charAt(0);
                 if (choice == 'y') {
-                    try {
-                        inv.save("save");
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                        e.printStackTrace();
+                    save("save");
 
-                    }
                 }
                 //Done. Return to main menu.
             } else if (choice == 'n') {
@@ -1121,14 +1127,18 @@ public class UI {
                         choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
                         if (choice == 'e') return;
                         if (choice == 'y') {
-                            boolean result = inv.borrowHolding(holdingID, memberID);
-                            if (result) {
-                                System.out.println("Holding " + holdingID + " has been borrowed. Your balance is " + inv.getMemberBalance(memberID) + " Press enter to return to menu.");
-                            } else {
-                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. Press enter to return to menu.");
+                            try {
+                                boolean result = inv.borrowHolding(holdingID, memberID);
+                                if (result) {
+                                    System.out.println("Holding " + holdingID + " has been borrowed. Your balance is " + inv.getMemberBalance(memberID));
+                                } else {
+                                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. ");
+                                }
+                            } catch (Exception e) {
+                                System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
                             }
                         } else {
-                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed. Press enter to return to menu.");
+                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
                         }
                     }
                 }
@@ -1164,11 +1174,15 @@ public class UI {
                         choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
                         if (choice == 'e') return;
                         if (choice == 'y') {
-                            boolean result = inv.returnHolding(holdingID, memberID);
-                            if (result) {
-                                System.out.println("Holding " + holdingID + " has been returned.");
-                            } else {
-                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned.");
+                            try {
+                                boolean result = inv.returnHolding(holdingID, memberID);
+                                if (result) {
+                                    System.out.println("Holding " + holdingID + " has been returned.");
+                                } else {
+                                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned.");
+                                }
+                            }catch (Exception e){
+                                System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
                             }
                         } else {
                             System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
@@ -1417,7 +1431,11 @@ public class UI {
         if (oldID != null) {
             String[] choiceOptions = {"4", "6"};
             int newLoan = Integer.parseInt(receiveStringInput("Enter new Loan Fee:", choiceOptions, true, 1));
-            inv.replaceLoan(oldID, newLoan);
+            try {
+                inv.replaceLoan(oldID, newLoan);
+            } catch (IncorrectDetailsException e) {
+                System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
+            }
         } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
     }
 
@@ -1427,13 +1445,16 @@ public class UI {
     private void activate() {
         String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
         if (ID != null) {
-
-            boolean result = inv.activate(ID);
-            if (!result) {
-                System.out.println(Utilities.WARNING_MESSAGE + " Activation failed");
-            } else {
-                System.out.println(Utilities.INFORMATION_MESSAGE + " Activation success");
-            }
+try {
+    boolean result = inv.activate(ID);
+    if (!result) {
+        System.out.println(Utilities.WARNING_MESSAGE + " Activation failed");
+    } else {
+        System.out.println(Utilities.INFORMATION_MESSAGE + " Activation success");
+    }
+}catch (IncorrectDetailsException e){
+    System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
+}
         }
     }
 
@@ -1471,7 +1492,11 @@ public class UI {
     private void returnHoldingNoFee() {
         String holdingID = getExistingID("Holding", HOLDING_TYPES);
         String memberID = getExistingID("Member", MEMBER_TYPES);
-        inv.returnHoldingNoFee(holdingID, memberID);
+        try {
+            inv.returnHoldingNoFee(holdingID, memberID);
+        }catch (Exception e){
+            System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
+        }
     }
 
     /**

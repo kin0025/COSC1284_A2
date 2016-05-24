@@ -9,7 +9,10 @@
 */
 package lms.members;
 
+import lms.exceptions.IncorrectDetailsException;
+import lms.exceptions.ItemInactiveException;
 import lms.exceptions.OnLoanException;
+import lms.exceptions.TimeTravelException;
 import lms.holding.Holding;
 import lms.util.DateTime;
 import lms.util.Utilities;
@@ -44,7 +47,7 @@ public class PremiumMember extends Member {
      * @return
      */
     @Override
-    public boolean returnHolding(Holding holding, DateTime returnDate) {
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws TimeTravelException,OnLoanException,ItemInactiveException{
         if (borrowed.contains(holding)) {
             DateTime currentDate = new DateTime();
             int lateFee = holding.calculateLateFee(currentDate);

@@ -84,7 +84,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
      *
      * @param loanFee the loan fee to be set.
      */
-    protected void setLoanFee(int loanFee) {
+    protected void setLoanFee(int loanFee) throws IncorrectDetailsException {
         this.loanFee = loanFee;
     }
 

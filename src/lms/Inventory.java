@@ -8,6 +8,7 @@ package lms;/*
 *@author - Alex Kinross-Smith
 */
 
+import lms.exceptions.*;
 import lms.holding.Book;
 import lms.holding.Holding;
 import lms.holding.Video;
@@ -235,7 +236,7 @@ public class Inventory {
      * @param loanFee
      * @return
      */
-    public boolean addHolding(String ID, char itemType, String title, int loanFee) {
+    public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
         if (numberOfHoldings < holdings.length) {
             if (checkID(ID, itemType).equals("Valid")) {
                 String holdingID = itemType + ID;
@@ -382,7 +383,7 @@ public class Inventory {
         }
     }
 
-    public boolean borrowHolding(String holdingID, String memberID) {
+    public boolean borrowHolding(String holdingID, String memberID) throws InsufficientCreditException,OnLoanException,ItemInactiveException{
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         if (holdingPos >= 0 && memberPos >= 0) {
@@ -391,7 +392,7 @@ public class Inventory {
         } else return false;
     }
 
-    public boolean returnHoldingNoFee(String holdingID, String memberID) {
+    public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException,OnLoanException,ItemInactiveException,TimeTravelException{
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         DateTime current = new DateTime();
@@ -402,7 +403,7 @@ public class Inventory {
 
     }
 
-    public boolean returnHolding(String holdingID, String memberID) {
+    public boolean returnHolding(String holdingID, String memberID) throws InsufficientCreditException,OnLoanException,ItemInactiveException,TimeTravelException{
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         DateTime current = new DateTime();
@@ -501,7 +502,7 @@ public class Inventory {
         holdings[arrayPos].setTitle(title);
     }
 
-    public boolean activate(String ID) {
+    public boolean activate(String ID) throws IncorrectDetailsException{
         int arrayPos = searchArrays(ID);
         if (ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
             return holdings[arrayPos].activate();
@@ -519,7 +520,7 @@ public class Inventory {
         }
     }
 
-    public void replaceLoan(String ID, int loanFee) {
+    public void replaceLoan(String ID, int loanFee) throws IncorrectDetailsException{
         int arrayPos = searchArrays(ID);
         Video video = (Video) holdings[arrayPos];
         video.setLoanFee(loanFee);

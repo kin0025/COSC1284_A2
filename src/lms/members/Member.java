@@ -14,6 +14,7 @@ import lms.UniqueID;
 import lms.exceptions.InsufficientCreditException;
 import lms.exceptions.ItemInactiveException;
 import lms.exceptions.OnLoanException;
+import lms.exceptions.TimeTravelException;
 import lms.holding.Holding;
 import lms.util.DateTime;
 import lms.util.IDManager;
@@ -276,7 +277,7 @@ public abstract class Member implements SystemOperations, UniqueID {
             throw new InsufficientCreditException(Utilities.WARNING_MESSAGE + "Balance was insufficient to borrow book");
     }
 
-    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException, ItemInactiveException, OnLoanException,TimeTravelException {
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
             int lateFee = borrowed.get(searchedPos).calculateLateFee(returnDate);
@@ -299,7 +300,7 @@ public abstract class Member implements SystemOperations, UniqueID {
         }
     }
 
-    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, OnLoanException {
+    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, OnLoanException ,TimeTravelException{
         int searchedPos = findHolding(holding);
         if (searchedPos <= 0) {
             if (borrowed.get(searchedPos).returnHolding(returnDate)) {
