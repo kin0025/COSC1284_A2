@@ -546,7 +546,6 @@ public class Inventory {
      * @param folderName
      * @throws IOException
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void save(String folderName) throws IOException {
         File folder = new File("./" + folderName);
         folder.mkdirs();
@@ -564,7 +563,7 @@ public class Inventory {
 
         for (Holding holding : holdings) {
             if (holding != null) {
-                holdingsWriter.append(holding.toFile()).append('\n');//Again IDE said performance issue without extra append, as I used to have a concat there.
+                holdingsWriter.append(holding.toFile()).append('\n');//Again IDE said performance issue without extra append, as I used to have a "+" there.
             }
         }
         for (Member member : members) {
@@ -669,7 +668,10 @@ public class Inventory {
             ArrayList<Holding> borrowed = new ArrayList<>();
             StringTokenizer borrowedTokens = new StringTokenizer(holdingsString, ":");
             while (borrowedTokens.hasMoreTokens()) {
-                borrowed.add(uuidToHolding(borrowedTokens.nextToken()));
+                String holdingUUID = borrowedTokens.nextToken();
+                if (holdingUUID != null && !holdingUUID.equals("null")) {
+                    borrowed.add(uuidToHolding(holdingUUID));
+                }
             }
 
             boolean active = Boolean.parseBoolean(membersToken.nextToken());

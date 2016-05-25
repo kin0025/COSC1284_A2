@@ -338,7 +338,8 @@ public class UI {
             try {
                 inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
             } catch (IncorrectDetailsException details) {
-                System.out.println("The details for the holding were incorrect, and the holding was not added." + holdingID[i]);
+                System.out.println("The details for the holding were incorrect, and the holding was not added." + (char)holdingType[i] + holdingID[i]);
+                System.out.println(details.getMessage());
             }
         }
         String[] memberID = {"000001", "000001", "000002", "000002"};

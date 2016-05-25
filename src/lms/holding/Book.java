@@ -93,8 +93,8 @@ public class Book extends Holding {
      */
     @Override
     public String checkValidity() {
-        String result = super.checkValidity('v');
-        if (getDefaultLoanFee() != 10) {
+        String result = super.checkValidity('b');
+        if (getDefaultLoanFee() != LOAN_FEE) {
             return ("Invalid Fee");
         }
         return (result);

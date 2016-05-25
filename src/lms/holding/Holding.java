@@ -314,7 +314,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
      */
     public String checkValidity(char itemType) {
         //Checks the length of the ID and its validity.
-        if (getID().length() != 7 || !Utilities.isIDValid(itemType, getID())) {
+        if (!Utilities.isIDValid(itemType, getID())) {
             return ("Invalid ID");
         }
         //Check the title's validity.

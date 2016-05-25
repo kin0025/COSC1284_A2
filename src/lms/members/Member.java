@@ -30,13 +30,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     private String ID;
     private String name;
     private final int maxCredit;
-    /**
-     * The Balance.
-     */
     protected double balance;
-    /**
-     * The Borrowed.
-     */
     protected ArrayList<Holding> borrowed = new ArrayList<>();
     private boolean active;
     private String uniqueID;
@@ -100,7 +94,7 @@ public abstract class Member implements SystemOperations, UniqueID {
      * @return The success value of the operation. If trying to set a value of credit higher than maximum it will fail.
      */
     public boolean setCredit(int credit) {
-        if (credit < maxCredit) {
+        if (credit <= maxCredit) {
             this.balance = credit;
             return true;
         } else return false;
@@ -375,7 +369,7 @@ public abstract class Member implements SystemOperations, UniqueID {
         System.out.println("Name:" + getFullName());
         System.out.println("Max Credit: " + getMaxCredit());
         System.out.println("Current Balance: " + getBalance());
-        System.out.println("Current Holdings:" + numberOfBorrowedHoldings());
+        System.out.println("Current Holdings: " + numberOfBorrowedHoldings());
         //Print all the holdings on a new line.
         for (Holding holding : borrowed) {
             //Iterate through the arraylist and print the title and ID.
@@ -392,19 +386,14 @@ public abstract class Member implements SystemOperations, UniqueID {
      * @return An integer of number of holdings borrowed
      */
     public int numberOfBorrowedHoldings() {
-        int result = 0;
-        for (Holding holding : borrowed) {
-            if (holding != null) {
-                result++;
-            }
-        }
-        System.out.print(result == borrowed.size());
+
         return borrowed.size();
     }
 
     /**
      * Returns a string representation of some of the properties of the member.
-     * @return A string of ":" seperated member properties.
+     *
+     * @return A string of ":" separated member properties.
      */
     public String toString() {
         return (getID() + ":" + getFullName() + ":" + calculateRemainingCredit());
@@ -427,14 +416,14 @@ public abstract class Member implements SystemOperations, UniqueID {
         for (Holding h : borrowed) {
             borrowedUniqueID.add(h.getUUID());
         }
-        String result;
+        String result = null;
+
         //  This requires java 1.8. A version that is less performant is commented out below and should work on 1.7
         //http://stackoverflow.com/questions/1978933/a-quick-and-easy-way-to-join-array-elements-with-a-separator-the-opposite-of-sp
-
-        result = String.join(":", borrowedUniqueID);
-
-        /*    System.out.println("Wrong java version");
-            result = null;
+        if (!borrowed.isEmpty()) {
+            result = String.join(":", borrowedUniqueID);
+        }
+        /*
             for (int i = 0; i < borrowed.size(); i++) {
                 Holding holding = borrowed.get(i);
                 if (holding != null) {
@@ -451,6 +440,7 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     /**
      * Returns the unique ID of the member
+     *
      * @return A string version of the unique id
      */
     public String getUUID() {
@@ -459,6 +449,7 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     /**
      * Generates a Unique ID and sets it.
+     *
      * @return Whether the operation was succesful.
      */
     public boolean setUUID() {
@@ -470,6 +461,7 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     /**
      * Sets the unique ID to one given to it. Does not add it to the ID manager.
+     *
      * @param uniqueID The unique Id to be set.
      */
     public void setUUID(String uniqueID) {
