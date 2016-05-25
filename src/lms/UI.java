@@ -27,6 +27,7 @@ import java.util.Scanner;
  */
 public class UI {
     private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
+    private static final String[] BORROW_OPTIONS = {"y (yes)", "c (change member)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
     private static final char[] MEMBER_TYPES = {'s', 'p'};
@@ -157,11 +158,12 @@ public class UI {
             if (!result) {
                 System.out.println("Program did not close correctly last run.");
                 //check if a backup folder exists.
-                File lastRun = new File("./backup");
-                result = lastRun.exists();
+                File backupMembersRun = new File("./backup/members" + Utilities.FILE_EXTENSION);
+                File backupHoldingsRun = new File("./backup/holdings" + Utilities.FILE_EXTENSION);
+
 
                 //If it exists set default load location to the backup.
-                if (result) {
+                if (backupHoldingsRun.exists() && backupMembersRun.exists()) {
                     System.out.println(Utilities.WARNING_MESSAGE + "We recommend loading from backup save.");
                     saveLocation = "backup";
                 } else {
@@ -338,7 +340,7 @@ public class UI {
             try {
                 inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
             } catch (IncorrectDetailsException details) {
-                System.out.println("The details for the holding were incorrect, and the holding was not added." + (char)holdingType[i] + holdingID[i]);
+                System.out.println("The details for the holding were incorrect, and the holding was not added." + (char) holdingType[i] + holdingID[i]);
                 System.out.println(details.getMessage());
             }
         }
@@ -1106,96 +1108,138 @@ public class UI {
      * A menu to receive input that will be passed to the inventory class.
      */
     private void borrowHolding() {
-        boolean keepGoing = true;
-        String memberID = getExistingID("Member", MEMBER_TYPES);
-        while (keepGoing) {
+        char choice = 'c';
+        boolean keepGoing;
+        String memberID = null;
+        do {
             newPage("Borrow");
-            if (memberID != null) {
-                System.out.println(inv.getMemberName(memberID));
-                char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
-                if (choice == 'e') return;
-                if (choice == 'n') {
-                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
-                    memberID = getExistingID("Member", MEMBER_TYPES);
-                    System.out.println("Press yes at the next prompt to borrow a holding for this new member.");
-                } else {
-                    String holdingID = getExistingID("Holding", HOLDING_TYPES);
-                    if (holdingID != null) {
+            if (choice == 'c') {
+                memberID = getExistingID("Member", MEMBER_TYPES);
 
-                        inv.printHolding(holdingID);
-                        DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
-                        System.out.println("You will have to return holding by the " + returnDate.getFormattedDate());
-                        choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
-                        if (choice == 'e') return;
-                        if (choice == 'y') {
-                            try {
-                                boolean result = inv.borrowHolding(holdingID, memberID);
-                                if (result) {
-                                    System.out.println("Holding " + holdingID + " has been borrowed. Your balance is " + inv.getMemberBalance(memberID));
-                                } else {
-                                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. ");
-                                }
-                            } catch (Exception e) {
-                                System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
-                            }
-                        } else {
-                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
-                        }
+                if (memberID != null) {
+                    System.out.println(inv.getMemberName(memberID));
+                    choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                    if (choice == 'e') {
+                        return;
+                    } else if (choice == 'n') {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
+                        memberID = getExistingID("Member", MEMBER_TYPES);
+                        System.out.println("Press yes at the next prompt to borrow a holding for this new member.");
                     }
+                }else{
+                    System.out.println("No member was entered.");
                 }
             }
-            char choice = receiveStringInput("Do you want to borrow another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
-            if (choice != 'y') {
-                keepGoing = false;
+            if (choice == 'y' || choice == 'c') {
+                String holdingID = getExistingID("Holding", HOLDING_TYPES);
+                if (holdingID != null && memberID != null) {
+
+                    inv.printHolding(holdingID);
+
+
+                    DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
+
+
+                    System.out.println("You will have to return holding by the " + returnDate.getFormattedDate());
+                    choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                    if (choice == 'e') return;
+                    if (choice == 'y') {
+                        try {
+                            boolean result = inv.borrowHolding(holdingID, memberID);
+                            if (result) {
+                                System.out.println("Holding " + holdingID + " has been borrowed. Your balance is " + inv.getMemberBalance(memberID));
+                            } else {
+                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. ");
+                            }
+                        } catch (Exception e) {
+                            System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
+                        }
+                    } else {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
+                    }
+                }else{
+                    System.out.println("Either the holding or member was not entered. Nothing was changed.");
+                }
             }
-        }
+
+
+            choice = receiveStringInput("Do you want to borrow another holding?", BORROW_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y' && choice != 'c') {
+                keepGoing = false;
+            } else {
+                keepGoing = true;
+            }
+
+
+        } while (keepGoing);
     }
 
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void returnHolding() {
-        boolean keepGoing = true;
-        while (keepGoing) {
-            newPage("Return");
-            String memberID = getExistingID("Member", MEMBER_TYPES);
-            if (memberID != null) {
-                System.out.println(inv.getMemberName(memberID));
-                char choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
-                if (choice == 'e') return;
-                if (choice == 'n') {
-                    System.out.println("No holding was returned. Press enter to return to menu.");
-                    input.nextLine();
-                    return;
-                } else {
-                    String holdingID = getExistingID("Holding", HOLDING_TYPES);
-                    if (holdingID != null) {
 
-                        inv.printHolding(holdingID);
-                        choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
-                        if (choice == 'e') return;
-                        if (choice == 'y') {
-                            try {
-                                boolean result = inv.returnHolding(holdingID, memberID);
-                                if (result) {
-                                    System.out.println("Holding " + holdingID + " has been returned.");
-                                } else {
-                                    System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned.");
-                                }
-                            }catch (Exception e){
-                                System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
-                            }
-                        } else {
-                            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
-                        }
+    private void returnHolding() {
+        char choice = 'c';
+        boolean keepGoing;
+        String memberID = null;
+        do {
+            newPage("Return");
+            if (choice == 'c') {
+                memberID = getExistingID("Member", MEMBER_TYPES);
+
+                if (memberID != null) {
+                    System.out.println(inv.getMemberName(memberID));
+                    choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                    if (choice == 'e') {
+                        return;
+                    } else if (choice == 'n') {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
+                        memberID = getExistingID("Member", MEMBER_TYPES);
+                        System.out.println("Press yes at the next prompt to return a holding for this new member.");
                     }
+                }else{
+                    System.out.println("No member was entered.");
                 }
             }
-            char choice = receiveStringInput("Do you want to return another holding?", CHOICE_OPTIONS, "n", 1).charAt(0);
-            if (choice != 'y') {
-                keepGoing = false;
+            if (choice == 'y' || choice == 'c') {
+                String holdingID = getExistingID("Holding", HOLDING_TYPES);
+                if (holdingID != null && memberID != null) {
+                    inv.printHolding(holdingID);
+
+                    // TODO: 26/05/2016 ADD DATETIME HANDLING HERE
+
+                    DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
+                    choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+                    if (choice == 'e') return;
+                    if (choice == 'y') {
+                        try {
+                            boolean result = inv.returnHolding(holdingID, memberID,returnDate);
+                            if (result) {
+                                System.out.println("Holding " + holdingID + " has been returned. Your balance is " + inv.getMemberBalance(memberID));
+                            } else {
+                                System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been returned. ");
+                            }
+                        } catch (Exception e) {
+                            System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
+                        }
+                    } else {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
+                    }
+                }
+            }    else {
+                System.out.println("Either the holding or member was not entered. Nothing was changed.");
             }
-        }
+
+
+            choice = receiveStringInput("Do you want to return another holding?", BORROW_OPTIONS, "n", 1).charAt(0);
+            if (choice != 'y' && choice != 'c') {
+                keepGoing = false;
+            } else {
+                keepGoing = true;
+            }
+
+
+        } while (keepGoing);
     }
 
     /**
@@ -1353,7 +1397,7 @@ public class UI {
         }
     }
 
-    //Admin Menu Pages
+//Admin Menu Pages
 
 
     /**
@@ -1446,16 +1490,16 @@ public class UI {
     private void activate() {
         String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
         if (ID != null) {
-try {
-    boolean result = inv.activate(ID);
-    if (!result) {
-        System.out.println(Utilities.WARNING_MESSAGE + " Activation failed");
-    } else {
-        System.out.println(Utilities.INFORMATION_MESSAGE + " Activation success");
-    }
-}catch (IncorrectDetailsException e){
-    System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
-}
+            try {
+                boolean result = inv.activate(ID);
+                if (!result) {
+                    System.out.println(Utilities.WARNING_MESSAGE + " Activation failed");
+                } else {
+                    System.out.println(Utilities.INFORMATION_MESSAGE + " Activation success");
+                }
+            } catch (IncorrectDetailsException e) {
+                System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
+            }
         }
     }
 
@@ -1495,7 +1539,7 @@ try {
         String memberID = getExistingID("Member", MEMBER_TYPES);
         try {
             inv.returnHoldingNoFee(holdingID, memberID);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
         }
     }

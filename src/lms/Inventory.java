@@ -38,7 +38,7 @@ public class Inventory {
     private final Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-    private static final String fileExtension = ".csv";
+    private static final String fileExtension = Utilities.FILE_EXTENSION ;
 
     /**
      * Creates holding and member arrays of size 15
@@ -396,20 +396,18 @@ public class Inventory {
     public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
-        DateTime current = new DateTime();
         if (holdingPos >= 0 && memberPos >= 0) {
-            members[memberPos].returnHoldingNoFee(holdings[holdingPos], current);
+            members[memberPos].returnHoldingNoFee(holdings[holdingPos], holdings[holdingPos].getBorrowDate());
             return true;
         } else return false;
 
     }
 
-    public boolean returnHolding(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
+    public boolean returnHolding(String holdingID, String memberID,DateTime returnDate) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
-        DateTime current = new DateTime();
         if (holdingPos >= 0 && memberPos >= 0) {
-            members[memberPos].returnHolding(holdings[holdingPos], current);
+            members[memberPos].returnHolding(holdings[holdingPos], returnDate);
             return true;
         } else return false;
 
@@ -618,7 +616,6 @@ public class Inventory {
 
         File membersFile = new File(folder.getAbsolutePath() + "\\" + "members" + fileExtension);
 
-        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state" + fileExtension);
         System.out.println(folder.getAbsolutePath());
 
         Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
@@ -683,7 +680,7 @@ public class Inventory {
                     members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
                 }
             } else {
-                System.out.println("Member with the ID: " + identifier + " and the name: + " + name + "was not added due to a duplicate unique identifier.");
+                System.out.println("Member with the ID: " + identifier + " and the name: + " + name + "was not added due to a duplicate UUID.");
             }
         }
 
@@ -698,6 +695,8 @@ public class Inventory {
         {
             if (loadLastHash(folderName).equals(outputState())) {
                 System.out.println("Program state was preserved since last save.");//If loading a database into an already populated database please ignore.
+                System.out.println("LAST HASH: " + loadLastHash(folderName));
+                System.out.println("CURRENT HASH: " + outputState());
             } else {
                 System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE. ");
                 System.out.println("LAST HASH: " + loadLastHash(folderName));

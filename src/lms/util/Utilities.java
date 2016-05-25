@@ -21,19 +21,33 @@ public class Utilities {
 
     //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
     //Un comment if the console you are using supports ANSI colours and stuff. Adds colours to the console output.
-    public static final String ANSI_RESET = ""; //"\u001B[0m";
-    public static final String ANSI_BLACK = ""; //"\u001B[30m";
-    public static final String ANSI_RED = ""; //"\u001B[31m";
-    public static final String ANSI_GREEN = ""; //"\u001B[32m";
-    public static final String ANSI_YELLOW = ""; //"\u001B[33m";
-    public static final String ANSI_BLUE = ""; // "\u001B[34m";
-    public static final String ANSI_PURPLE = ""; // "\u001B[35m";
-    public static final String ANSI_CYAN = ""; // "\u001B[36m";
-    public static final String ANSI_WHITE = ""; // "\u001B[37m";
+/*    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE =  "\u001B[35m";
+    public static final String ANSI_CYAN =  "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";*/
+
+    //Comment the block below after enabling colours
+    public static final String ANSI_RESET = "";
+    public static final String ANSI_BLACK = "";
+    public static final String ANSI_RED = "";
+    public static final String ANSI_GREEN = "";
+    public static final String ANSI_YELLOW = "";
+    public static final String ANSI_BLUE = "";
+    public static final String ANSI_PURPLE = "";
+    public static final String ANSI_CYAN = "";
+    public static final String ANSI_WHITE = "";
+
     public static final String ERROR_MESSAGE = ANSI_RED + "Error:" + ANSI_RESET;
     public static final String INFORMATION_MESSAGE = ANSI_CYAN + "INFORMATION:" + ANSI_RESET;
     public static final String WARNING_MESSAGE = ANSI_YELLOW + "WARNING:" + ANSI_RESET;
     public static final String INPUT_MESSAGE = ANSI_GREEN + ":" + ANSI_RESET;
+
+    public static final String FILE_EXTENSION = ".csv";
 
     /**
      * Generates a random 6 digit ID.
