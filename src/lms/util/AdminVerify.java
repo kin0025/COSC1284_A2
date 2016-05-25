@@ -14,13 +14,18 @@ package lms.util;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class AdminVerify {
-    //Wow! Such magic
+    //An MD5 hash of the password.
     private final String masterPassword = "d41d8cd98f00b204e9800998ecf8427e";
 
+    /**
+     * Check that the password hashes to the same value as the master password and return the success of the operation.
+     * @param passcode The passcode to be examined.
+     * @return Whether the password matched.
+     */
     public boolean authenticated(String passcode) {
+        //Hash the input passcode
         String hash = Utilities.hashString(passcode);
-        System.out.println(hash);
-        System.out.println(masterPassword);
+
         return masterPassword.equals(hash);
     }
 }

@@ -463,7 +463,7 @@ public abstract class Member implements SystemOperations, UniqueID {
      */
     public boolean setUUID() {
         if (uniqueID == null) {
-            this.uniqueID = IDManager.generateUniqueID();
+            this.uniqueID = IDManager.generateUUID();
             return true;
         } else return false;
     }

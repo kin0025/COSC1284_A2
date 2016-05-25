@@ -18,8 +18,9 @@ import java.util.Random;
  */
 @SuppressWarnings("WeakerAccess")
 public class Utilities {
+
     //ANSI Codes from http://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
-    //Un comment if the console you are using supports ANSI colours and stuff.
+    //Un comment if the console you are using supports ANSI colours and stuff. Adds colours to the console output.
     public static final String ANSI_RESET = ""; //"\u001B[0m";
     public static final String ANSI_BLACK = ""; //"\u001B[30m";
     public static final String ANSI_RED = ""; //"\u001B[31m";
@@ -34,6 +35,11 @@ public class Utilities {
     public static final String WARNING_MESSAGE = ANSI_YELLOW + "WARNING:" + ANSI_RESET;
     public static final String INPUT_MESSAGE = ANSI_GREEN + ":" + ANSI_RESET;
 
+    /**
+     * Generates a random 6 digit ID.
+     *
+     * @return the generated ID
+     */
     public static String randomID() {
         int[] numbers = new int[6];
         Random random = new Random();
@@ -42,7 +48,15 @@ public class Utilities {
         }
         return (numbers[0] + "" + numbers[1] + numbers[2] + numbers[3] + numbers[4] + numbers[5]);
     }
-    public static boolean isIDValid(char expectedType, String ID){
+
+    /**
+     * Checks if an ID meets the validity requirements-  the first character muse equal the expected type. It must be 7 long, and the last 6 digits must be numbers between 0 and 9.
+     *
+     * @param expectedType the expected type
+     * @param ID           the id to be checked
+     * @return true if ID is valid
+     */
+    public static boolean isIDValid(char expectedType, String ID) {
         boolean validID = true;
         int i = 1;
         while (ID.length() > i && validID) {
@@ -54,7 +68,14 @@ public class Utilities {
         return ID.charAt(0) == expectedType && ID.length() == 7 && validID;
 
     }
-    public static String hashString(String input){
+
+    /**
+     * Hashes a string passed to it with an MD5 algorithm.
+     *
+     * @param input the input string
+     * @return the output MD5 hash
+     */
+    public static String hashString(String input) {
         String outputHash = null;
         //https://dzone.com/articles/get-md5-hash-few-lines-java
         try {
