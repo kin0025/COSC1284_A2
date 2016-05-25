@@ -1113,56 +1113,83 @@ public class UI {
         String memberID = null;
         do {
             newPage("Borrow");
+
+            //On the first run choice always == c. Get a new member name.
             if (choice == 'c') {
+                //Get the member name
                 memberID = getExistingID("Member", MEMBER_TYPES);
 
+                //Check that the member name was entered correctly. Don't give the user options if it was not.
                 if (memberID != null) {
+                    //Tell the user who they are.
                     System.out.println(inv.getMemberName(memberID));
+
+                    //Get them to confirm that they are who they say they are.
                     choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+
+                    //Exit if they want to
                     if (choice == 'e') {
                         return;
-                    } else if (choice == 'n') {
+                    }
+                    //If they want to enter a different user name, set the new one and tell them to go around again.
+                    else if (choice == 'n') {
                         System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
                         memberID = getExistingID("Member", MEMBER_TYPES);
                         System.out.println("Press yes at the next prompt to borrow a holding for this new member.");
                     }
-                }else{
+                } else {
                     System.out.println("No member was entered.");
                 }
             }
-            if (choice == 'y' || choice == 'c') {
+
+            //If the user selected y after member selection or after re-run choice == y
+            if (choice == 'y') {
+
+                //Get the holding ID
                 String holdingID = getExistingID("Holding", HOLDING_TYPES);
+
+                //Check that the holding and member IDs have been entered correctly.
                 if (holdingID != null && memberID != null) {
 
                     inv.printHolding(holdingID);
 
-
+                    //Get the time when the holding will have to be returned by or fees will be incurred and print it
                     DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
-
-
                     System.out.println("You will have to return holding by the " + returnDate.getFormattedDate());
+
+                    //Confirm they want to proceed.
                     choice = receiveStringInput("Do you want to borrow this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+
+                    //Exit if they want to exit
                     if (choice == 'e') return;
+
+                    //If they want to proceed print error messages based on result.
                     if (choice == 'y') {
                         try {
                             boolean result = inv.borrowHolding(holdingID, memberID);
+
                             if (result) {
                                 System.out.println("Holding " + holdingID + " has been borrowed. Your balance is " + inv.getMemberBalance(memberID));
                             } else {
                                 System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was not been borrowed. ");
                             }
+                            //Catch any exceptions that might be thrown by the borrowing of a holding and print the associated message.
                         } catch (Exception e) {
                             System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
                         }
-                    } else {
+                    }
+                    //Must have selected n, tel; them nothing has happened.
+                    else {
                         System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
                     }
-                }else{
+                }
+                //If one or both of them are null, they weren't entered correctly. Tell the user.
+                else {
                     System.out.println("Either the holding or member was not entered. Nothing was changed.");
                 }
             }
 
-
+//Ask them if they want to perform another operation
             choice = receiveStringInput("Do you want to borrow another holding?", BORROW_OPTIONS, "n", 1).charAt(0);
             if (choice != 'y' && choice != 'c') {
                 keepGoing = false;
@@ -1170,7 +1197,7 @@ public class UI {
                 keepGoing = true;
             }
 
-
+//Keep going while they want to keepgoing
         } while (keepGoing);
     }
 
@@ -1197,11 +1224,11 @@ public class UI {
                         memberID = getExistingID("Member", MEMBER_TYPES);
                         System.out.println("Press yes at the next prompt to return a holding for this new member.");
                     }
-                }else{
+                } else {
                     System.out.println("No member was entered.");
                 }
             }
-            if (choice == 'y' || choice == 'c') {
+            if (choice == 'y') {
                 String holdingID = getExistingID("Holding", HOLDING_TYPES);
                 if (holdingID != null && memberID != null) {
                     inv.printHolding(holdingID);
@@ -1213,7 +1240,7 @@ public class UI {
                     if (choice == 'e') return;
                     if (choice == 'y') {
                         try {
-                            boolean result = inv.returnHolding(holdingID, memberID,returnDate);
+                            boolean result = inv.returnHolding(holdingID, memberID, returnDate);
                             if (result) {
                                 System.out.println("Holding " + holdingID + " has been returned. Your balance is " + inv.getMemberBalance(memberID));
                             } else {
@@ -1226,7 +1253,7 @@ public class UI {
                         System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
                     }
                 }
-            }    else {
+            } else {
                 System.out.println("Either the holding or member was not entered. Nothing was changed.");
             }
 

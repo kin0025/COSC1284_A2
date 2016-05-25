@@ -38,7 +38,7 @@ public class Inventory {
     private final Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-    private static final String fileExtension = Utilities.FILE_EXTENSION ;
+    private static final String fileExtension = Utilities.FILE_EXTENSION;
 
     /**
      * Creates holding and member arrays of size 15
@@ -403,7 +403,7 @@ public class Inventory {
 
     }
 
-    public boolean returnHolding(String holdingID, String memberID,DateTime returnDate) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
+    public boolean returnHolding(String holdingID, String memberID, DateTime returnDate) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         if (holdingPos >= 0 && memberPos >= 0) {

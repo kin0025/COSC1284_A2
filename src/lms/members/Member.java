@@ -409,18 +409,23 @@ public abstract class Member implements SystemOperations, UniqueID {
     }
 
     /**
-     * @return
+     * Converts the borrowed arraylist to a string.
+     *
+     * @return the string ":" delimiter seperated list of UUID s of holdings.
      */
     private String borrowedToString() {
+        //Create another arraylist with the UUIDs of borrowed holdings stored in it.
         ArrayList<String> borrowedUniqueID = new ArrayList<>();
         for (Holding h : borrowed) {
             borrowedUniqueID.add(h.getUUID());
         }
+
         String result = null;
 
-        //  This requires java 1.8. A version that is less performant is commented out below and should work on 1.7
+        //This requires java 1.8. A version that is less performant is commented out below and should work on 1.7
         //http://stackoverflow.com/questions/1978933/a-quick-and-easy-way-to-join-array-elements-with-a-separator-the-opposite-of-sp
         if (!borrowed.isEmpty()) {
+            //Join all the elements of the arraylist with a ":" delimiter.
             result = String.join(":", borrowedUniqueID);
         }
         /*
