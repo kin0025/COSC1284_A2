@@ -16,6 +16,6 @@ public class OnLoanException extends Exception {
     }
 
     public OnLoanException(String message) {
-        super(Utilities.ERROR_MESSAGE + message);
+        super(message);
     }
 }

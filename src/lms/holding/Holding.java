@@ -38,7 +38,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
     public Holding(String holdingID, String title) {
         this.ID = holdingID;
         this.title = title;
-        setUniqueID();
+        setUUID();
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
         this.maxLoanPeriod = maxLoanPeriod;
         this.borrowDate = borrowDate;
         this.active = active;
-        setUniqueID(uniqueID);
+        setUUID(uniqueID);
         if (!checkValidity().equalsIgnoreCase("valid")) {
             deactivate();
             System.out.println(Utilities.ERROR_MESSAGE + " Item " + ID + " has been deactivated due to invalid details: " + checkValidity());
@@ -268,7 +268,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
         } else {
             date = null;
         }
-        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + date + "," + active + "," + getUniqueID());
+        return (getID() + "," + getTitle() + "," + getDefaultLoanFee() + "," + getMaxLoanPeriod() + "," + date + "," + active + "," + getUUID());
     }
 
     /**
@@ -330,7 +330,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
      * Returns the unique ID of the item.
      * @return a 6 digit String form unique ID
      */
-    public String getUniqueID() {
+    public String getUUID() {
         return uniqueID;
     }
 
@@ -338,7 +338,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
      * Sets a unique ID and adds it to the database to ensure no duplicates.
      * @return If there is already a unique ID returns false and does not add a new unique id.
      */
-    public boolean setUniqueID() {
+    public boolean setUUID() {
         if (uniqueID == null) {
             this.uniqueID = IDManager.generateUniqueID();
             return true;
@@ -349,7 +349,7 @@ public abstract class Holding implements SystemOperations, UniqueID {
      * Sets unique ID for the item, and adds it to IDManager.
      * @param uniqueID The unique ID to be set.
      */
-    public void setUniqueID(String uniqueID) {
+    public void setUUID(String uniqueID) {
         this.uniqueID = uniqueID;
         IDManager.addIdentifier(uniqueID);
     }

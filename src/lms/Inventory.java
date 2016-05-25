@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -37,7 +38,7 @@ public class Inventory {
     private final Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-    private static final String fileExtension = ".txt";
+    private static final String fileExtension = ".csv";
 
     /**
      * Creates holding and member arrays of size 15
@@ -327,8 +328,8 @@ public class Inventory {
     }
 
     private void addDeleted(Holding deleted) {
-        if(deletedHoldings[deletedHoldings.length-1] != null){
-            IDManager.removeIdentifier(deletedHoldings[deletedHoldings.length -1].getUniqueID());
+        if (deletedHoldings[deletedHoldings.length - 1] != null) {
+            IDManager.removeIdentifier(deletedHoldings[deletedHoldings.length - 1].getUUID());
         }
         //Reference IntelliJ IDEA code analyse.
         System.arraycopy(deletedHoldings, 0, deletedHoldings, 1, deletedHoldings.length - 1); //So I had the code below, and my IDE was like "Performance Issues", so I performed its recommended fix.
@@ -368,7 +369,7 @@ public class Inventory {
         int memberPos = searchArrays(ID);
         if (members[memberPos].numberOfBorrowedHoldings() == 0) {
             if (memberPos >= 0) {
-                IDManager.removeIdentifier(members[memberPos].getUniqueID());
+                IDManager.removeIdentifier(members[memberPos].getUUID());
                 members[memberPos] = null;
                 recalculateStatistics();
             } else {
@@ -383,7 +384,7 @@ public class Inventory {
         }
     }
 
-    public boolean borrowHolding(String holdingID, String memberID) throws InsufficientCreditException,OnLoanException,ItemInactiveException{
+    public boolean borrowHolding(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         if (holdingPos >= 0 && memberPos >= 0) {
@@ -392,7 +393,7 @@ public class Inventory {
         } else return false;
     }
 
-    public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException,OnLoanException,ItemInactiveException,TimeTravelException{
+    public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         DateTime current = new DateTime();
@@ -403,7 +404,7 @@ public class Inventory {
 
     }
 
-    public boolean returnHolding(String holdingID, String memberID) throws InsufficientCreditException,OnLoanException,ItemInactiveException,TimeTravelException{
+    public boolean returnHolding(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         DateTime current = new DateTime();
@@ -502,7 +503,7 @@ public class Inventory {
         holdings[arrayPos].setTitle(title);
     }
 
-    public boolean activate(String ID) throws IncorrectDetailsException{
+    public boolean activate(String ID) throws IncorrectDetailsException {
         int arrayPos = searchArrays(ID);
         if (ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
             return holdings[arrayPos].activate();
@@ -520,7 +521,7 @@ public class Inventory {
         }
     }
 
-    public void replaceLoan(String ID, int loanFee) throws IncorrectDetailsException{
+    public void replaceLoan(String ID, int loanFee) throws IncorrectDetailsException {
         int arrayPos = searchArrays(ID);
         Video video = (Video) holdings[arrayPos];
         video.setLoanFee(loanFee);
@@ -534,7 +535,7 @@ public class Inventory {
     public int getMemberBalance(String ID) {
         int balance;
 
-            balance = (int) members[searchArrays(ID)].getBalance();
+        balance = (int) members[searchArrays(ID)].getBalance();
 
         return balance;
     }
@@ -601,9 +602,8 @@ public class Inventory {
     }
 
 
-
     public String outputState() {
-        return Utilities.hashString(toString());
+        return Utilities.hashString(toStateString());
     }
 
     /**
@@ -624,28 +624,30 @@ public class Inventory {
 
         Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
         Scanner membersReader = new Scanner(membersFile.getAbsoluteFile());
-        Scanner stateReader = new Scanner(stateFile.getAbsoluteFile());
+//Load Holdings
         while (holdingsReader.hasNextLine()) {
             StringTokenizer holdingToken = new StringTokenizer(holdingsReader.nextLine(), ",");
             String identifier = holdingToken.nextToken();
             String title = holdingToken.nextToken();
             int loanFee = Integer.parseInt(holdingToken.nextToken());
             int maxLoanPeriod = Integer.parseInt(holdingToken.nextToken());
+
+            //Load the borrow time.
             String borrowTime = holdingToken.nextToken();
-            DateTime borrowDate;
+            DateTime borrowDate = null;
             if (!borrowTime.equals("null")) {
                 StringTokenizer dateSplit = new StringTokenizer(borrowTime, "-");
                 int year = Integer.parseInt(dateSplit.nextToken());
                 int month = Integer.parseInt(dateSplit.nextToken());
                 int day = Integer.parseInt(dateSplit.nextToken());
-
                 borrowDate = new DateTime(day, month, year);
-            } else {
-                borrowDate = null;
             }
+
+
             boolean active = Boolean.parseBoolean(holdingToken.nextToken());
             String uniqueID = holdingToken.nextToken();
 
+            //Add them to the array.
             if (!IDManager.isAlreadyTaken(uniqueID)) {
                 if (identifier.charAt(0) == 'b') {
                     holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
@@ -656,20 +658,20 @@ public class Inventory {
                 System.out.println("Holding with the ID: " + identifier + " and the title: + " + title + "was not added due to a duplicate unique identifier.");
             }
         }
+        //Load Members
         while (membersReader.hasNextLine()) {
             StringTokenizer membersToken = new StringTokenizer(membersReader.nextLine(), ",");
             String identifier = membersToken.nextToken();
             String name = membersToken.nextToken();
             int maxCredit = Integer.parseInt(membersToken.nextToken());
-            int balance = Integer.parseInt(membersToken.nextToken());
+            double balance = Double.parseDouble(membersToken.nextToken());
             String holdingsString = membersToken.nextToken();
-            Holding[] borrowed = new Holding[15];
+            ArrayList<Holding> borrowed = new ArrayList<>();
             StringTokenizer borrowedTokens = new StringTokenizer(holdingsString, ":");
-            for (int i = 0; i < borrowed.length; i++) {
-                if (borrowedTokens.hasMoreTokens()) {
-                    borrowed[i] = uniqueIDToHolding(borrowedTokens.nextToken());
-                }
+            while (borrowedTokens.hasMoreTokens()) {
+                borrowed.add(uuidToHolding(borrowedTokens.nextToken()));
             }
+
             boolean active = Boolean.parseBoolean(membersToken.nextToken());
             String uniqueID = membersToken.nextToken();
             if (!IDManager.isAlreadyTaken(uniqueID)) {
@@ -683,15 +685,15 @@ public class Inventory {
             }
         }
 
-        while (stateReader.hasNext()) {
-            stateReader.useDelimiter(",");
-            IDManager.addIdentifier(stateReader.next());
-        }
-        stateReader.close();
+
         membersReader.close();
         holdingsReader.close();
+
         recalculateStatistics();
-        try {
+
+        try
+
+        {
             if (loadLastHash(folderName).equals(outputState())) {
                 System.out.println("Program state was preserved since last save.");//If loading a database into an already populated database please ignore.
             } else {
@@ -699,17 +701,21 @@ public class Inventory {
                 System.out.println("LAST HASH: " + loadLastHash(folderName));
                 System.out.println("CURRENT HASH: " + outputState());
             }
-        } catch (NullPointerException e) {
+        } catch (
+                NullPointerException e
+                )
+
+        {
             System.out.println("There was no state saved last time.");
         }
 
     }
 
-    private Holding uniqueIDToHolding(String uniqueID) {
+    private Holding uuidToHolding(String uuid) {
         for (Holding h : holdings
                 ) {
             if (h != null) {
-                if (h.getUniqueID().equals(uniqueID)) {
+                if (h.getUUID().equals(uuid)) {
                     return h;
                 }
             }
@@ -724,18 +730,18 @@ public class Inventory {
         } else return 0;
     }
 
-    public String toString() {
+    public String toStateString() {
         String megaString = null;
         for (Holding h : holdings
                 ) {
             if (h != null) {
-                megaString += h.toString();
+                megaString += h.toFile();
             }
         }
         for (Member m : members
                 ) {
             if (m != null) {
-                megaString += m.toString();
+                megaString += m.toFile();
             }
         }
         megaString += IDManager.stateString();

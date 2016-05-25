@@ -154,7 +154,7 @@ public class UI {
         try {
             //try to create the file to tell program status. This will be deleted before close. If file already exists, close must have been completed incorrectly, and assume crash.
             result = RUN_STATUS.createNewFile();
-            if (result) {
+            if (!result) {
                 System.out.println("Program did not close correctly last run.");
                 //check if a backup folder exists.
                 File lastRun = new File("./backup");

@@ -16,6 +16,6 @@ public class TimeTravelException extends Exception {
     }
 
     public TimeTravelException(String message) {
-        super(Utilities.ERROR_MESSAGE + message);
+        super(message);
     }
 }

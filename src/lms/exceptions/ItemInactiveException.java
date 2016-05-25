@@ -16,6 +16,6 @@ public class ItemInactiveException extends Exception{
     }
 
     public ItemInactiveException(String message) {
-        super(Utilities.ERROR_MESSAGE + message);
+        super(message);
     }
 }

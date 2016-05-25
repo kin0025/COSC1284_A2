@@ -7,6 +7,7 @@
 package lms.util;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Emily on 18/05/2016 as part of s3603437_A2
@@ -59,7 +60,7 @@ public class IDManager {
         String test;
         boolean result;
         do {
-            test = Utilities.randomID();
+            test = String.valueOf(UUID.randomUUID());
             result = isAlreadyTaken(test);
         } while (result);
         identifiers.add(test);

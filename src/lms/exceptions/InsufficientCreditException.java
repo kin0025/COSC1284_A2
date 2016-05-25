@@ -17,6 +17,6 @@ public class InsufficientCreditException extends Exception {
     }
 
     public InsufficientCreditException(String message) {
-        super(Utilities.ERROR_MESSAGE + message);
+        super(message);
     }
 }

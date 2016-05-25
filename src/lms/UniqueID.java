@@ -10,9 +10,9 @@ package lms;
  * Created by Emily on 19/05/2016 as part of s3603437_A2
  */
 public interface UniqueID {
-    String getUniqueID();
+    String getUUID();
 
-    void setUniqueID(String uniqueID);
+    void setUUID(String uniqueID);
 
-    boolean setUniqueID();
+    boolean setUUID();
 }
