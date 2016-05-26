@@ -724,10 +724,17 @@ public class Inventory {
         return null;
     }
 
-    public int returnHoldingTime(String ID) {
+    public int getHoldingReturnTime(String ID) {
         int holdingPos = searchArrays(ID);
         if (holdingPos >= 0) {
             return holdings[holdingPos].getMaxLoanPeriod();
+        } else return 0;
+    }
+
+    public int getHoldingLateFee(String ID,DateTime returnDay){
+        int holdingPos = searchArrays(ID);
+        if (holdingPos >= 0) {
+            return holdings[holdingPos].calculateLateFee(returnDay);
         } else return 0;
     }
 

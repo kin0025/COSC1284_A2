@@ -9,7 +9,6 @@
 */
 package lms.members;
 
-import lms.exceptions.IncorrectDetailsException;
 import lms.exceptions.ItemInactiveException;
 import lms.exceptions.OnLoanException;
 import lms.exceptions.TimeTravelException;
@@ -17,7 +16,6 @@ import lms.holding.Holding;
 import lms.util.DateTime;
 import lms.util.Utilities;
 
-import javax.rmi.CORBA.Util;
 import java.util.ArrayList;
 
 /**

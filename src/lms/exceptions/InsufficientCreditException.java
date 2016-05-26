@@ -6,8 +6,6 @@
 
 package lms.exceptions;
 
-import lms.util.Utilities;
-
 /**
  * Created by Emily on 12/05/2016 as part of s3603437_A2
  */

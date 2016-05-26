@@ -10,7 +10,6 @@
 package lms;
 
 import lms.exceptions.IncorrectDetailsException;
-import lms.exceptions.OnLoanException;
 import lms.util.AdminVerify;
 import lms.util.DateTime;
 import lms.util.Utilities;
@@ -21,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
@@ -340,7 +340,7 @@ public class UI {
             try {
                 inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
             } catch (IncorrectDetailsException details) {
-                System.out.println("The details for the holding were incorrect, and the holding was not added." + (char) holdingType[i] + holdingID[i]);
+                System.out.println("The details for the holding were incorrect, and the holding was not added." + holdingType[i] + holdingID[i]);
                 System.out.println(details.getMessage());
             }
         }
@@ -1154,7 +1154,7 @@ public class UI {
                     inv.printHolding(holdingID);
 
                     //Get the time when the holding will have to be returned by or fees will be incurred and print it
-                    DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
+                    DateTime returnDate = new DateTime(inv.getHoldingReturnTime(holdingID));
                     System.out.println("You will have to return holding by the " + returnDate.getFormattedDate());
 
                     //Confirm they want to proceed.
@@ -1191,11 +1191,7 @@ public class UI {
 
 //Ask them if they want to perform another operation
             choice = receiveStringInput("Do you want to borrow another holding?", BORROW_OPTIONS, "n", 1).charAt(0);
-            if (choice != 'y' && choice != 'c') {
-                keepGoing = false;
-            } else {
-                keepGoing = true;
-            }
+            keepGoing = !(choice != 'y' && choice != 'c');
 
 //Keep going while they want to keepgoing
         } while (keepGoing);
@@ -1204,7 +1200,6 @@ public class UI {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-
     private void returnHolding() {
         char choice = 'c';
         boolean keepGoing;
@@ -1232,10 +1227,35 @@ public class UI {
                 String holdingID = getExistingID("Holding", HOLDING_TYPES);
                 if (holdingID != null && memberID != null) {
                     inv.printHolding(holdingID);
-
+                    DateTime returnDate;
                     // TODO: 26/05/2016 ADD DATETIME HANDLING HERE
+                    System.out.println("Enter a single number in days  for when the holding will be returned or that date in the format DD-MM-YYYY. Alternatively, press enter to select the current day.");
+                    String date = input.nextLine();
+                    if (date.charAt(2) == '-' && date.charAt(5) == '-') {
+                        StringTokenizer dateTokens = new StringTokenizer(date, "-");
+                        if (dateTokens.countTokens() == 3) {
+                            try {
+                                int day = Integer.parseInt(dateTokens.nextToken());
+                                int month = Integer.parseInt(dateTokens.nextToken());
+                                int year = Integer.parseInt(dateTokens.nextToken());
+                                returnDate = new DateTime(day,month,year);
 
-                    DateTime returnDate = new DateTime(inv.returnHoldingTime(holdingID));
+                            }catch(Exception e){
+                                System.out.println("Date was entered in incorrect format. Date has been set to current day");
+                                returnDate = new DateTime();
+                            }
+                        }
+                    } else if (!date.isEmpty()) {
+                        try {
+                            returnDate = new DateTime(Integer.parseInt(date));
+                        }catch(Exception e){
+                            System.out.println("Date was entered in incorrect format. Date has been set to current day");
+                            returnDate = new DateTime();
+                        }
+                    } else {
+                        returnDate = new DateTime();
+                    }
+                    System.out.println("Holding will be returned with a late fee of :" + inv.getHoldingLateFee(holdingID, returnDate));
                     choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
                     if (choice == 'e') return;
                     if (choice == 'y') {
@@ -1259,11 +1279,7 @@ public class UI {
 
 
             choice = receiveStringInput("Do you want to return another holding?", BORROW_OPTIONS, "n", 1).charAt(0);
-            if (choice != 'y' && choice != 'c') {
-                keepGoing = false;
-            } else {
-                keepGoing = true;
-            }
+            keepGoing = !(choice != 'y' && choice != 'c');
 
 
         } while (keepGoing);
