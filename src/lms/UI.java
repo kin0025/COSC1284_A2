@@ -191,15 +191,19 @@ public class UI {
             e.printStackTrace();
         }
 
+//Choices of what to load
         String[] choiceOptions = {"d (default)", "s (saved)", "n (new)"};
         char choice = receiveStringInput("Do you want to load the default inventory, a saved inventory or start new?", choiceOptions, defaultChoice, 1).charAt(0);
 
+        //Set default
         if (choice == 'd') {
             addDefault();
-        } else if (choice == 's') {
+        }
+        //Choices of folder, and default set before
+        else if (choice == 's') {
 
             choice = receiveStringInput("What do folder do you want to use?", new String[]{"c (custom)", "b (backup)", "s (save)", "l (lastrun)"}, saveLocation, 1).charAt(0);
-
+//Get the folder to load from via the choice before
             switch (choice) {
                 case 'b':
                     saveLocation = "backup";
@@ -215,7 +219,7 @@ public class UI {
                     System.out.println("Enter the name of the folder to load from.");
                     saveLocation = input.nextLine();
             }
-
+//Try to load.
             try {
                 inv.load(saveLocation);
             } catch (IOException e) {
@@ -224,22 +228,27 @@ public class UI {
 
         }
 
+        //Load the terminal options
         newPage("Terminal Settings");
+        //Show the user what 150 chars looks like
         System.out.println("\nA terminal width of 100-150 characters is recommended. \n" + Utilities.ANSI_YELLOW + "If the line below is cut off or on two lines consider changing your console window or choosing another console width." + Utilities.ANSI_RESET);
         printCharTimes('-', 150, true);
+        //Ask them if they want a custom width. Give them 5 seconds to answer, or assume no.
         choice = receiveStringInput("Do you want to specify a custom width? This may produce unexpected results.", CHOICE_OPTIONS, "n", 1, 5).charAt(0);
         if (choice == 'y') {
             System.out.println("Enter the new terminal width:");
             while (consoleWidth == 150) {
                 try {
                     System.out.print(Utilities.INPUT_MESSAGE);
-                    consoleWidth = input.nextInt();
-                } catch (InputMismatchException e) {
+                    consoleWidth = Integer.parseInt(input.nextLine());
+                } catch (Exception e) {
                     System.out.println("A number must entered");
                     throw e;
                 }
             }
-        } else if (choice == 'e') {
+        }
+        //Exit the program, and delete the run status before.
+        else if (choice == 'e') {
             RUN_STATUS.delete();
             System.exit(0);
         }
@@ -253,10 +262,14 @@ public class UI {
         newPage("Admin Verification");
         System.out.println("Please enter your admin password (Password1):");
         System.out.print(Utilities.INPUT_MESSAGE);
+        //Check the password
         String password = input.nextLine();
+        //Run the admin menu
         if (verify.authenticated(password)) {
             adminMenu();
-        } else {
+        }
+        //Wait 5 seconds so they can't spam passwords.
+        else {
             try {
                 System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect Password. Returning to main menu");
                 System.out.print("In 5 seconds");
@@ -332,10 +345,13 @@ public class UI {
      * Adds the default holdings as specified by assignment spec.
      **/
     private void addDefault() {
+        //Use arrays cos I am lazy
         String[] holdingTitle = {"Intro to Java", "Learning UML", "Design Patterns", "Advanced Java", "Java 1", "Java 2", "UML 1", "UML 2"};
         char[] holdingType = {'b', 'b', 'b', 'b', 'v', 'v', 'v', 'v'};
         String[] holdingID = {"000001", "000002", "000003", "000004", "000001", "000002", "000003", "000004"};
         int[] holdingFee = {0, 0, 0, 0, 4, 6, 6, 4};
+
+        //Add all the holdings.
         for (int i = 0; i < holdingID.length; i++) {
             try {
                 inv.addHolding(holdingID[i], holdingType[i], holdingTitle[i], holdingFee[i]);
@@ -344,13 +360,15 @@ public class UI {
                 System.out.println(details.getMessage());
             }
         }
+
         String[] memberID = {"000001", "000001", "000002", "000002"};
         String[] memberName = {"Joe Bloggs", "Fred Bloggs", "Jane Smith", "Fred Smith"};
         char[] memberType = {'s', 'p', 's', 'p'};
+
+        //Add all the members
         for (int i = 0; i < memberID.length; i++) {
             inv.addMember(memberID[i], memberType[i], memberName[i]);
         }
-        //inv.recalculateStatistics();
     }
 
     /**
@@ -418,6 +436,7 @@ public class UI {
         }
         boolean isCorrect = false;
         int i = 0;
+        //Check it matches input parameters.
         while (i < options.length && !isCorrect) {
             String currentExamined;
             if (options[i].length() >= outputLength) {
@@ -472,6 +491,7 @@ public class UI {
         }
         boolean isCorrect = false;
         int i = 0;
+        //Check it matches a vbalid input
         while (i < options.length && !isCorrect) {
             String currentExamined;
             if (options[i].length() >= outputLength) {
@@ -491,6 +511,15 @@ public class UI {
         return inputString;
     }
 
+    /**
+     * Wrapper for default string input with no auto input.
+     *
+     * @param flavourText   Printed before every request for input.
+     * @param options       The array of <code>Strings</code> that is used for validation of input.
+     * @param defaultAnswer The default solutions. If no input is received this is returned.
+     * @param outputLength  The length of input that will be validated and output.
+     * @return The final validated chosen user input of the first <code>int outputLength</code> positions.
+     **/
     private String receiveStringInput(String flavourText, String[] options, String defaultAnswer, int outputLength) {
         return receiveStringInput(flavourText, options, defaultAnswer, outputLength, 0);
     }
@@ -636,6 +665,7 @@ public class UI {
      * Runs other methods based on user input.
      */
     public void mainMenu() {
+        //Print options. Debug stuff on option 211 and 404
         newPage("Home");
         System.out.println(" 1. Add Holding");
         System.out.println(" 2. Remove Holding");
@@ -654,6 +684,7 @@ public class UI {
         printCharTimes('=', consoleWidth, true);
         String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "211", "301", "404"};
         int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 16)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
+        //Run options
         switch (choice) {
             case 1:
                 addHolding();
@@ -716,7 +747,7 @@ public class UI {
     private void adminMenu() {
         while (true) {
             newPage("Admin");
-
+//The menu for admin stuff
             System.out.println(" 1. Activate");
             System.out.println(" 2. Deactivate");
             System.out.println(" 3. Edit Holding Details");
@@ -806,6 +837,9 @@ public class UI {
         }
     }
 
+    /**
+     * Does nothing WIP
+     */
     private void debugInventory() {
         //inv.debug(); // TODO: 20/05/2016 Add debug support.
     }
@@ -978,7 +1012,6 @@ public class UI {
                         inv.save("save");
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
-                        e.printStackTrace();
 
                     }
                 }
@@ -1025,7 +1058,6 @@ public class UI {
                                 inv.save("save");
                             } catch (IOException e) {
                                 System.out.println(e.getMessage());
-                                e.printStackTrace();
 
                             }
                         }
@@ -1084,7 +1116,6 @@ public class UI {
                                 inv.save("save");
                             } catch (IOException e) {
                                 System.out.println(e.getMessage());
-                                e.printStackTrace();
 
                             }
                         }
@@ -1109,7 +1140,7 @@ public class UI {
      */
     private void borrowHolding() {
         char choice = 'c';
-        boolean keepGoing;
+        boolean keepGoing = true;
         String memberID = null;
         do {
             newPage("Borrow");
@@ -1135,7 +1166,7 @@ public class UI {
                     else if (choice == 'n') {
                         System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been borrowed.");
                         memberID = getExistingID("Member", MEMBER_TYPES);
-                        System.out.println("Press yes at the next prompt to borrow a holding for this new member.");
+                        continue;
                     }
                 } else {
                     System.out.println("No member was entered.");
@@ -1202,34 +1233,55 @@ public class UI {
      */
     private void returnHolding() {
         char choice = 'c';
-        boolean keepGoing;
+        boolean keepGoing = true;
         String memberID = null;
         do {
             newPage("Return");
+            //On the first run choice always == c. Get a new member name.
+
             if (choice == 'c') {
                 memberID = getExistingID("Member", MEMBER_TYPES);
 
+                //Check that the member name was entered correctly. Don't give the user options if it was not.
                 if (memberID != null) {
+                    //Tell the user who they are.
                     System.out.println(inv.getMemberName(memberID));
+
+                    //Get them to confirm that they are who they think they are.
                     choice = receiveStringInput("Is this your name?", CHOICE_OPTIONS, "y", 1).charAt(0);
+
+                    //Exit if they want to
                     if (choice == 'e') {
                         return;
-                    } else if (choice == 'n') {
+                    }
+                    //If they want to enter a different user name, set the new one and tell them to go around again.
+
+                    else if (choice == 'n') {
                         System.out.println(Utilities.INFORMATION_MESSAGE + "Holding has not been returned.");
                         memberID = getExistingID("Member", MEMBER_TYPES);
-                        System.out.println("Press yes at the next prompt to return a holding for this new member.");
+                        continue;
                     }
                 } else {
                     System.out.println("No member was entered.");
                 }
             }
+
+            //If the user selected y after member selection or after re-run choice == y
             if (choice == 'y') {
+
+                //Get the holding ID
                 String holdingID = getExistingID("Holding", HOLDING_TYPES);
+
+                //Check that the holding and member IDs have been entered correctly.
                 if (holdingID != null && memberID != null) {
                     inv.printHolding(holdingID);
+
+                    //Get the DateTime for when they want to return it.
                     DateTime returnDate = new DateTime();
                     System.out.println("Enter a single number in days  for when the holding will be returned or that date in the format DD-MM-YYYY. Alternatively, press enter to select the current day.");
                     String date = input.nextLine();
+
+                    //Support for entered dates
                     if (date.charAt(2) == '-' && date.charAt(5) == '-') {
                         StringTokenizer dateTokens = new StringTokenizer(date, "-");
                         if (dateTokens.countTokens() == 3) {
@@ -1237,24 +1289,34 @@ public class UI {
                                 int day = Integer.parseInt(dateTokens.nextToken());
                                 int month = Integer.parseInt(dateTokens.nextToken());
                                 int year = Integer.parseInt(dateTokens.nextToken());
-                                returnDate = new DateTime(day,month,year);
+                                returnDate = new DateTime(day, month, year);
 
-                            }catch(Exception e){
+                            } catch (Exception e) {
                                 System.out.println("Date was entered in incorrect format. Date has been set to current day");
                                 returnDate = new DateTime();
                             }
                         }
-                    } else if (!date.isEmpty()) {
+                    }
+                    //If it is not a date it must be a number of days. Otherwise set it to current date.
+                    else if (!date.isEmpty()) {
                         try {
                             returnDate = new DateTime(Integer.parseInt(date));
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             System.out.println("Date was entered in incorrect format. Date has been set to current day");
                             returnDate = new DateTime();
                         }
                     }
+
+                    //Tell the user their late fee.
                     System.out.println("Holding will be returned with a late fee of :" + inv.getHoldingLateFee(holdingID, returnDate));
+
+                    //Confirm they want to proceed.
                     choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
+
+                    //Exit if they want to exit
                     if (choice == 'e') return;
+
+                    //If they want to proceed print error messages based on result.
                     if (choice == 'y') {
                         try {
                             boolean result = inv.returnHolding(holdingID, memberID, returnDate);
@@ -1309,6 +1371,7 @@ public class UI {
         boolean keepGoing = true;
         while (keepGoing) {
             newPage("Holding");
+            //Get the ID
             String ID = getExistingID("Holding", HOLDING_TYPES);
             if (ID != null) {
                 newPage("Holding: " + ID);
@@ -1328,6 +1391,8 @@ public class UI {
         boolean keepGoing = true;
         while (keepGoing) {
             newPage("Member");
+
+            //Get the ID
             String ID = getExistingID("Member", MEMBER_TYPES);
             if (ID != null) {
                 newPage("Member: " + ID);
@@ -1340,38 +1405,45 @@ public class UI {
         }
     }
 
-    private void save() { //http://stackoverflow.com/questions/10059068/set-timeout-for-users-input (Jeffrey's answer)
+    private void save() {
         newPage("Save");
         String folderName;
         System.out.println("Enter the folder that you want to save to. You have 5 seconds to comply or a default will be chosen:");
+        //Get the save
         folderName = returnWaitInput(10, "save");
 
         try {
             inv.save(folderName);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
         }
         System.out.println("Press enter to return to menu");
         input.nextLine();
 
     }
 
-    private String returnWaitInput(int waitTime, String defaultResult) {
+    private String returnWaitInput(int waitTime, String defaultResult) { //http://stackoverflow.com/questions/10059068/set-timeout-for-users-input (Jeffrey's answer)
+        //Start an input
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        //Get the start time
         long startTime = System.currentTimeMillis();
         String result;
 
+        //Tell them how long they have
         System.out.println(Utilities.INFORMATION_MESSAGE + "You have " + waitTime + " seconds until an answer is chosen for you. You can press enter to choose the default." + Utilities.ANSI_GREEN + "Press enter once you have entered your input" + Utilities.ANSI_RESET);
         System.out.print(Utilities.INPUT_MESSAGE);
         try {
             //noinspection StatementWithEmptyBody
+            //Wait for 1000 * wait time milliseconds
             while ((System.currentTimeMillis() - startTime) < waitTime * 1000
                     && !in.ready()) {
             }
+            //Get the input
             if (in.ready()) {
                 result = in.readLine();
-            } else {
+            }
+            //If there was no input default will be selected.
+            else {
                 System.out.println(Utilities.INFORMATION_MESSAGE + "No input was detected and a default answer has been selected");
                 result = defaultResult;
             }
@@ -1403,14 +1475,17 @@ public class UI {
      */
     private void load() {
         newPage("Load File");
+        //Get their choice
         char choice = receiveStringInput("Do you want to use the default save location?", CHOICE_OPTIONS, "y", 1).charAt(0);
         String folder;
+        //Set it to the default location
         if (choice == 'y') {
             folder = "save";
         } else {
             System.out.println("Enter the relative folder path");
             folder = input.nextLine();
         }
+        //Load
         try {
             inv.load(folder);
         } catch (IOException e) {
@@ -1423,15 +1498,21 @@ public class UI {
     private void exit() {
         newPage("Exit");
         char choice = receiveStringInput("Do you want to exit? \"y\" for save and exit, \"e\" for exit.", CHOICE_OPTIONS, "y", 1, 30).charAt(0);
-        if (choice == 'e') System.exit(0);
+        if (choice == 'e') {
+            //Cleanup and exit without save
+            RUN_STATUS.delete();
+            System.exit(0);
+        }
         if (choice == 'y') {
             try {
+                //Save to lastrun and a backup- one for every day.
                 inv.save("lastrun");
                 DateTime currentDay = new DateTime();
                 inv.save("backup\\" + currentDay.toString());
             } catch (IOException e) {
                 System.out.print("An error occurred and state could not be saved.");
             }
+            //Cleanup and exit
             RUN_STATUS.delete();
             System.exit(0);
         }
@@ -1447,7 +1528,9 @@ public class UI {
      * @param typeName Used in user facing prompts.
      */
     private void editID(char[] types, String typeName) {
+        //Get the ID
         String oldID = getExistingID(typeName, types);
+        //If it was entered correctly keep going
         if (oldID != null) {
             String[] options = {oldID.substring(0, 1)};
             String[] idInfo = getValidID(typeName, options);
@@ -1455,6 +1538,7 @@ public class UI {
                 return;
             }
             String newID = idInfo[0] + idInfo[1];
+            //Replace the ID
             inv.replaceID(oldID, newID);
         } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
 
@@ -1467,16 +1551,22 @@ public class UI {
      * @param typeName Used in user facing prompts.
      */
     private void editTitle(char[] types, String typeName) {
+        //Get the ID
         String oldID = getExistingID(typeName, types);
+        //If it was entered correctly keep going
         if (oldID != null) {
+            //Get input after prompting
             System.out.println("Please enter replacement title");
             System.out.print(Utilities.INPUT_MESSAGE);
             String title = input.nextLine();
+
+            //Validate it
             while (title.length() == 0) {
                 System.out.println(Utilities.WARNING_MESSAGE + "Please enter at least one character:");
                 System.out.print(Utilities.INPUT_MESSAGE);
                 title = input.nextLine();
             }
+            //Replace the title
             inv.replaceTitle(oldID, title);
         } else System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect ID, nothing was changed.");
 
@@ -1489,17 +1579,22 @@ public class UI {
      * @param typeName Used in user facing prompts.
      */
     private void editName(char[] types, String typeName) {
+        //Get the ID
         String oldID = getExistingID(typeName, types);
+        //If it was entered correctly keep going
         if (oldID != null) {
-
+            //Get input after prompting
             System.out.println("Please enter replacement name");
             System.out.print(Utilities.INPUT_MESSAGE);
             String name = input.nextLine();
+
+            //Validate it
             while (name.length() > 0) {
                 System.out.println(Utilities.WARNING_MESSAGE + "Please enter at least one character:");
                 System.out.print(Utilities.INPUT_MESSAGE);
                 name = input.nextLine();
             }
+            //Replace the name and inform the user
             boolean result = inv.replaceName(oldID, name);
             if (!result) {
                 System.out.println(Utilities.ERROR_MESSAGE + "Change failed.");
@@ -1511,12 +1606,17 @@ public class UI {
      * Edits the loan cost of Videos.
      */
     private void editLoanCost() {
+        //We can only edit loan cost on Videos.
         char[] type = {'v'};
-        String oldID = getExistingID("Holding", type);
+        String oldID = getExistingID("Video", type);
+
+        //Validate ID
         if (oldID != null) {
+            //Run input validation
             String[] choiceOptions = {"4", "6"};
             int newLoan = Integer.parseInt(receiveStringInput("Enter new Loan Fee:", choiceOptions, true, 1));
             try {
+                //Replace the loan fee
                 inv.replaceLoan(oldID, newLoan);
             } catch (IncorrectDetailsException e) {
                 System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
@@ -1528,9 +1628,12 @@ public class UI {
      * Activates the ID input by the user. Can be a member or holding.
      */
     private void activate() {
+        //Get the ID
         String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
+        //If it was entered correctly keep going
         if (ID != null) {
             try {
+                //Run the activation and report result
                 boolean result = inv.activate(ID);
                 if (!result) {
                     System.out.println(Utilities.WARNING_MESSAGE + " Activation failed");
@@ -1547,9 +1650,11 @@ public class UI {
      * Deactivates the ID input by the user. Can be a member or holding.
      */
     private void deactivate() {
+        //Get the ID
         String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
+        //If it was entered correctly keep going
         if (ID != null) {
-
+            //Run the activation and report result
             boolean result = inv.deactivate(ID);
             if (!result) {
                 System.out.println(Utilities.WARNING_MESSAGE + "Deactivation failed");
@@ -1563,9 +1668,10 @@ public class UI {
      * Resets the credit of the ID input by the user. Is for a member.
      */
     private void resetMemberCredit() {
+        //Get the ID
         String ID = getExistingID("Member", MEMBER_TYPES);
         if (ID != null) {
-
+//Reset the credit
             inv.resetMemberCredit(ID);
             System.out.println(Utilities.INFORMATION_MESSAGE + "Credit was reset");
         }
@@ -1575,9 +1681,11 @@ public class UI {
      * Returns a holding with no fee.
      */
     private void returnHoldingNoFee() {
+        //Get both IDs
         String holdingID = getExistingID("Holding", HOLDING_TYPES);
         String memberID = getExistingID("Member", MEMBER_TYPES);
         try {
+            //Return it
             inv.returnHoldingNoFee(holdingID, memberID);
         } catch (Exception e) {
             System.out.println(Utilities.ERROR_MESSAGE + " Adding failed due to " + e + " with error message: \n" + e.getMessage());
@@ -1588,9 +1696,12 @@ public class UI {
      * A UI method for retrieving deleted holdings.
      */
     private void undeleteHolding() {
+        //Print the options
         inv.printDeleted();
+        //Give them a selection
         int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete", new String[]{"0", "1", "2", "3", "4"}, true, 1));
 
+        //Run the program and get result
         boolean result = inv.undeleteHolding(selection);
         if (!result) {
             System.out.println(Utilities.WARNING_MESSAGE + "Retrieval Failed");
@@ -1603,10 +1714,15 @@ public class UI {
      * Compares the program md5 state to an input md5.
      */
     private void printState() {
+        //Print an MD5 of the state.
         String outputHash = inv.outputState();
         System.out.println(outputHash);
+
+        //Request an MD5 from a previous run
         System.out.println("Enter past MD5");
         String pastHash = input.nextLine();
+
+        //Tell the user if they are the same
         if (pastHash.equals(outputHash)) {
             System.out.println("State was preserved");
         } else {
