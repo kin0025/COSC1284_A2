@@ -820,11 +820,9 @@ public class Inventory {
                     return members[arrayPos].getBalance();
                 }
             }
-        } else {
-            System.out.println("Item not found");
-            return 0;
         }
-
+        System.out.println("Item not found");
+        return 0;
     }
 
     /**
