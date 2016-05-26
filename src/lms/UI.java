@@ -1227,8 +1227,7 @@ public class UI {
                 String holdingID = getExistingID("Holding", HOLDING_TYPES);
                 if (holdingID != null && memberID != null) {
                     inv.printHolding(holdingID);
-                    DateTime returnDate;
-                    // TODO: 26/05/2016 ADD DATETIME HANDLING HERE
+                    DateTime returnDate = new DateTime();
                     System.out.println("Enter a single number in days  for when the holding will be returned or that date in the format DD-MM-YYYY. Alternatively, press enter to select the current day.");
                     String date = input.nextLine();
                     if (date.charAt(2) == '-' && date.charAt(5) == '-') {
@@ -1252,8 +1251,6 @@ public class UI {
                             System.out.println("Date was entered in incorrect format. Date has been set to current day");
                             returnDate = new DateTime();
                         }
-                    } else {
-                        returnDate = new DateTime();
                     }
                     System.out.println("Holding will be returned with a late fee of :" + inv.getHoldingLateFee(holdingID, returnDate));
                     choice = receiveStringInput("Do you want to return this holding?", CHOICE_OPTIONS, "y", 1).charAt(0);
