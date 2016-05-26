@@ -6,12 +6,10 @@
 
 package lms.holding;
 
+import lms.IdentifierSupported;
 import lms.SystemOperations;
 import lms.UniqueID;
-import lms.exceptions.IncorrectDetailsException;
-import lms.exceptions.ItemInactiveException;
-import lms.exceptions.OnLoanException;
-import lms.exceptions.TimeTravelException;
+import lms.exceptions.*;
 import lms.util.DateTime;
 import lms.util.IDManager;
 import lms.util.Utilities;
@@ -20,7 +18,7 @@ import lms.util.Utilities;
 */
 
 @SuppressWarnings("WeakerAccess")
-public abstract class Holding implements SystemOperations, UniqueID {
+public abstract class Holding implements SystemOperations, UniqueID, IdentifierSupported{
     private String ID;
     private String title;
     private int loanFee;
@@ -218,14 +216,14 @@ public abstract class Holding implements SystemOperations, UniqueID {
      * @param dateReturned The date the holding was returned.
      * @return the success of returning.
      */
-    public boolean returnHolding(DateTime dateReturned) throws ItemInactiveException, OnLoanException, TimeTravelException { /** Returns true if it has been returned, false if issues encountered and not marked as returned**/
+    public boolean returnHolding(DateTime dateReturned) throws ItemInactiveException, NotBorrowedException, TimeTravelException { /** Returns true if it has been returned, false if issues encountered and not marked as returned**/
         if (isOnLoan() && DateTime.diffDays(dateReturned, borrowDate) >= 0 && active) {
             borrowDate = null;
             return true;
         } else if (!active) {
             throw new ItemInactiveException("Item was previously marked as inactive. It has not been marked as returned");
         } else if (!isOnLoan()) {
-            throw new OnLoanException("Item was not borrowed, hence cannot be returned.");
+            throw new NotBorrowedException("Item was not borrowed, hence cannot be returned.");
         } else {
             throw new TimeTravelException("Attempt to return book in the past.");
         }

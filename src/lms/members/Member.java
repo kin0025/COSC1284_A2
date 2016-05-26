@@ -9,12 +9,10 @@
 */
 package lms.members;
 
+import lms.IdentifierSupported;
 import lms.SystemOperations;
 import lms.UniqueID;
-import lms.exceptions.InsufficientCreditException;
-import lms.exceptions.ItemInactiveException;
-import lms.exceptions.OnLoanException;
-import lms.exceptions.TimeTravelException;
+import lms.exceptions.*;
 import lms.holding.Holding;
 import lms.util.DateTime;
 import lms.util.IDManager;
@@ -26,7 +24,7 @@ import java.util.ArrayList;
  * The type Member.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class Member implements SystemOperations, UniqueID {
+public abstract class Member implements SystemOperations, UniqueID, IdentifierSupported {
     private String ID;
     private String name;
     private final int maxCredit;
@@ -260,7 +258,7 @@ public abstract class Member implements SystemOperations, UniqueID {
      */
     public boolean borrowHolding(Holding holding) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
         //Check if the member is valid to borrow.
-        if (checkAllowedCreditOverdraw(holding.getDefaultLoanFee()) && active) {
+        if (checkAllowedCreditOverdraw(holding.getDefaultLoanFee()) && isActive()) {
 
             //Check if the holding can be borrowed
             if (holding.borrowHolding()) {
@@ -272,8 +270,11 @@ public abstract class Member implements SystemOperations, UniqueID {
             } else
                 //If the book cannot be borrowed
                 throw new OnLoanException(Utilities.WARNING_MESSAGE + "Holding on Loan: Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
-        } else
+        } else if (!isActive()) {
+            throw new ItemInactiveException("Member was inactive. Activate the member to borrow a holding.");
+        } else {
             throw new InsufficientCreditException(Utilities.WARNING_MESSAGE + "Balance was insufficient to borrow book");
+        }
     }
 
     /**
@@ -284,33 +285,35 @@ public abstract class Member implements SystemOperations, UniqueID {
      * @return Returns whether the return operation was successful.
      * @throws InsufficientCreditException the insufficient credit exception
      * @throws ItemInactiveException       the item inactive exception
-     * @throws OnLoanException             the on loan exception
      * @throws TimeTravelException         the time travel exception
      */
-    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException, ItemInactiveException, OnLoanException, TimeTravelException {
+
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws InsufficientCreditException, ItemInactiveException, NotBorrowedException, TimeTravelException {
         int searchedPos = findHolding(holding);
+        if (isActive()) {
+            //Check that a holding was found.
+            if (searchedPos <= 0) {
+                //If the holding was found get the late fee and validate it.
+                int lateFee = holding.calculateLateFee(returnDate);
 
-        //Check that a holding was found.
-        if (searchedPos <= 0) {
-            //If the holding was found get the late fee and validate it.
-            int lateFee = holding.calculateLateFee(returnDate);
-
-            //Check that the
-            if (lateFee > balance && holding.returnHolding(returnDate)) {
-                //Then reduce the balance
-                updateRemainingCredit(lateFee);
-                //And remove the holding from the member.
-                borrowed.remove(searchedPos);
-                return (true);
-            } else if (balance < lateFee) {
-                throw new OnLoanException("Balance is too low to return item. It must be greater than $" + lateFee + "to return");
+                //Check that the
+                if (lateFee > balance && holding.returnHolding(returnDate)) {
+                    //Then reduce the balance
+                    updateRemainingCredit(lateFee);
+                    //And remove the holding from the member.
+                    borrowed.remove(searchedPos);
+                    return (true);
+                } else if (balance < lateFee) {
+                    throw new InsufficientCreditException("Balance is too low to return item. It must be greater than $" + lateFee + "to return");
+                } else {
+                    throw new ItemInactiveException("Holding was unable to be returned, likely due to deactivation");
+                }
             } else {
-                throw new ItemInactiveException("Holding was unable to be returned, likely due to deactivation");
+                throw new NotBorrowedException("Holding was not borrowed by this user.");
             }
         } else {
-            throw new OnLoanException("Holding was not borrowed by this user.");
+            throw new ItemInactiveException("Member is inactive. Activate to return holding");
         }
-
     }
 
     /**
@@ -323,23 +326,27 @@ public abstract class Member implements SystemOperations, UniqueID {
      * @throws OnLoanException       the on loan exception
      * @throws TimeTravelException   the time travel exception
      */
-    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, OnLoanException, TimeTravelException {
+    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, NotBorrowedException, TimeTravelException {
         int searchedPos = findHolding(holding);
 
-        //Validate that the holding is borrowed by the user
-        if (searchedPos <= 0) {
+        if (isActive()) {
+            //Validate that the holding is borrowed by the user
+            if (searchedPos <= 0) {
 
-            //Try to return the holding
-            if (holding.returnHolding(returnDate)) {
+                //Try to return the holding
+                if (holding.returnHolding(returnDate)) {
 
-                //Remove the holding from the member.
-                borrowed.remove(searchedPos);
-                return (true);
+                    //Remove the holding from the member.
+                    borrowed.remove(searchedPos);
+                    return (true);
+                } else {
+                    throw new ItemInactiveException("Holding could not be returned");
+                }
             } else {
-                throw new ItemInactiveException("Holding could not be returned");
+                throw new ItemInactiveException("Holding was not borrowed and could not be returned");
             }
         } else {
-            throw new ItemInactiveException("Holding was not borrowed and could not be returned");
+            throw new ItemInactiveException("Member is inactive. Activate to return holding");
         }
     }
 

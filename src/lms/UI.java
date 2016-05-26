@@ -30,8 +30,8 @@ public class UI {
     private static final String[] BORROW_OPTIONS = {"y (yes)", "c (change member)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
-    private static final char[] MEMBER_TYPES = {'s', 'p'};
-    private static final char[] HOLDING_TYPES = {'b', 'v'};
+    public static final char[] MEMBER_TYPES = {'s', 'p'};
+    public static final char[] HOLDING_TYPES = {'b', 'v'};
     private final File RUN_STATUS = new File("./running");
     private static int consoleWidth = 150;
     private final Scanner input = new Scanner(System.in);
@@ -157,7 +157,7 @@ public class UI {
             result = RUN_STATUS.createNewFile();
             if (!result) {
                 System.out.println("Program did not close correctly last run.");
-                //check if a backup folder exists.
+                //check if a backup exists.
                 File backupMembersRun = new File("./backup/members" + Utilities.FILE_EXTENSION);
                 File backupHoldingsRun = new File("./backup/holdings" + Utilities.FILE_EXTENSION);
 

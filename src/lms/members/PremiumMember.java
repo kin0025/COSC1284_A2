@@ -10,6 +10,7 @@
 package lms.members;
 
 import lms.exceptions.ItemInactiveException;
+import lms.exceptions.NotBorrowedException;
 import lms.exceptions.OnLoanException;
 import lms.exceptions.TimeTravelException;
 import lms.holding.Holding;
@@ -70,36 +71,39 @@ public class PremiumMember extends Member {
      * @return Whether the holding was successfully returned.
      */
     @Override
-    public boolean returnHolding(Holding holding, DateTime returnDate) throws TimeTravelException,OnLoanException,ItemInactiveException{
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws TimeTravelException,NotBorrowedException,ItemInactiveException{
         //Check that the holding is actually borrowed by the user.
-        if (borrowed.contains(holding)) {
+        if(isActive()) {
+            if (borrowed.contains(holding)) {
 
-            //Check that the holding can be returned.
-            if (holding.returnHolding(returnDate)) {
-                //Deduct the fee, remove the holding from the member.
-                int lateFee = holding.calculateLateFee(returnDate);
-                updateRemainingCredit(lateFee);
-                borrowed.remove(holding);
+                //Check that the holding can be returned.
+                if (holding.returnHolding(returnDate)) {
+                    //Deduct the fee, remove the holding from the member.
+                    int lateFee = holding.calculateLateFee(returnDate);
+                    updateRemainingCredit(lateFee);
+                    borrowed.remove(holding);
 
-                //Print some stuff to the console for the user to see.
-                if (balance < 0) {
-                    System.out.println(Utilities.INFORMATION_MESSAGE + " Balance is less than 0 dollars, you will be unable to borrow any books until it is reloaded.");
-                }
-                if (lateFee > 0) {
-                    System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with late fee of:" + lateFee + ". Remaining balance is " + getBalance());
+                    //Print some stuff to the console for the user to see.
+                    if (balance < 0) {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + " Balance is less than 0 dollars, you will be unable to borrow any books until it is reloaded.");
+                    }
+                    if (lateFee > 0) {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with late fee of:" + lateFee + ". Remaining balance is " + getBalance());
+                    } else {
+                        System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with no late fee. Thank you for returning your books in a timely fashion. Your remaining balance is:" + lateFee);
+                    }
+                    return true;
+                    //If the holding cannot be returned return false. It will likely throw an exception anyway.
                 } else {
-                    System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with no late fee. Thank you for returning your books in a timely fashion. Your remaining balance is:" + lateFee);
+                    return false;
                 }
-                return true;
-            //If the holding cannot be returned return false. It will likely throw an exception anyway.
+                //Throw an exception if it was not.
             } else {
-                return false;
+                throw new NotBorrowedException("User has not borrowed holding");
             }
-            //Throw an exception if it was not.
-        } else {
-            throw new OnLoanException("User has not borrowed holding");
+        }else{
+            throw new ItemInactiveException("Member is inactive. Please activate member to return holding.");
         }
-
     }
 
 

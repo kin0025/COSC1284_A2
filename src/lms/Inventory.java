@@ -85,13 +85,17 @@ public class Inventory {
      * @return Returns one of these strings: <code>Wrong Number of Digits,ID contains characters,Already taken, Valid</code>
      */
     String checkID(String ID, char itemType) {
+
         if (ID.length() != 6) {
             return ("Wrong Number of Digits");
         }
+
         boolean validID = true;
+
         int i = 0;
+
         while (ID.length() > i && validID) {
-            //So we need to cast the id to a char to an int. This returns an ascii value, as I found out with the loanFee.
+            //So we need to cast the id to a char to an int. This returns an numerical representation of their ASCII code. The numbers 0-9 are represented by ASCII codes between 48 and 58.
             if (!((int) ID.charAt(i) >= 48 && (int) ID.charAt(i) <= 58)) { //Ascii codes for numbers are between 48 and 58 (including 0). If each character is between these values, they are numbers.
                 validID = false;
             }
@@ -135,19 +139,33 @@ public class Inventory {
      * @return returns an array index of the first null value
      */
     private int firstNullArray(char type) {
-        if (type == 'v' || type == 'b') {
-            for (int i = 0; i < holdings.length; i++) {
-                if (holdings[i] == null) {
-                    return i;
-                }
+        //Set an array up
+        Object[] array = null;
+
+        //If the type is on of the holding types, set the array to the holdings array.
+        for (char c : UI.HOLDING_TYPES) {
+            if (type == c) {
+                array = holdings;
             }
-        } else if (type == 'p' || type == 's') {
-            for (int i = 0; i < members.length; i++) {
-                if (members[i] == null) {
+        }
+
+        //If the type is of a member set the array to the members array
+        for (char c : UI.MEMBER_TYPES) {
+            if (type == c) {
+                array = members;
+            }
+        }
+
+        //If the array was set find the first null value and return it.
+        if (array != null) {
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] == null) {
                     return i;
                 }
             }
         }
+
+        //If they type did not match a holding or member, or a null position was not found return -1;
         return -1;
     }
 
@@ -168,6 +186,7 @@ public class Inventory {
      */
     public String generateValidID(char itemType) {
         String randomID;
+        //Use the Utilities method to create random IDs until one is unique. This could cause problems if the arrays are larger and thousands of IDs are taken. In this case, sequential generation might be better.
         do {
             randomID = Utilities.randomID();
         } while (!checkID(randomID, itemType).equalsIgnoreCase("valid"));
@@ -200,30 +219,42 @@ public class Inventory {
      */
     private int searchArrays(String ID) {
         char itemType = ID.toLowerCase().charAt(0);
-        if (itemType == 'v' || itemType == 'b') {
-            for (int i = 0; i < holdings.length; i++) {
-                if (holdings[i] != null) {
-                    if (holdings[i].getID().equals(ID)) {
+
+        IdentifierSupported[] array = null;
+        //If the type is on of the holding types, set the array to the holdings array.
+        for (char c : UI.HOLDING_TYPES) {
+            if (itemType == c) {
+                array = holdings;
+            }
+        }
+
+        //If the type is of a member set the array to the members array
+        for (char c : UI.MEMBER_TYPES) {
+            if (itemType == c) {
+                array = members;
+            }
+        }
+
+        //If the array was set as it matched something use it here.
+        if (array != null) {
+            //Search through the array for something that matches the ID given. If found, return it.
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] != null) {
+                    if (array[i].getID().equals(ID)) {
                         return (i);
                     }
                 }
             }
+            //If we didn't find anything tell the user.
             System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find holding with that ID");
             return (-1);
-        } else if (itemType == 'p' || itemType == 's') {
-            for (int i = 0; i < members.length; i++) {
-                if (members[i] != null) {
-                    if (members[i].getID().equals(ID)) {
-                        return (i);
-                    }
-                }
-            }
-        } else {
+        }
+
+        //The array was null- hence the ID did not match one of the accepted types. Report that to the user.
+        else {
             System.out.println(Utilities.WARNING_MESSAGE + " Wrong ID format");
             return -1;
         }
-        System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find member with that ID");
-        return -1;
     }
 
     /* Methods that add items to inventory */
@@ -238,15 +269,26 @@ public class Inventory {
      * @return
      */
     public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
+        //Check that there is still room in inventory for a new holding.
+        recalculateStatistics();
         if (numberOfHoldings < holdings.length) {
+
+            //Check that the ID is valid
             if (checkID(ID, itemType).equals("Valid")) {
+
+                //Set the proper concatenated ID.
                 String holdingID = itemType + ID;
+                //Find the first open slot in inventory
                 int itemNumber = firstNullArray(itemType);
+
+                //Create a book if the type is set to book
                 if (itemType == 'b') {
                     holdings[itemNumber] = new Book(holdingID, title);
                     recalculateStatistics();
                     return true;
-                } else if (itemType == 'v') {
+                }
+                //Create a video if they type is a video.
+                else if (itemType == 'v') {
                     holdings[itemNumber] = new Video(holdingID, title, loanFee);
                     numberOfHoldings++;
                     return true;
@@ -258,13 +300,21 @@ public class Inventory {
     }
 
     public boolean addMember(String ID, char itemType, String name) {
+        //Check there is room for a new member
+        recalculateStatistics();
         if (numberOfMembers < members.length) {
+
+            //Check the id is valid
             if (checkID(ID, itemType).equals("Valid")) {
+
                 String memberID = itemType + ID;
+                //Find the first blank position in the array to fill.
                 int itemNumber = firstNullArray(itemType);
+
+                //Create the member based on type.
                 if (itemType == 's') {
                     members[itemNumber] = new StandardMember(memberID, name);
-                    recalculateStatistics();
+                    numberOfMembers++;
                     return true;
                 } else if (itemType == 'p') {
                     members[itemNumber] = new PremiumMember(memberID, name);
@@ -279,6 +329,12 @@ public class Inventory {
     }
 
     /* Remove */
+
+    /**
+     * A wrapper method that has forcing removal disabled.
+     * @param ID The id to be removed
+     * @return whether the item was succesfully removed.
+     */
     public boolean removeHolding(String ID) {
         return removeHolding(ID, false);
     }
@@ -341,7 +397,7 @@ public class Inventory {
 
     public boolean undeleteHolding(int deletedIndex) {
 
-        int index = firstNullArray('b');
+        int index = firstNullArray(UI.HOLDING_TYPES[0]);
         if (index < 0) {
             return false;
         }
@@ -393,7 +449,7 @@ public class Inventory {
         } else return false;
     }
 
-    public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
+    public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException, NotBorrowedException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         if (holdingPos >= 0 && memberPos >= 0) {
@@ -403,7 +459,7 @@ public class Inventory {
 
     }
 
-    public boolean returnHolding(String holdingID, String memberID, DateTime returnDate) throws InsufficientCreditException, OnLoanException, ItemInactiveException, TimeTravelException {
+    public boolean returnHolding(String holdingID, String memberID, DateTime returnDate) throws InsufficientCreditException, NotBorrowedException, ItemInactiveException, TimeTravelException {
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
         if (holdingPos >= 0 && memberPos >= 0) {
@@ -503,6 +559,8 @@ public class Inventory {
 
     public boolean activate(String ID) throws IncorrectDetailsException {
         int arrayPos = searchArrays(ID);
+
+        SystemOperations[] array = null;
         if (ID.charAt(0) == 'b' || ID.charAt(0) == 'v') {
             return holdings[arrayPos].activate();
         } else {
@@ -731,7 +789,7 @@ public class Inventory {
         } else return 0;
     }
 
-    public int getHoldingLateFee(String ID,DateTime returnDay){
+    public int getHoldingLateFee(String ID, DateTime returnDay) {
         int holdingPos = searchArrays(ID);
         if (holdingPos >= 0) {
             return holdings[holdingPos].calculateLateFee(returnDay);
