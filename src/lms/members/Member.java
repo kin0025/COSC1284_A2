@@ -80,7 +80,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @param ID The ID to be set
      * @return If the ID is set returns true.
      */
-    protected boolean setID(String ID) {
+    public boolean setID(String ID) {
         this.ID = ID;
         return true;
     }
@@ -479,5 +479,12 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
     public void setUUID(String uniqueID) {
         this.uniqueID = uniqueID;
         IDManager.addIdentifier(uniqueID);
+    }
+
+    public boolean containsHolding(Holding holding){
+        return borrowed.contains(holding);
+    }
+    public boolean removeHolding(Holding holding){
+        return borrowed.remove(holding);
     }
 }

@@ -4,6 +4,9 @@ If you wish to load from a daily backup you can enter it in the form "backup/YYY
 
 There are a series of constants in the Utilities class that allow the type of file to be changed, and colours to be enabled.
 
+Admin menu option includes activation, deactivation, editing of details , resetting of credit and returning holdings with no fee and undeleting holdings.
+Password is Password1
+
 During save a call is made to a function that is part of Java 8. If using java 1.7 an alternative is provided.
 The call is made in methods below. Alternatives are provided and are commented out.:
 lms.members.Member.borrowedToString()

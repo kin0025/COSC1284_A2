@@ -11,5 +11,6 @@ package lms;
  */
 public interface IdentifierSupported {
     String getID();
+    boolean setID(String newID);
 
     }
