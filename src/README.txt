@@ -1,5 +1,7 @@
 If an input is requested accompanied by [char] with char been one of the input options, pressing enter will select that as the default input.
 
+Part of this program was done on my Sister's computer as my pc broke- hence some headers may include Made by Emily or something.
+
 If you wish to load from a daily backup you can enter it in the form "backup/YYYY-MM-DD"
 
 There are a series of constants in the Utilities class that allow the type of file to be changed, and colours to be enabled.

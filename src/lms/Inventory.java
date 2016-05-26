@@ -17,15 +17,14 @@ import lms.members.PremiumMember;
 import lms.members.StandardMember;
 import lms.util.DateTime;
 import lms.util.IDManager;
+import lms.util.IO;
 import lms.util.Utilities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 
 
 /**
@@ -39,6 +38,7 @@ public class Inventory {
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
     private static final String fileExtension = Utilities.FILE_EXTENSION;
+    private IO io = new IO(this);
 
     /**
      * Creates holding and member arrays of size 15
@@ -138,7 +138,7 @@ public class Inventory {
      * @param type the type of array to be examined
      * @return returns an array index of the first null value
      */
-    private int firstNullArray(char type) {
+    public int firstNullArray(char type) {
         //Set an array up
         Object[] array = null;
 
@@ -196,7 +196,7 @@ public class Inventory {
     /**
      * Recalculates the statistics for number of items.
      */
-    private void recalculateStatistics() {
+    public void recalculateStatistics() {
         numberOfHoldings = 0;
         numberOfMembers = 0;
         for (Holding holding : holdings) {
@@ -825,54 +825,6 @@ public class Inventory {
         return 0;
     }
 
-    /**
-     * Saves the program state to holdings.txt, members.txt and state.txt
-     *
-     * @param folderName the name of the folder to save to relative to project root
-     * @throws IOException
-     */
-    public void save(String folderName) throws IOException {
-        File folder = new File("./" + folderName);
-        //Check out folder structure is in place
-        folder.mkdirs();
-
-        //Initialise the files.
-        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings" + fileExtension);
-        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members" + fileExtension);
-        File stateFile = new File(folder.getAbsolutePath() + "\\" + "state" + fileExtension);
-
-        //Print this so we know where we are saving.
-        System.out.println(folder.getAbsolutePath());
-
-        //Create the writer objects
-        FileWriter holdingsWriter = new FileWriter(holdingsFile.getAbsoluteFile());
-        FileWriter membersWriter = new FileWriter(membersFile.getAbsoluteFile());
-        FileWriter stateWriter = new FileWriter(stateFile.getAbsoluteFile());
-
-        //Output each holding to file
-        for (Holding holding : holdings) {
-            if (holding != null) {
-                holdingsWriter.append(holding.toFile()).append('\n');//Again IDE said performance issue without extra append, as I used to have a "+" there.
-            }
-        }
-
-        //Output each member to file
-        for (Member member : members) {
-            if (member != null) {
-                membersWriter.append(member.toFile()).append("\n");
-            }
-        }
-        //Write the output state to file
-        stateWriter.append(outputState());
-
-        //Save them all
-        stateWriter.flush();
-        stateWriter.close();
-        membersWriter.flush();
-        membersWriter.close();
-        holdingsWriter.flush();
-        holdingsWriter.close();
-    }
 
     /**
      * Loads the hash from the state file
@@ -880,7 +832,7 @@ public class Inventory {
      * @param folder the name of the folder to load from relative to project root
      * @return Returns the hash of the last run.
      */
-    private String loadLastHash(String folder) {
+    public String loadLastHash(String folder) {
         //The file to load from
         File stateFile = new File("./" + "\\" + folder + "\\state" + fileExtension);
         Scanner state = null;
@@ -913,126 +865,12 @@ public class Inventory {
     }
 
     /**
-     * Loads the holdings.txt, members.txt and state.txt files from the folder specified relative to the location.
-     *
-     * @param folderName
-     * @throws IOException
-     */
-    public void load(String folderName) throws IOException {
-        File folder = new File("./" + folderName);
-        //Check our folder structure is present
-        folder.mkdir();
-
-        //Create the file objects
-        File holdingsFile = new File(folder.getAbsolutePath() + "\\" + "holdings" + fileExtension);
-        File membersFile = new File(folder.getAbsolutePath() + "\\" + "members" + fileExtension);
-        //Print this so we know where we are saving.
-        System.out.println(folder.getAbsolutePath());
-
-        //Create the reader objects
-        Scanner holdingsReader = new Scanner(holdingsFile.getAbsoluteFile());
-        Scanner membersReader = new Scanner(membersFile.getAbsoluteFile());
-
-        //Load Holdings
-        while (holdingsReader.hasNextLine()) {
-            //Tokenize each line
-            StringTokenizer holdingToken = new StringTokenizer(holdingsReader.nextLine(), ",");
-            //Load each property
-            String identifier = holdingToken.nextToken();
-            String title = holdingToken.nextToken();
-            int loanFee = Integer.parseInt(holdingToken.nextToken());
-            int maxLoanPeriod = Integer.parseInt(holdingToken.nextToken());
-
-            //Load the borrow time.
-            String borrowTime = holdingToken.nextToken();
-            DateTime borrowDate = null;
-            if (!borrowTime.equals("null")) {
-                StringTokenizer dateSplit = new StringTokenizer(borrowTime, "-");
-                int year = Integer.parseInt(dateSplit.nextToken());
-                int month = Integer.parseInt(dateSplit.nextToken());
-                int day = Integer.parseInt(dateSplit.nextToken());
-                borrowDate = new DateTime(day, month, year);
-            }
-
-
-            boolean active = Boolean.parseBoolean(holdingToken.nextToken());
-            String uniqueID = holdingToken.nextToken();
-
-            //Add them to the array.
-            if (!IDManager.isAlreadyTaken(uniqueID)) {
-                if (identifier.charAt(0) == 'b') {
-                    holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
-                } else if (identifier.charAt(0) == 'v') {
-                    holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
-                }
-            } else {
-                System.out.println("Holding with the ID: " + identifier + " and the title: + " + title + "was not added due to a duplicate unique identifier.");
-            }
-        }
-        //Load Members
-        while (membersReader.hasNextLine()) {
-            //Tokenize each line
-            StringTokenizer membersToken = new StringTokenizer(membersReader.nextLine(), ",");
-            //Load each property
-            String identifier = membersToken.nextToken();
-            String name = membersToken.nextToken();
-            int maxCredit = Integer.parseInt(membersToken.nextToken());
-            double balance = Double.parseDouble(membersToken.nextToken());
-            String holdingsString = membersToken.nextToken();
-            ArrayList<Holding> borrowed = new ArrayList<>();
-            StringTokenizer borrowedTokens = new StringTokenizer(holdingsString, ":");
-            while (borrowedTokens.hasMoreTokens()) {
-                String holdingUUID = borrowedTokens.nextToken();
-                if (holdingUUID != null && !holdingUUID.equals("null")) {
-                    borrowed.add(uuidToHolding(holdingUUID));
-                }
-            }
-
-            boolean active = Boolean.parseBoolean(membersToken.nextToken());
-            String uniqueID = membersToken.nextToken();
-            //Add them to the array.
-            if (!IDManager.isAlreadyTaken(uniqueID)) {
-                if (identifier.charAt(0) == 's') {
-                    members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
-                } else if (identifier.charAt(0) == 'p') {
-                    members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
-                }
-            } else {
-                System.out.println("Member with the ID: " + identifier + " and the name: + " + name + "was not added due to a duplicate UUID.");
-            }
-        }
-
-//Close all the things
-        membersReader.close();
-        holdingsReader.close();
-//Recheck the arrays.
-        recalculateStatistics();
-
-        //Run state checking
-        try {
-            //Print stuff after comparing state
-            if (loadLastHash(folderName).equals(outputState())) {
-                System.out.println("Program state was preserved since last save.");//If loading a database into an already populated database please ignore.
-                System.out.println("LAST HASH: " + loadLastHash(folderName));
-                System.out.println("CURRENT HASH: " + outputState());
-            } else {
-                System.out.println(Utilities.WARNING_MESSAGE + "WARNING PROGRAM STATE CHANGED ACROSS BOOT! INFORMATION MAY NOT BE THE SAME AS BEFORE. ");
-                System.out.println("LAST HASH: " + loadLastHash(folderName));
-                System.out.println("CURRENT HASH: " + outputState());
-            }
-        } catch (NullPointerException e) {
-            System.out.println("There was no state saved last time.");
-        }
-
-    }
-
-    /**
      * Gets a UUID, returns a holding with the same UUID
      *
      * @param uuid The UUID to check
      * @return A holding with the uuid.
      */
-    private Holding uuidToHolding(String uuid) {
+    public Holding uuidToHolding(String uuid) {
         for (Holding h : holdings
                 ) {
             if (h != null) {
@@ -1095,6 +933,37 @@ public class Inventory {
         }
         megaString += IDManager.stateString();
         return megaString;
+    }
+
+    public void addHolding(String identifier, String title, int loanFee,int maxLoanPeriod, DateTime borrowDate,boolean active, String uniqueID){
+        if (identifier.charAt(0) == 'b') {
+            holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+        } else if (identifier.charAt(0) == 'v') {
+            holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+        }
+    }
+
+    public void addMember(String identifier, String name, int maxCredit,double balance, ArrayList<Holding> borrowed,boolean active, String uniqueID){
+        if (identifier.charAt(0) == 's') {
+            members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+        } else if (identifier.charAt(0) == 'p') {
+            members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+        }
+    }
+
+    public void save(String folder)throws IOException{
+        io.save(folder);
+    }
+
+    public void load(String folder)throws IOException{
+        io.load(folder);
+    }
+
+    public Holding[] getHoldings(){
+        return holdings;
+    }
+    public Member[] getMembers(){
+        return members;
     }
 
 }
