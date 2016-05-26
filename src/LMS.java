@@ -25,8 +25,8 @@ public class LMS {
        }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println(e.getStackTrace());
-        }finally {
+e.printStackTrace();
+       }finally {
             System.out.println("Saving program state to backup directory due to thrown exception.");
             state.save("backup");
         }

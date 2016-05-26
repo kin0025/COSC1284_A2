@@ -33,7 +33,7 @@ public class IDManager {
      */
     public static String stateString() {
 
-        String megaString = null;
+        String megaString;
         //works with java 1.7
         /*for (String a : identifiers
                 ) {

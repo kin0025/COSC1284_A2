@@ -11,7 +11,6 @@ package lms.members;
 
 import lms.exceptions.ItemInactiveException;
 import lms.exceptions.NotBorrowedException;
-import lms.exceptions.OnLoanException;
 import lms.exceptions.TimeTravelException;
 import lms.holding.Holding;
 import lms.util.DateTime;

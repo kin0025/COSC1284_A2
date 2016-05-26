@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -491,7 +490,7 @@ public class UI {
         }
         boolean isCorrect = false;
         int i = 0;
-        //Check it matches a vbalid input
+        //Check it matches a valid input
         while (i < options.length && !isCorrect) {
             String currentExamined;
             if (options[i].length() >= outputLength) {
@@ -1224,7 +1223,7 @@ public class UI {
             choice = receiveStringInput("Do you want to borrow another holding?", BORROW_OPTIONS, "n", 1).charAt(0);
             keepGoing = !(choice != 'y' && choice != 'c');
 
-//Keep going while they want to keepgoing
+//Keep going while they want to keep going
         } while (keepGoing);
     }
 

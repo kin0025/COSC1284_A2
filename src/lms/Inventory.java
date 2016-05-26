@@ -262,10 +262,10 @@ public class Inventory {
     /**
      * Creates a member based on provided information.
      *
-     * @param ID
-     * @param itemType
-     * @param title
-     * @param loanFee
+     * @param ID The id of the member
+     * @param itemType the item type of the member
+     * @param title the title of the member
+     * @param loanFee the loan fee for the member
      * @return
      */
     public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
@@ -429,7 +429,7 @@ public class Inventory {
 
         //Set the deleted holding
         Holding deleted = deletedHoldings[deletedIndex];
-        //If there is no holding with the index retuyrn false
+        //If there is no holding with the index return false
         if (deleted == null) {
             return false;
         }
@@ -517,7 +517,7 @@ public class Inventory {
      * @throws ItemInactiveException
      * @throws TimeTravelException
      */
-    public boolean returnHoldingNoFee(String holdingID, String memberID) throws InsufficientCreditException, NotBorrowedException, ItemInactiveException, TimeTravelException {
+    public boolean returnHoldingNoFee(String holdingID, String memberID) throws NotBorrowedException, ItemInactiveException, TimeTravelException {
         //Find the holding and member array positions.
         int holdingPos = searchArrays(holdingID);
         int memberPos = searchArrays(memberID);
@@ -1076,7 +1076,7 @@ public class Inventory {
      *
      * @return A string of all member and holding details.
      */
-    public String toStateString() {
+    private String toStateString() {
         String megaString = null;
         //Add all holdings to the string
         for (Holding h : holdings

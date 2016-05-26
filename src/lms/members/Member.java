@@ -323,7 +323,6 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @param returnDate The date it is returned.
      * @return Returns whether the return operation was successful.
      * @throws ItemInactiveException the item inactive exception
-     * @throws OnLoanException       the on loan exception
      * @throws TimeTravelException   the time travel exception
      */
     public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, NotBorrowedException, TimeTravelException {
@@ -418,7 +417,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
     /**
      * Converts the borrowed arraylist to a string.
      *
-     * @return the string ":" delimiter seperated list of UUID s of holdings.
+     * @return the string ":" delimiter separated list of UUID s of holdings.
      */
     private String borrowedToString() {
         //Create another arraylist with the UUIDs of borrowed holdings stored in it.
@@ -462,7 +461,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
     /**
      * Generates a Unique ID and sets it.
      *
-     * @return Whether the operation was succesful.
+     * @return Whether the operation was successful.
      */
     public boolean setUUID() {
         if (uniqueID == null) {
