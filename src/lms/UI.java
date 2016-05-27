@@ -1280,29 +1280,35 @@ public class UI {
                     String date = input.nextLine();
 
                     //Support for entered dates
-                    if (date.charAt(2) == '-' && date.charAt(5) == '-') {
-                        StringTokenizer dateTokens = new StringTokenizer(date, "-");
-                        if (dateTokens.countTokens() == 3) {
-                            try {
-                                int day = Integer.parseInt(dateTokens.nextToken());
-                                int month = Integer.parseInt(dateTokens.nextToken());
-                                int year = Integer.parseInt(dateTokens.nextToken());
-                                returnDate = new DateTime(day, month, year);
+                    try {
+                        if (date != null && date.length() == 10 && date.charAt(2) == '-' && date.charAt(5) == '-') {
+                            StringTokenizer dateTokens = new StringTokenizer(date, "-");
+                            if (dateTokens.countTokens() == 3) {
+                                try {
+                                    int day = Integer.parseInt(dateTokens.nextToken());
+                                    int month = Integer.parseInt(dateTokens.nextToken());
+                                    int year = Integer.parseInt(dateTokens.nextToken());
+                                    returnDate = new DateTime(day, month, year);
 
+                                } catch (Exception e) {
+                                    System.out.println("Date was entered in incorrect format. Date has been set to current day");
+                                    returnDate = new DateTime();
+                                }
+                            }
+                        }
+
+                        //If it is not a date it must be a number of days. Otherwise set it to current date.
+                        else if (!date.isEmpty()) {
+                            try {
+                                returnDate = new DateTime(Integer.parseInt(date));
                             } catch (Exception e) {
                                 System.out.println("Date was entered in incorrect format. Date has been set to current day");
                                 returnDate = new DateTime();
                             }
                         }
-                    }
-                    //If it is not a date it must be a number of days. Otherwise set it to current date.
-                    else if (!date.isEmpty()) {
-                        try {
-                            returnDate = new DateTime(Integer.parseInt(date));
-                        } catch (Exception e) {
-                            System.out.println("Date was entered in incorrect format. Date has been set to current day");
-                            returnDate = new DateTime();
-                        }
+                    } catch (Exception e) {
+                        System.out.println("Date was entered in incorrect format. Date has been set to current day");
+                        returnDate = new DateTime();
                     }
 
                     //Tell the user their late fee.

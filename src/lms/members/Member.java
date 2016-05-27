@@ -297,7 +297,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
                 int lateFee = holding.calculateLateFee(returnDate);
 
                 //Check that the
-                if (lateFee > balance && holding.returnHolding(returnDate)) {
+                if (lateFee <= balance && holding.returnHolding(returnDate)) {
                     //Then reduce the balance
                     updateRemainingCredit(lateFee);
                     //And remove the holding from the member.
