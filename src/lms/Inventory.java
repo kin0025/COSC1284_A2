@@ -794,7 +794,7 @@ public class Inventory {
     public void resetMemberCredit(String ID) {
         int arrayPos = searchArrays(ID);
         char type = ID.charAt(0);
-//Check that the ID is correct, and a member
+
         if (arrayPos >= 0) {
             for (char c : UI.MEMBER_TYPES) {
                 if (type == c) {

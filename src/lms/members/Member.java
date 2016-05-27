@@ -411,7 +411,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @return the string
      */
     public String toFile() {
-        return (getID() + "," + getFullName() + "," + calculateRemainingCredit() + "," + balance + "," + borrowedToString() + "," + active + "," + getUUID());
+        return (getID() + "," + getFullName() + "," + getMaxCredit() + "," + balance + "," + borrowedToString() + "," + active + "," + getUUID());
     }
 
     /**
