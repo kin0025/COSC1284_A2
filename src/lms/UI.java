@@ -25,14 +25,14 @@ import java.util.StringTokenizer;
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class UI {
+    public static final char[] MEMBER_TYPES = {'s', 'p'};
+    public static final char[] HOLDING_TYPES = {'b', 'v'};
     private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
     private static final String[] BORROW_OPTIONS = {"y (yes)", "c (change member)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
     private static final String[] HOLDING_OPTIONS = {"b (book)", "v (video)"};
-    public static final char[] MEMBER_TYPES = {'s', 'p'};
-    public static final char[] HOLDING_TYPES = {'b', 'v'};
-    private final File RUN_STATUS = new File("./running");
     private static int consoleWidth = 150;
+    private final File RUN_STATUS = new File("./running");
     private final Scanner input = new Scanner(System.in);
     private final Inventory inv;
     //Functional Methods
@@ -731,7 +731,7 @@ public class UI {
                 printState();
                 break;
             case 301:
-                debugInventory();
+                enableColours();
                 break;
             case 404:
                 consoleWidthEdit();
@@ -839,8 +839,8 @@ public class UI {
     /**
      * Does nothing WIP
      */
-    private void debugInventory() {
-        //inv.debug(); // TODO: 20/05/2016 Add debug support.
+    private void enableColours() {
+        Utilities.toggleColours();
     }
 
     /**
@@ -850,7 +850,6 @@ public class UI {
         System.out.println("Enter console width:");
         consoleWidth = input.nextInt();
     }
-    //Main Menu Methods
 
     /**
      * A menu to receive input that will be passed to the inventory class.
@@ -1692,24 +1691,6 @@ public class UI {
     }
 
     /**
-     * A UI method for retrieving deleted holdings.
-     */
-    private void undeleteHolding() {
-        //Print the options
-        inv.printDeleted();
-        //Give them a selection
-        int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete", new String[]{"0", "1", "2", "3", "4"}, true, 1));
-
-        //Run the program and get result
-        boolean result = inv.undeleteHolding(selection);
-        if (!result) {
-            System.out.println(Utilities.WARNING_MESSAGE + "Retrieval Failed");
-        } else {
-            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was retrieved");
-        }
-    }
-
-    /**
      * Compares the program md5 state to an input md5.
      */
     private void printState() {
@@ -1726,6 +1707,24 @@ public class UI {
             System.out.println("State was preserved");
         } else {
             System.out.println("State was changed.");
+        }
+    }
+
+    /**
+     * A UI method for retrieving deleted holdings.
+     */
+    private void undeleteHolding() {
+        //Print the options
+        inv.printDeleted();
+        //Give them a selection
+        int selection = Integer.parseInt(receiveStringInput("Enter the number of the holding you want to undelete", new String[]{"0", "1", "2", "3", "4"}, true, 1));
+
+        //Run the program and get result
+        boolean result = inv.undeleteHolding(selection);
+        if (!result) {
+            System.out.println(Utilities.WARNING_MESSAGE + "Retrieval Failed");
+        } else {
+            System.out.println(Utilities.INFORMATION_MESSAGE + "Holding was retrieved");
         }
     }
 

@@ -19,22 +19,17 @@ public class LMS {
     public static void main(String[] args) {
         UI state = new UI();
         state.logoBoot();
-       try {
+        try {
             while (true) {
                 state.mainMenu();
-       }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-e.printStackTrace();
-       }finally {
+            e.printStackTrace();
+        } finally {
             System.out.println("Saving program state to backup directory due to thrown exception.");
             state.save("backup");
         }
     }
-// TODO: 22/05/2016 Custom and Java exceptions behave as expected and are handled to prevent run time errors that cause the program to crash.
-    // TODO: 22/05/2016 Your code commenting was generally appropriate and improved the readability of your code.
-// TODO: 22/05/2016 Your code formatting was generally neat, consistent and followed an accepted coding style convention.
-// TODO: 22/05/2016 Your code formatting is generally poor - indentation needs to be consistent, code should be spaced out into logical segments and expressions should also be spaced out to make your code easier to read.
-// TODO: 23/05/2016 Reduce prompt frequency
 
 }

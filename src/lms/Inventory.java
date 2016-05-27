@@ -31,13 +31,13 @@ import java.util.Scanner;
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class Inventory {
+    private static final String fileExtension = Utilities.FILE_EXTENSION;
     //Start Screen
     private final Holding[] holdings;
     private final Holding[] deletedHoldings = new Holding[5];
     private final Member[] members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-    private static final String fileExtension = Utilities.FILE_EXTENSION;
     private IO io = new IO(this);
 
     /**
@@ -75,6 +75,30 @@ public class Inventory {
      */
     int getNumberOfMembers() {
         return numberOfMembers;
+    }
+
+    /**
+     * Provides a string form printout of inventory values.
+     *
+     * @return Returns "Holdings:"number/max "Members:" Number/max
+     */
+    public String infoPrintout() {
+        return ("Holdings:" + numberOfHoldings + "/" + holdings.length + " | " + "Members:" + numberOfMembers + "/" + members.length);
+    }
+
+    /**
+     * Creates a 6 digit ID that is valid for use and is not already used for a holding of <code>itemType</code>
+     *
+     * @param itemType the type of item been examined
+     * @return String form 6 digit ID.
+     */
+    public String generateValidID(char itemType) {
+        String randomID;
+        //Use the Utilities method to create random IDs until one is unique. This could cause problems if the arrays are larger and thousands of IDs are taken. In this case, sequential generation might be better.
+        do {
+            randomID = Utilities.randomID();
+        } while (!checkID(randomID, itemType).equalsIgnoreCase("valid"));
+        return randomID;
     }
 
     /**
@@ -133,6 +157,64 @@ public class Inventory {
     }
 
     /**
+     * Creates a member based on provided information.
+     *
+     * @param ID       The id of the member
+     * @param itemType the item type of the member
+     * @param title    the title of the member
+     * @param loanFee  the loan fee for the member
+     * @return
+     */
+    public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
+        //Check that there is still room in inventory for a new holding.
+        recalculateStatistics();
+        if (numberOfHoldings < holdings.length) {
+
+            //Check that the ID is valid
+            if (checkID(ID, itemType).equals("Valid")) {
+
+                //Set the proper concatenated ID.
+                String holdingID = itemType + ID;
+                //Find the first open slot in inventory
+                int itemNumber = firstNullArray(itemType);
+
+                //Create a book if the type is set to book
+                if (itemType == 'b') {
+                    holdings[itemNumber] = new Book(holdingID, title);
+                    recalculateStatistics();
+                    return true;
+                }
+                //Create a video if they type is a video.
+                else if (itemType == 'v') {
+                    holdings[itemNumber] = new Video(holdingID, title, loanFee);
+                    numberOfHoldings++;
+                    return true;
+                }
+            } else System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
+        } else
+            System.out.println(Utilities.ERROR_MESSAGE + " All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
+        return false;
+    }
+
+    /**
+     * Recalculates the statistics for number of items.
+     */
+    public void recalculateStatistics() {
+        numberOfHoldings = 0;
+        numberOfMembers = 0;
+        for (Holding holding : holdings) {
+            if (holding != null) {
+                numberOfHoldings++;
+            }
+        }
+        for (Member member : members) {
+            if (member != null) {
+                numberOfMembers++;
+            }
+        }
+    }
+
+    /**
      * Finds the array index of the first null value
      *
      * @param type the type of array to be examined
@@ -169,135 +251,7 @@ public class Inventory {
         return -1;
     }
 
-    /**
-     * Provides a string form printout of inventory values.
-     *
-     * @return Returns "Holdings:"number/max "Members:" Number/max
-     */
-    public String infoPrintout() {
-        return ("Holdings:" + numberOfHoldings + "/" + holdings.length + " | " + "Members:" + numberOfMembers + "/" + members.length);
-    }
-
-    /**
-     * Creates a 6 digit ID that is valid for use and is not already used for a holding of <code>itemType</code>
-     *
-     * @param itemType the type of item been examined
-     * @return String form 6 digit ID.
-     */
-    public String generateValidID(char itemType) {
-        String randomID;
-        //Use the Utilities method to create random IDs until one is unique. This could cause problems if the arrays are larger and thousands of IDs are taken. In this case, sequential generation might be better.
-        do {
-            randomID = Utilities.randomID();
-        } while (!checkID(randomID, itemType).equalsIgnoreCase("valid"));
-        return randomID;
-    }
-
-    /**
-     * Recalculates the statistics for number of items.
-     */
-    public void recalculateStatistics() {
-        numberOfHoldings = 0;
-        numberOfMembers = 0;
-        for (Holding holding : holdings) {
-            if (holding != null) {
-                numberOfHoldings++;
-            }
-        }
-        for (Member member : members) {
-            if (member != null) {
-                numberOfMembers++;
-            }
-        }
-    }
-
-    /**
-     * Searches for the array index of the holding or member with the ID.
-     *
-     * @param ID Search for this ID in the arrays.
-     * @return array index that has an item that has a matching ID.
-     */
-    private int searchArrays(String ID) {
-        char itemType = ID.toLowerCase().charAt(0);
-
-        IdentifierSupported[] array = null;
-        //If the type is on of the holding types, set the array to the holdings array.
-        for (char c : UI.HOLDING_TYPES) {
-            if (itemType == c) {
-                array = holdings;
-            }
-        }
-
-        //If the type is of a member set the array to the members array
-        for (char c : UI.MEMBER_TYPES) {
-            if (itemType == c) {
-                array = members;
-            }
-        }
-
-        //If the array was set as it matched something use it here.
-        if (array != null) {
-            //Search through the array for something that matches the ID given. If found, return it.
-            for (int i = 0; i < array.length; i++) {
-                if (array[i] != null) {
-                    if (array[i].getID().equals(ID)) {
-                        return (i);
-                    }
-                }
-            }
-            //If we didn't find anything tell the user.
-            System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find holding with that ID");
-            return (-1);
-        }
-
-        //The array was null- hence the ID did not match one of the accepted types. Report that to the user.
-        else {
-            System.out.println(Utilities.WARNING_MESSAGE + " Wrong ID format");
-            return -1;
-        }
-    }
-
     /* Methods that add items to inventory */
-
-    /**
-     * Creates a member based on provided information.
-     *
-     * @param ID The id of the member
-     * @param itemType the item type of the member
-     * @param title the title of the member
-     * @param loanFee the loan fee for the member
-     * @return
-     */
-    public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
-        //Check that there is still room in inventory for a new holding.
-        recalculateStatistics();
-        if (numberOfHoldings < holdings.length) {
-
-            //Check that the ID is valid
-            if (checkID(ID, itemType).equals("Valid")) {
-
-                //Set the proper concatenated ID.
-                String holdingID = itemType + ID;
-                //Find the first open slot in inventory
-                int itemNumber = firstNullArray(itemType);
-
-                //Create a book if the type is set to book
-                if (itemType == 'b') {
-                    holdings[itemNumber] = new Book(holdingID, title);
-                    recalculateStatistics();
-                    return true;
-                }
-                //Create a video if they type is a video.
-                else if (itemType == 'v') {
-                    holdings[itemNumber] = new Video(holdingID, title, loanFee);
-                    numberOfHoldings++;
-                    return true;
-                }
-            } else System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
-        } else
-            System.out.println(Utilities.ERROR_MESSAGE + " All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
-        return false;
-    }
 
     public boolean addMember(String ID, char itemType, String name) {
         //Check there is room for a new member
@@ -328,8 +282,6 @@ public class Inventory {
         return false;
     }
 
-    /* Remove */
-
     /**
      * A wrapper method that has forcing removal disabled.
      *
@@ -339,6 +291,8 @@ public class Inventory {
     public boolean removeHolding(String ID) {
         return removeHolding(ID, false);
     }
+
+    /* Remove */
 
     /**
      * Removes a holding from inventory
@@ -397,6 +351,52 @@ public class Inventory {
         }
 
         return false;
+    }
+
+    /**
+     * Searches for the array index of the holding or member with the ID.
+     *
+     * @param ID Search for this ID in the arrays.
+     * @return array index that has an item that has a matching ID.
+     */
+    private int searchArrays(String ID) {
+        char itemType = ID.toLowerCase().charAt(0);
+
+        IdentifierSupported[] array = null;
+        //If the type is on of the holding types, set the array to the holdings array.
+        for (char c : UI.HOLDING_TYPES) {
+            if (itemType == c) {
+                array = holdings;
+            }
+        }
+
+        //If the type is of a member set the array to the members array
+        for (char c : UI.MEMBER_TYPES) {
+            if (itemType == c) {
+                array = members;
+            }
+        }
+
+        //If the array was set as it matched something use it here.
+        if (array != null) {
+            //Search through the array for something that matches the ID given. If found, return it.
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] != null) {
+                    if (array[i].getID().equals(ID)) {
+                        return (i);
+                    }
+                }
+            }
+            //If we didn't find anything tell the user.
+            System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find holding with that ID");
+            return (-1);
+        }
+
+        //The array was null- hence the ID did not match one of the accepted types. Report that to the user.
+        else {
+            System.out.println(Utilities.WARNING_MESSAGE + " Wrong ID format");
+            return -1;
+        }
     }
 
     /**
@@ -865,6 +865,32 @@ public class Inventory {
     }
 
     /**
+     * Returns a string that comprises of all holdings and members details.
+     *
+     * @return A string of all member and holding details.
+     */
+    private String toStateString() {
+        String megaString = null;
+        //Add all holdings to the string
+        for (Holding h : holdings
+                ) {
+            if (h != null) {
+                megaString += h.toFile();
+            }
+        }
+
+        //Add all members to string
+        for (Member m : members
+                ) {
+            if (m != null) {
+                megaString += m.toFile();
+            }
+        }
+        megaString += IDManager.stateString();
+        return megaString;
+    }
+
+    /**
      * Gets a UUID, returns a holding with the same UUID
      *
      * @param uuid The UUID to check
@@ -909,33 +935,7 @@ public class Inventory {
         } else return 0;
     }
 
-    /**
-     * Returns a string that comprises of all holdings and members details.
-     *
-     * @return A string of all member and holding details.
-     */
-    private String toStateString() {
-        String megaString = null;
-        //Add all holdings to the string
-        for (Holding h : holdings
-                ) {
-            if (h != null) {
-                megaString += h.toFile();
-            }
-        }
-
-        //Add all members to string
-        for (Member m : members
-                ) {
-            if (m != null) {
-                megaString += m.toFile();
-            }
-        }
-        megaString += IDManager.stateString();
-        return megaString;
-    }
-
-    public void addHolding(String identifier, String title, int loanFee,int maxLoanPeriod, DateTime borrowDate,boolean active, String uniqueID){
+    public void addHolding(String identifier, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, String uniqueID) {
         if (identifier.charAt(0) == 'b') {
             holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
         } else if (identifier.charAt(0) == 'v') {
@@ -943,7 +943,7 @@ public class Inventory {
         }
     }
 
-    public void addMember(String identifier, String name, int maxCredit,double balance, ArrayList<Holding> borrowed,boolean active, String uniqueID){
+    public void addMember(String identifier, String name, int maxCredit, double balance, ArrayList<Holding> borrowed, boolean active, String uniqueID) {
         if (identifier.charAt(0) == 's') {
             members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
         } else if (identifier.charAt(0) == 'p') {
@@ -951,18 +951,19 @@ public class Inventory {
         }
     }
 
-    public void save(String folder)throws IOException{
+    public void save(String folder) throws IOException {
         io.save(folder);
     }
 
-    public void load(String folder)throws IOException{
+    public void load(String folder) throws IOException {
         io.load(folder);
     }
 
-    public Holding[] getHoldings(){
+    public Holding[] getHoldings() {
         return holdings;
     }
-    public Member[] getMembers(){
+
+    public Member[] getMembers() {
         return members;
     }
 
