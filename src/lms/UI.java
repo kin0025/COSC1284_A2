@@ -726,7 +726,7 @@ public class UI {
         }
     }
 
-    void search(){
+    private void search(){
         SystemOperations item = searchInventory.searchMenu();
         if(item != null){
             item.lineSummary();

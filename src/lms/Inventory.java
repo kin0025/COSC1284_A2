@@ -154,7 +154,6 @@ public class Inventory {
     public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
         //Check that there is still room in inventory for a new holding.
         recalculateStatistics();
-        if (numberOfHoldings < holdings.size()) {
 
             //Check that the ID is valid
             if (checkID(ID, itemType).equals("Valid")) {
@@ -175,8 +174,7 @@ public class Inventory {
                     return true;
                 }
             } else System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
-        } else
-            System.out.println(Utilities.ERROR_MESSAGE + " All holding spots are taken. Please pay for a larger subscription to support more holdings, or remove exiting holdings");
+
         return false;
     }
 

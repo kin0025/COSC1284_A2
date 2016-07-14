@@ -54,11 +54,9 @@ public class StandardMember extends Member {
     public void setID(String ID) {
         if (Utilities.isIDValid('s', ID)) {
             super.setID(ID);
-            return (true);
-        } else {
-            return (false);
-        }
 
+
+        }
     }
 
 }

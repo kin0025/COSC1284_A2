@@ -20,9 +20,9 @@ import java.util.Scanner;
  * Created by kin0025 on 14/07/2016.
  */
 public class SearchInventory {
-    ArrayList<Member> members;
-    ArrayList<Holding> holdings;
-    Scanner input = new Scanner(System.in);
+    private ArrayList<Member> members;
+    private ArrayList<Holding> holdings;
+    private Scanner input = new Scanner(System.in);
 
 
     public SearchInventory(ArrayList<Member> members, ArrayList<Holding> holdings) {
@@ -53,7 +53,7 @@ public class SearchInventory {
         }
     }
 
-    SystemOperations searchID(String searchString) {
+    private SystemOperations searchID(String searchString) {
         ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
 
         //Search all the holdings
@@ -129,7 +129,7 @@ public class SearchInventory {
 
     }
 
-    SystemOperations searchTitle(String searchString) {
+    private SystemOperations searchTitle(String searchString) {
         ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
 
         //Search all the holdings
@@ -179,7 +179,7 @@ public class SearchInventory {
 
     }
 
-    SystemOperations searchName(String searchString) {
+    private SystemOperations searchName(String searchString) {
         ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
 
 
