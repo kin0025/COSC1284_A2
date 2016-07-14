@@ -16,4 +16,6 @@ public interface SystemOperations {
     String getID();
 
     void setID(String newID);
+
+    String lineSummary();
 }

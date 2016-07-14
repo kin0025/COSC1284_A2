@@ -10,6 +10,7 @@
 package lms;
 
 import lms.exceptions.IncorrectDetailsException;
+import lms.ui.SearchInventory;
 import lms.util.AdminVerify;
 import lms.util.DateTime;
 import lms.util.Utilities;
@@ -34,7 +35,8 @@ public class UI {
     private static int consoleWidth = 150;
     private final File RUN_STATUS = new File("./running");
     private final Scanner input = new Scanner(System.in);
-    private final Inventory inv;
+    private final Inventory inv = new Inventory();
+    private final SearchInventory searchInventory = inv.createSearch();
     //Functional Methods
 
     /**
@@ -42,8 +44,6 @@ public class UI {
      * Prompts user for inventory size input.
      */
     public UI() {
-        //Create a normal inventory object with 15 members and 15 holdings.
-        inv = new Inventory();
 
 
     }
@@ -659,12 +659,13 @@ public class UI {
         System.out.println(" 8. Print all Members");
         System.out.println(" 9. Print specific Holding");
         System.out.println("10. Print specific Member");
-        System.out.println("11. Save to file");
-        System.out.println("12. Load from file");
-        System.out.println("13. Exit");
-        System.out.println("14. Admin");
+        System.out.println("11. Search");
+        System.out.println("12. Save to file");
+        System.out.println("13. Load from file");
+        System.out.println("14. Exit");
+        System.out.println("15. Admin");
         printCharTimes('=', consoleWidth, true);
-        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "211", "301", "404"};
+        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15","211", "301", "404"};
         int choice = Integer.parseInt(receiveStringInput("Enter an option:", options, false, 16)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
         //Run options
         switch (choice) {
@@ -699,15 +700,17 @@ public class UI {
                 printMember();
                 break;
             case 11:
+                search();
+            case 12:
                 save();
                 break;
-            case 12:
+            case 13:
                 load();
                 break;
-            case 13:
+            case 14:
                 exit();
                 break;
-            case 14:
+            case 15:
                 adminMenuVerify();
                 break;
             case 211:
@@ -721,6 +724,14 @@ public class UI {
             default:
                 break;
         }
+    }
+
+    void search(){
+        SystemOperations item = searchInventory.searchMenu();
+        if(item != null){
+            item.lineSummary();
+        }
+        System.out.println("Please enter the ID (the content before the colon) in prompts");
     }
 
     /**

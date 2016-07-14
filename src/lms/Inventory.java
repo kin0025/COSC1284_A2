@@ -15,6 +15,7 @@ import lms.holding.Video;
 import lms.members.Member;
 import lms.members.PremiumMember;
 import lms.members.StandardMember;
+import lms.ui.SearchInventory;
 import lms.util.DateTime;
 import lms.util.IDManager;
 import lms.util.IO;
@@ -30,7 +31,6 @@ import java.util.Scanner;
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
-@SuppressWarnings("JavaDoc")
 public class Inventory {
     private static final String fileExtension = Utilities.FILE_EXTENSION;
     //Start Screen
@@ -861,6 +861,9 @@ public class Inventory {
         io.load(folder);
     }
 
+    SearchInventory createSearch(){
+        return new SearchInventory(members,holdings);
+    }
     public Holding[] getHoldings() {
         return holdings.toArray(new Holding[holdings.size()]);
     }

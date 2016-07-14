@@ -352,4 +352,8 @@ public abstract class Holding implements SystemOperations, UniqueID {
         this.uniqueID = uniqueID;
         IDManager.addIdentifier(uniqueID);
     }
+
+    public String lineSummary(){
+        return getID() + ":" + getTitle();
+    }
 }

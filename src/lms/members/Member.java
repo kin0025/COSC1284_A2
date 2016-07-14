@@ -481,4 +481,8 @@ public abstract class Member implements SystemOperations, UniqueID {
     public boolean removeHolding(Holding holding) {
         return borrowed.remove(holding);
     }
+
+    public String lineSummary(){
+        return getID() + ":" + getFullName();
+    }
 }
