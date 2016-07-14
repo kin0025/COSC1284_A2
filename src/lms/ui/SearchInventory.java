@@ -63,7 +63,7 @@ public class SearchInventory {
             String compare = holding.getID();
 
             //Check the string for something to compare to
-            for (int i = 0; compare.length() <= i; i++) {
+            for (int i = 0; i < compare.length(); i++) {
 
                 //Check each spot
                 if (compare.charAt(i) == searchString.charAt(0)) {
@@ -90,7 +90,7 @@ public class SearchInventory {
             String compare = member.getID();
 
             //Check the string for something to compare to
-            for (int i = 0; compare.length() <= i; i++) {
+            for (int i = 0;i < compare.length() ; i++) {
 
                 //Check each spot
                 if (compare.charAt(i) == searchString.charAt(0)) {
@@ -113,14 +113,17 @@ public class SearchInventory {
 
         for (int i = 0; i < searchedCandidates.size(); i++) {
             SystemOperations operations = searchedCandidates.get(i);
-            System.out.println(i + operations.lineSummary());
+            System.out.println(i + ": " + operations.lineSummary());
         }
         int choice;
         boolean canGo = false;
+        System.out.println("Please enter your choice");
         do {
             choice = input.nextInt();
             if (choice < searchedCandidates.size()) {
                 canGo = true;
+            }else{
+                System.out.println("Choice not valid, try again lol");
             }
         } while (!canGo);
 
@@ -139,7 +142,7 @@ public class SearchInventory {
             String compare = holding.getTitle();
 
             //Check the string for something to compare to
-            for (int i = 0; compare.length() <= i; i++) {
+            for (int i = 0; i<compare.length() ; i++) {
 
                 //Check each spot
                 if (compare.charAt(i) == searchString.charAt(0)) {
@@ -163,14 +166,17 @@ public class SearchInventory {
 
         for (int i = 0; i < searchedCandidates.size(); i++) {
             SystemOperations operations = searchedCandidates.get(i);
-            System.out.println(i + operations.lineSummary());
+            System.out.println(i +": "+ operations.lineSummary());
         }
         int choice;
         boolean canGo = false;
+        System.out.println("Please enter your choice");
         do {
             choice = input.nextInt();
             if (choice < searchedCandidates.size()) {
                 canGo = true;
+            }else{
+                System.out.println("Choice not valid, try again lol");
             }
         } while (!canGo);
 
@@ -190,7 +196,7 @@ public class SearchInventory {
             String compare = member.getFullName();
 
             //Check the string for something to compare to
-            for (int i = 0; compare.length() <= i; i++) {
+            for (int i = 0; i<compare.length() ; i++) {
 
                 //Check each spot
                 if (compare.charAt(i) == searchString.charAt(0)) {
@@ -213,14 +219,18 @@ public class SearchInventory {
 
         for (int i = 0; i < searchedCandidates.size(); i++) {
             SystemOperations operations = searchedCandidates.get(i);
-            System.out.println(i + operations.lineSummary());
+            System.out.println(i +": "+ operations.lineSummary());
         }
         int choice;
         boolean canGo = false;
+
+        System.out.println("Please enter your choice");
         do {
-            choice = input.nextInt();
+            choice = Integer.parseInt(input.nextLine());
             if (choice < searchedCandidates.size()) {
                 canGo = true;
+            }else{
+                System.out.println("Choice not valid, try again lol");
             }
         } while (!canGo);
 

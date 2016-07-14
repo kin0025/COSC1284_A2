@@ -701,6 +701,7 @@ public class UI {
                 break;
             case 11:
                 search();
+                break;
             case 12:
                 save();
                 break;
@@ -729,9 +730,11 @@ public class UI {
     private void search(){
         SystemOperations item = searchInventory.searchMenu();
         if(item != null){
-            item.lineSummary();
+            System.out.println(item.lineSummary());
+        }else{
+            System.out.println("Nothing was selected");
         }
-        System.out.println("Please enter the ID (the content before the colon) in prompts");
+        System.out.println("Please enter the ID (the content before the colon) in prompts when borrowing or returning");
     }
 
     /**
