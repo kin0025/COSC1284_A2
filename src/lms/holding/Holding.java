@@ -6,7 +6,6 @@
 
 package lms.holding;
 
-import lms.IdentifierSupported;
 import lms.SystemOperations;
 import lms.UniqueID;
 import lms.exceptions.*;
@@ -18,7 +17,7 @@ import lms.util.Utilities;
 */
 
 @SuppressWarnings("WeakerAccess")
-public abstract class Holding implements SystemOperations, UniqueID, IdentifierSupported{
+public abstract class Holding implements SystemOperations, UniqueID {
     private String ID;
     private String title;
     private int loanFee;
@@ -72,9 +71,8 @@ public abstract class Holding implements SystemOperations, UniqueID, IdentifierS
      * @param ID the ID to be set
      * @return Always true.
      */
-    public boolean setID(String ID) {
+    public void setID(String ID) {
         this.ID = ID;
-        return true;
     }
 
     /**
@@ -216,7 +214,7 @@ public abstract class Holding implements SystemOperations, UniqueID, IdentifierS
      * @param dateReturned The date the holding was returned.
      * @return the success of returning.
      */
-    public boolean returnHolding(DateTime dateReturned) throws ItemInactiveException, NotBorrowedException, TimeTravelException { /** Returns true if it has been returned, false if issues encountered and not marked as returned**/
+    public boolean returnHolding(DateTime dateReturned) throws ItemInactiveException, NotBorrowedException, TimeTravelException {
         if (isOnLoan() && DateTime.diffDays(dateReturned, borrowDate) >= 0 && active) {
             borrowDate = null;
             return true;
@@ -326,6 +324,7 @@ public abstract class Holding implements SystemOperations, UniqueID, IdentifierS
 
     /**
      * Returns the unique ID of the item.
+     *
      * @return a 6 digit String form unique ID
      */
     public String getUUID() {
@@ -334,6 +333,7 @@ public abstract class Holding implements SystemOperations, UniqueID, IdentifierS
 
     /**
      * Sets a unique ID and adds it to the database to ensure no duplicates.
+     *
      * @return If there is already a unique ID returns false and does not add a new unique id.
      */
     public boolean setUUID() {
@@ -345,6 +345,7 @@ public abstract class Holding implements SystemOperations, UniqueID, IdentifierS
 
     /**
      * Sets unique ID for the item, and adds it to IDManager.
+     *
      * @param uniqueID The unique ID to be set.
      */
     public void setUUID(String uniqueID) {

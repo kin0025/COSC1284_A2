@@ -24,9 +24,9 @@ public class Book extends Holding {
      * Construct the holding using the default values and the ID and title passed through.
      *
      * @param holdingID The id of the holding.
-     * @param title the title of the holding.
+     * @param title     the title of the holding.
      */
-    public Book(String holdingID, String title) throws IncorrectDetailsException{
+    public Book(String holdingID, String title) throws IncorrectDetailsException {
         super(holdingID, title);
         setLoanFee(LOAN_FEE);
         setMaxLoanPeriod(LOAN_PERIOD);
@@ -56,12 +56,10 @@ public class Book extends Holding {
      * @return returns the success state of setting the ID. If false, ID was not set.
      */
     @Override
-    public boolean setID(String ID) {
+    public void setID(String ID) {
         if (Utilities.isIDValid('b', ID)) {
             super.setID(ID);
-            return true;
         } else {
-            return false;
         }
     }
 

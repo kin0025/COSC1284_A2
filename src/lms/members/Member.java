@@ -9,7 +9,6 @@
 */
 package lms.members;
 
-import lms.IdentifierSupported;
 import lms.SystemOperations;
 import lms.UniqueID;
 import lms.exceptions.*;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
  * The type Member.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class Member implements SystemOperations, UniqueID, IdentifierSupported {
+public abstract class Member implements SystemOperations, UniqueID {
     private String ID;
     private String name;
     private final int maxCredit;
@@ -80,9 +79,8 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @param ID The ID to be set
      * @return If the ID is set returns true.
      */
-    public boolean setID(String ID) {
+    public void setID(String ID) {
         this.ID = ID;
-        return true;
     }
 
     /**
@@ -91,11 +89,11 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @param credit The amount of credit for the user.
      * @return The success value of the operation. If trying to set a value of credit higher than maximum it will fail.
      */
-    public boolean setCredit(int credit) {
+    public void setCredit(int credit) {
         if (credit <= maxCredit) {
             this.balance = credit;
-            return true;
-        } else return false;
+        } else {
+        }
     }
 
     /**
@@ -228,12 +226,10 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @param loanFee The amount to be subtracted from the balance
      * @return If subtracting the loan fee increases balance above max credit returns false.
      */
-    public boolean updateRemainingCredit(int loanFee) {
+    public void updateRemainingCredit(int loanFee) {
         if (balance - loanFee <= maxCredit) {
             balance -= loanFee;
-            return true;
         } else {
-            return false;
         }
     }
 
@@ -256,7 +252,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @throws ItemInactiveException       the item inactive exception
      * @throws OnLoanException             the on loan exception
      */
-    public boolean borrowHolding(Holding holding) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
+    public void borrowHolding(Holding holding) throws InsufficientCreditException, ItemInactiveException, OnLoanException {
         //Check if the member is valid to borrow.
         if (checkAllowedCreditOverdraw(holding.getDefaultLoanFee()) && isActive()) {
 
@@ -266,7 +262,6 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
                 //Borrow the holding.
                 borrowed.add(holding);
                 updateRemainingCredit(holding.getDefaultLoanFee());
-                return true;
             } else
                 //If the book cannot be borrowed
                 throw new OnLoanException(Utilities.WARNING_MESSAGE + "Holding on Loan: Book was unavailable to be borrowed. Book was not added to your account and you were not charged.");
@@ -325,7 +320,7 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
      * @throws ItemInactiveException the item inactive exception
      * @throws TimeTravelException   the time travel exception
      */
-    public boolean returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, NotBorrowedException, TimeTravelException {
+    public void returnHoldingNoFee(Holding holding, DateTime returnDate) throws ItemInactiveException, NotBorrowedException, TimeTravelException {
         int searchedPos = findHolding(holding);
 
         if (isActive()) {
@@ -337,7 +332,6 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
 
                     //Remove the holding from the member.
                     borrowed.remove(searchedPos);
-                    return (true);
                 } else {
                     throw new ItemInactiveException("Holding could not be returned");
                 }
@@ -480,10 +474,11 @@ public abstract class Member implements SystemOperations, UniqueID, IdentifierSu
         IDManager.addIdentifier(uniqueID);
     }
 
-    public boolean containsHolding(Holding holding){
+    public boolean containsHolding(Holding holding) {
         return borrowed.contains(holding);
     }
-    public boolean removeHolding(Holding holding){
+
+    public boolean removeHolding(Holding holding) {
         return borrowed.remove(holding);
     }
 }

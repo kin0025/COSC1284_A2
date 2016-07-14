@@ -13,7 +13,7 @@ import lms.UI;
 /**
  * Created by akinr on 20/04/2016 as part of s3603437_A2
  */
-public class LMS {
+class LMS {
 
 
     public static void main(String[] args) {

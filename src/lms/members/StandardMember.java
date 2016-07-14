@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
-public class StandardMember extends Member{
+public class StandardMember extends Member {
 
     /**
      * Instantiates a new Standard member.
@@ -25,8 +25,8 @@ public class StandardMember extends Member{
      * @param standardMemberId   the standard member id
      * @param standardMemberName the standard member name
      */
-    public StandardMember(String standardMemberId, String standardMemberName){
-        super(standardMemberId,standardMemberName,30);
+    public StandardMember(String standardMemberId, String standardMemberName) {
+        super(standardMemberId, standardMemberName, 30);
 
     }
 
@@ -47,14 +47,15 @@ public class StandardMember extends Member{
 
     /**
      * Sets ID after validating that it was correct.
+     *
      * @param ID The ID to be set
      * @return Whether the ID was set and is valid.
      */
-    public boolean setID(String ID) {
-        if(Utilities.isIDValid('s',ID)){
+    public void setID(String ID) {
+        if (Utilities.isIDValid('s', ID)) {
             super.setID(ID);
-            return(true);
-        }else{
+            return (true);
+        } else {
             return (false);
         }
 

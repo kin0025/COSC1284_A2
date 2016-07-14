@@ -51,28 +51,28 @@ public class PremiumMember extends Member {
 
     /**
      * Sets and ID after validation.
+     *
      * @param ID The ID to be set
      * @return Whether the ID was valid and set.
      */
-    public boolean setID(String ID) {
-        if (Utilities.isIDValid('p',ID)) {
+    public void setID(String ID) {
+        if (Utilities.isIDValid('p', ID)) {
             super.setID(ID);
-            return (true);
-        } else {
-            return (false);
         }
-
     }
 
-    /**Returns a holding. Validates the success of holding return, however does not require the user to have sufficient balance to repay late fees.
-     * @param holding the holding to be returned.
+
+    /**
+     * Returns a holding. Validates the success of holding return, however does not require the user to have sufficient balance to repay late fees.
+     *
+     * @param holding    the holding to be returned.
      * @param returnDate the date the holding was returned.
      * @return Whether the holding was successfully returned.
      */
     @Override
-    public boolean returnHolding(Holding holding, DateTime returnDate) throws TimeTravelException,NotBorrowedException,ItemInactiveException{
+    public boolean returnHolding(Holding holding, DateTime returnDate) throws TimeTravelException, NotBorrowedException, ItemInactiveException {
         //Check that the holding is actually borrowed by the user.
-        if(isActive()) {
+        if (isActive()) {
             if (borrowed.contains(holding)) {
 
                 //Check that the holding can be returned.
@@ -91,7 +91,6 @@ public class PremiumMember extends Member {
                     } else {
                         System.out.println(Utilities.INFORMATION_MESSAGE + " Holding was returned with no late fee. Thank you for returning your books in a timely fashion. Your remaining balance is:" + lateFee);
                     }
-                    return true;
                     //If the holding cannot be returned return false. It will likely throw an exception anyway.
                 } else {
                     return false;
@@ -100,9 +99,10 @@ public class PremiumMember extends Member {
             } else {
                 throw new NotBorrowedException("User has not borrowed holding");
             }
-        }else{
+        } else {
             throw new ItemInactiveException("Member is inactive. Please activate member to return holding.");
         }
+        return true;
     }
 
 

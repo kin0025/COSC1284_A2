@@ -40,7 +40,7 @@ public class IDManager {
             megaString += a;
         }*/
         //Requires Java 1.8
-        megaString = String.join(":",identifiers);
+        megaString = String.join(":", identifiers);
         return megaString;
     }
 
@@ -50,13 +50,11 @@ public class IDManager {
      * @param identifier the identifier to be removed
      * @return whether the identifier was removed.
      */
-    public static boolean removeIdentifier(String identifier) {
+    public static void removeIdentifier(String identifier) {
         int index = identifier.indexOf(identifier);
         if (index >= 0) {
             identifiers.remove(index);
-            return true;
         }
-        return false;
     }
 
     /**

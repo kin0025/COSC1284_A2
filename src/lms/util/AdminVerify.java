@@ -19,6 +19,7 @@ public class AdminVerify {
 
     /**
      * Check that the password hashes to the same value as the master password and return the success of the operation.
+     *
      * @param passcode The passcode to be examined.
      * @return Whether the password matched.
      */

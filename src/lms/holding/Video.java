@@ -20,7 +20,7 @@ public class Video extends Holding {
     private static final int LOAN_PERIOD = 7;
     private static final int[] LOAN_FEES = {4, 6};
 
-    public Video(String holdingId, String title, int loanFee) throws IncorrectDetailsException{
+    public Video(String holdingId, String title, int loanFee) throws IncorrectDetailsException {
         super(holdingId, title);
         setLoanFee(loanFee);
         setMaxLoanPeriod(LOAN_PERIOD);
@@ -51,15 +51,13 @@ public class Video extends Holding {
      * @return returns the success state of setting the ID. If false, ID was not set.
      */
     @Override
-    public boolean setID(String ID) {
+    public void setID(String ID) {
         //Check if the ID was valid
         if (Utilities.isIDValid('v', ID)) {
             super.setID(ID);
-            return true;
         }
         //If it isn't return false.
         else {
-            return false;
         }
     }
 
@@ -92,7 +90,7 @@ public class Video extends Holding {
      * @param loanFee The loan fee to be set.
      */
     @Override
-    public void setLoanFee(int loanFee) throws IncorrectDetailsException{
+    public void setLoanFee(int loanFee) throws IncorrectDetailsException {
         //Validates the loan fee.
         if (isValidLoanFee(loanFee)) {
             super.setLoanFee(loanFee);

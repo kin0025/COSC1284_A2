@@ -30,33 +30,23 @@ import java.util.Scanner;
 /**
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
+@SuppressWarnings("JavaDoc")
 public class Inventory {
     private static final String fileExtension = Utilities.FILE_EXTENSION;
     //Start Screen
-    private final Holding[] holdings;
+    private final ArrayList<Holding> holdings;
     private final Holding[] deletedHoldings = new Holding[5];
-    private final Member[] members;
+    private final ArrayList<Member> members;
     private int numberOfHoldings = 0;
     private int numberOfMembers = 0;
-    private IO io = new IO(this);
+    private final IO io = new IO(this);
 
     /**
      * Creates holding and member arrays of size 15
      */
     public Inventory() {
-        this.holdings = new Holding[15];
-        this.members = new Member[15];
-    }
-
-    /**
-     * Creates holding and member arrays of specified input size
-     *
-     * @param holdings Size of the holdings array
-     * @param members  Size of the members array
-     */
-    public Inventory(int holdings, int members) {
-        this.holdings = new Holding[holdings];
-        this.members = new Member[members];
+        this.holdings = new ArrayList<>();
+        this.members = new ArrayList<>();
     }
 
     /**
@@ -83,7 +73,7 @@ public class Inventory {
      * @return Returns "Holdings:"number/max "Members:" Number/max
      */
     public String infoPrintout() {
-        return ("Holdings:" + numberOfHoldings + "/" + holdings.length + " | " + "Members:" + numberOfMembers + "/" + members.length);
+        return ("Holdings:" + numberOfHoldings + "/" + holdings.size() + " | " + "Members:" + numberOfMembers + "/" + members.size());
     }
 
     /**
@@ -130,22 +120,18 @@ public class Inventory {
         switch (itemType) {
             case 'b':
             case 'v':
-                for (i = 0; i < holdings.length; i++) {
-                    if (holdings[i] != null) {
-                        if (holdings[i].getID().equals(itemType + ID)) {
-                            return ("Already Taken");
-                        }
+                for (Holding holding : holdings) {
+                    if (holding.getID().equalsIgnoreCase(itemType + ID)) {
+                        return "Already Taken";
                     }
                 }
                 break;
             case 's':
 
             case 'p':
-                for (i = 0; i < members.length; i++) {
-                    if (members[i] != null) {
-                        if (members[i].getID().equals(itemType + ID)) {
-                            return ("Already Taken");
-                        }
+                for (Member member : members) {
+                    if (member.getID().equalsIgnoreCase(itemType + ID)) {
+                        return "Already Taken";
                     }
                 }
                 break;
@@ -163,12 +149,12 @@ public class Inventory {
      * @param itemType the item type of the member
      * @param title    the title of the member
      * @param loanFee  the loan fee for the member
-     * @return
+     * @return whether the holding was successfully added
      */
     public boolean addHolding(String ID, char itemType, String title, int loanFee) throws IncorrectDetailsException {
         //Check that there is still room in inventory for a new holding.
         recalculateStatistics();
-        if (numberOfHoldings < holdings.length) {
+        if (numberOfHoldings < holdings.size()) {
 
             //Check that the ID is valid
             if (checkID(ID, itemType).equals("Valid")) {
@@ -176,17 +162,15 @@ public class Inventory {
                 //Set the proper concatenated ID.
                 String holdingID = itemType + ID;
                 //Find the first open slot in inventory
-                int itemNumber = firstNullArray(itemType);
-
                 //Create a book if the type is set to book
                 if (itemType == 'b') {
-                    holdings[itemNumber] = new Book(holdingID, title);
+                    holdings.add(new Book(holdingID, title));
                     recalculateStatistics();
                     return true;
                 }
                 //Create a video if they type is a video.
                 else if (itemType == 'v') {
-                    holdings[itemNumber] = new Video(holdingID, title, loanFee);
+                    holdings.add(new Video(holdingID, title, loanFee));
                     numberOfHoldings++;
                     return true;
                 }
@@ -214,71 +198,30 @@ public class Inventory {
         }
     }
 
-    /**
-     * Finds the array index of the first null value
-     *
-     * @param type the type of array to be examined
-     * @return returns an array index of the first null value
-     */
-    public int firstNullArray(char type) {
-        //Set an array up
-        Object[] array = null;
-
-        //If the type is on of the holding types, set the array to the holdings array.
-        for (char c : UI.HOLDING_TYPES) {
-            if (type == c) {
-                array = holdings;
-            }
-        }
-
-        //If the type is of a member set the array to the members array
-        for (char c : UI.MEMBER_TYPES) {
-            if (type == c) {
-                array = members;
-            }
-        }
-
-        //If the array was set find the first null value and return it.
-        if (array != null) {
-            for (int i = 0; i < array.length; i++) {
-                if (array[i] == null) {
-                    return i;
-                }
-            }
-        }
-
-        //If they type did not match a holding or member, or a null position was not found return -1;
-        return -1;
-    }
-
     /* Methods that add items to inventory */
 
     public boolean addMember(String ID, char itemType, String name) {
         //Check there is room for a new member
-        recalculateStatistics();
-        if (numberOfMembers < members.length) {
 
-            //Check the id is valid
-            if (checkID(ID, itemType).equals("Valid")) {
 
-                String memberID = itemType + ID;
-                //Find the first blank position in the array to fill.
-                int itemNumber = firstNullArray(itemType);
+        //Check the id is valid
+        if (checkID(ID, itemType).equals("Valid")) {
 
-                //Create the member based on type.
-                if (itemType == 's') {
-                    members[itemNumber] = new StandardMember(memberID, name);
-                    numberOfMembers++;
-                    return true;
-                } else if (itemType == 'p') {
-                    members[itemNumber] = new PremiumMember(memberID, name);
-                    numberOfMembers++;
-                    return true;
-                }
+            String memberID = itemType + ID;
+            //Find the first blank position in the array to fill.
+
+            //Create the member based on type.
+            if (itemType == 's') {
+                members.add(new StandardMember(memberID, name));
+                numberOfMembers++;
+                return true;
+            } else if (itemType == 'p') {
+                members.add(new PremiumMember(memberID, name));
+                numberOfMembers++;
+                return true;
             }
-            System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
         }
-        System.out.println(Utilities.ERROR_MESSAGE + " All member spots are taken. Please pay for a larger subscription to support more members, or remove exiting members");
+        System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
         return false;
     }
 
@@ -303,14 +246,13 @@ public class Inventory {
      */
     public boolean removeHolding(String ID, boolean force) {
         //Find the holding to be removed
-        int holdingPos = searchArrays(ID);
+        Holding holding = (Holding) searchArrays(ID);
         //If the holding is not in inventory fail immediately.
-        if (holdingPos >= 0) {
+        if (holding == null) {
             System.out.println("Holding with ID: " + ID + " does not exist.");
             return false;
         }
         //Set the holding.
-        Holding holding = holdings[holdingPos];
         //Initialise this for a foreach. If the holding is not found it will not be set.
         boolean holdingIsBorrowed = false;
         Member containingMember = null;
@@ -329,7 +271,7 @@ public class Inventory {
             //Add it to the backup array for restoration - this is not saved between runs.
             addDeleted(holding);
             //Remove it from the normal array.
-            holdings[holdingPos] = null;
+            holdings.remove(holding);
             recalculateStatistics();
             //Tell the user some inane stats.
             System.out.println(Utilities.INFORMATION_MESSAGE + " Holding " + ID + " was removed. There are " + numberOfHoldings + " holdings still in system");
@@ -340,7 +282,7 @@ public class Inventory {
         else if (force) {
             //Run through the deleted process
             addDeleted(holding);
-            holdings[holdingPos] = null;
+            holdings.remove(holding);
             //Remove it from the member.
             containingMember.removeHolding(holding);
             recalculateStatistics();
@@ -359,10 +301,10 @@ public class Inventory {
      * @param ID Search for this ID in the arrays.
      * @return array index that has an item that has a matching ID.
      */
-    private int searchArrays(String ID) {
+    private SystemOperations searchArrays(String ID) {
         char itemType = ID.toLowerCase().charAt(0);
 
-        IdentifierSupported[] array = null;
+        ArrayList<? extends SystemOperations> array = null;
         //If the type is on of the holding types, set the array to the holdings array.
         for (char c : UI.HOLDING_TYPES) {
             if (itemType == c) {
@@ -380,22 +322,21 @@ public class Inventory {
         //If the array was set as it matched something use it here.
         if (array != null) {
             //Search through the array for something that matches the ID given. If found, return it.
-            for (int i = 0; i < array.length; i++) {
-                if (array[i] != null) {
-                    if (array[i].getID().equals(ID)) {
-                        return (i);
-                    }
+            for (SystemOperations holding : array) {
+                if (holding.getID().equals(ID)) {
+                    return (holding);
                 }
+
             }
             //If we didn't find anything tell the user.
             System.out.println(Utilities.INFORMATION_MESSAGE + " Unable to find holding with that ID");
-            return (-1);
+            return (null);
         }
 
         //The array was null- hence the ID did not match one of the accepted types. Report that to the user.
         else {
             System.out.println(Utilities.WARNING_MESSAGE + " Wrong ID format");
-            return -1;
+            return null;
         }
     }
 
@@ -421,12 +362,6 @@ public class Inventory {
 
     public boolean undeleteHolding(int deletedIndex) {
 
-        int index = firstNullArray(UI.HOLDING_TYPES[0]);
-        //If the holdings array is full return false
-        if (index <= 0) {
-            return false;
-        }
-
         //Set the deleted holding
         Holding deleted = deletedHoldings[deletedIndex];
         //If there is no holding with the index return false
@@ -435,7 +370,7 @@ public class Inventory {
         }
         //Shift the holding to the normal array.
         else {
-            holdings[index] = deleted;
+            holdings.add(deleted);
             deletedHoldings[deletedIndex] = null;
             return true;
         }
@@ -462,15 +397,15 @@ public class Inventory {
      */
     public boolean removeMember(String ID) {
         //Find the member
-        int memberPos = searchArrays(ID);
+        Member member = (Member) searchArrays(ID);
         //Only delete the
-        if (memberPos >= 0) {
+        if (member != null) {
 
             //Only delete the member if all holdings are returned
-            if (members[memberPos].numberOfBorrowedHoldings() == 0) {
+            if (member.numberOfBorrowedHoldings() == 0) {
                 //Delete the ID, remove the member from the array
-                IDManager.removeIdentifier(members[memberPos].getUUID());
-                members[memberPos] = null;
+                IDManager.removeIdentifier(member.getUUID());
+                members.remove(member);
                 recalculateStatistics();
                 System.out.println(Utilities.INFORMATION_MESSAGE + " Member " + ID + " was removed. There are " + numberOfMembers + " members still in system");
                 return true;
@@ -497,11 +432,11 @@ public class Inventory {
      */
     public boolean borrowHolding(String holdingID, String memberID) throws InsufficientCreditException, OnLoanException, ItemInactiveException {
         //Find the holding and member positions in the array
-        int holdingPos = searchArrays(holdingID);
-        int memberPos = searchArrays(memberID);
+        Holding holding = (Holding) searchArrays(holdingID);
+        Member member = (Member) searchArrays(memberID);
         //Borrow them
-        if (holdingPos >= 0 && memberPos >= 0) {
-            members[memberPos].borrowHolding(holdings[holdingPos]);
+        if (holding != null && member != null) {
+            member.borrowHolding(holding);
             return true;
         } else return false;
     }
@@ -517,15 +452,15 @@ public class Inventory {
      * @throws ItemInactiveException
      * @throws TimeTravelException
      */
-    public boolean returnHoldingNoFee(String holdingID, String memberID) throws NotBorrowedException, ItemInactiveException, TimeTravelException {
+    public void returnHoldingNoFee(String holdingID, String memberID) throws NotBorrowedException, ItemInactiveException, TimeTravelException {
         //Find the holding and member array positions.
-        int holdingPos = searchArrays(holdingID);
-        int memberPos = searchArrays(memberID);
+        Holding holding = (Holding) searchArrays(holdingID);
+        Member member = (Member) searchArrays(memberID);
         //Return them using the borrow date to ensure no fee (just in case)
-        if (holdingPos >= 0 && memberPos >= 0) {
-            members[memberPos].returnHoldingNoFee(holdings[holdingPos], holdings[holdingPos].getBorrowDate());
-            return true;
-        } else return false;
+        if (holding != null && member != null) {
+            member.returnHoldingNoFee(holding, holding.getBorrowDate());
+        } else {
+        }
 
     }
 
@@ -542,11 +477,11 @@ public class Inventory {
      */
     public boolean returnHolding(String holdingID, String memberID, DateTime returnDate) throws InsufficientCreditException, NotBorrowedException, ItemInactiveException, TimeTravelException {
         //Find the holding and member array positions.
-        int holdingPos = searchArrays(holdingID);
-        int memberPos = searchArrays(memberID);
+        Holding holding = (Holding) searchArrays(holdingID);
+        Member member = (Member) searchArrays(memberID);
         //Return them, passing the returnDate.
-        if (holdingPos >= 0 && memberPos >= 0) {
-            members[memberPos].returnHolding(holdings[holdingPos], returnDate);
+        if (holding != null && member != null) {
+            member.returnHolding(holding, returnDate);
             return true;
         } else return false;
 
@@ -588,10 +523,11 @@ public class Inventory {
      * @param ID the ID to be used to identify the holding.
      */
     public void printHolding(String ID) {
-        int holdingID = searchArrays(ID);
-        if (holdingID < 0) {
-            System.out.println(Utilities.WARNING_MESSAGE + " No Holding Found");
-        } else holdings[holdingID].print();
+        Holding holding = (Holding) searchArrays(ID);
+        if (holding != null) {
+            holding.print();
+        } else System.out.println(Utilities.WARNING_MESSAGE + " No Holding Found");
+
     }
 
     /**
@@ -600,10 +536,11 @@ public class Inventory {
      * @param ID the ID to be used to identify the holding.
      */
     public void printMember(String ID) {
-        int memberID = searchArrays(ID);
-        if (memberID < 0) {
-            System.out.println(Utilities.WARNING_MESSAGE + " No Member Found");
-        } else members[memberID].print();
+        Member member = (Member) searchArrays(ID);
+        if (member != null) {
+            member.print();
+        } else System.out.println(Utilities.WARNING_MESSAGE + " No Member Found");
+
     }
 
     /**
@@ -613,18 +550,26 @@ public class Inventory {
      * @return the members name
      */
     public String getMemberName(String ID) {
-        boolean result;
+        boolean result = false;
         //Validate that the member is of the correct type
-        if (ID.charAt(0) == 's' || ID.charAt(0) == 'p') {
+        for (char c : Utilities.MEMBER_TYPES) {
+            if (c == ID.charAt(0)) {
+                result = true;
+            }
+        }
+
+        //If the member id is of an acceptable type check if it exists
+        if (result) {
             result = idExists(ID);
         } else {
             System.out.println(Utilities.WARNING_MESSAGE + " ID not a member. Please try again");
             return null;
         }
-        if (!result) {
-            return null;
+        Member member = ((Member) searchArrays(ID));
+        if (result && member != null) {
+            return (member.getFullName());
         } else {
-            return (members[searchArrays(ID)].getFullName());
+            return null;
         }
     }
 
@@ -639,7 +584,7 @@ public class Inventory {
             System.out.println(Utilities.WARNING_MESSAGE + " Incorrect ID");
             return false;
         }
-        if (searchArrays(ID) < 0) {
+        if (searchArrays(ID) != null) {
             System.out.println(Utilities.WARNING_MESSAGE + " Not Found");
             return false;
         } else
@@ -653,26 +598,12 @@ public class Inventory {
      * @param newID The ID to replace with.
      */
     public void replaceID(String oldID, String newID) {
-        char type = oldID.charAt(0);
-        int arrayIndex = searchArrays(oldID);
-        IdentifierSupported[] array = null;
-        //If the type is on of the holding types, set the array to the holdings array.
-        for (char c : UI.HOLDING_TYPES) {
-            if (type == c) {
-                array = holdings;
-            }
-        }
 
-        //If the type is of a member set the array to the members array
-        for (char c : UI.MEMBER_TYPES) {
-            if (type == c) {
-                array = members;
-            }
-        }
+        SystemOperations replace = searchArrays(oldID);
 
         //If the array was set as it matched something use it here.
-        if (array != null) {
-            array[arrayIndex].setID(newID);
+        if (replace != null) {
+            replace.setID(newID);
         } else {
             System.out.println("Nothing was found with that ID");
         }
@@ -686,8 +617,8 @@ public class Inventory {
      * @return whether the operation was successful
      */
     public boolean replaceName(String ID, String name) {
-        int arrayPos = searchArrays(ID);
-        return members[arrayPos].setName(name);
+        Member member = (Member) searchArrays(ID);
+        return member != null && member.setName(name);
     }
 
     /**
@@ -697,8 +628,10 @@ public class Inventory {
      * @param title the title to set for the holding
      */
     public void replaceTitle(String ID, String title) {
-        int arrayPos = searchArrays(ID);
-        holdings[arrayPos].setTitle(title);
+        Holding holding = (Holding) searchArrays(ID);
+        if (holding != null) {
+            holding.setTitle(title);
+        }
     }
 
     /**
@@ -709,26 +642,11 @@ public class Inventory {
      * @throws IncorrectDetailsException
      */
     public boolean activate(String ID) throws IncorrectDetailsException {
-        int arrayPos = searchArrays(ID);
-        char type = ID.charAt(0);
-        SystemOperations[] array = null;
-        //If the type is of a holding set the array to the holdings array
-        for (char c : UI.HOLDING_TYPES) {
-            if (type == c) {
-                array = holdings;
-            }
-        }
-
-        //If the type is of a member set the array to the members array
-        for (char c : UI.MEMBER_TYPES) {
-            if (type == c) {
-                array = members;
-            }
-        }
+        SystemOperations operable = searchArrays(ID);
 
         //Check that the array was properly set.
-        if (array != null) {
-            return array[arrayPos].activate();
+        if (operable != null) {
+            return operable.activate();
         } else {
             System.out.println("ID was invalid");
             return false;
@@ -742,26 +660,11 @@ public class Inventory {
      * @return the success of the deactivation
      */
     public boolean deactivate(String ID) {
-        int arrayPos = searchArrays(ID);
-        char type = ID.charAt(0);
-        SystemOperations[] array = null;
-        //If the type is of a holding set the array to the holdings array
-        for (char c : UI.HOLDING_TYPES) {
-            if (type == c) {
-                array = holdings;
-            }
-        }
-
-        //If the type is of a member set the array to the members array
-        for (char c : UI.MEMBER_TYPES) {
-            if (type == c) {
-                array = members;
-            }
-        }
+        SystemOperations operable = searchArrays(ID);
 
         //Check that the array was properly set.
-        if (array != null) {
-            return array[arrayPos].deactivate();
+        if (operable != null) {
+            return operable.deactivate();
         } else {
             System.out.println("ID was invalid");
             return false;
@@ -776,14 +679,16 @@ public class Inventory {
      * @throws IncorrectDetailsException
      */
     public void replaceLoan(String ID, int loanFee) throws IncorrectDetailsException {
-        int arrayPos = searchArrays(ID);
         if (ID.charAt(0) == 'v') {
-            Video video = (Video) holdings[arrayPos];
-            video.setLoanFee(loanFee);
-
+            Video video = (Video) searchArrays(ID);
+            if (video != null) {
+                video.setLoanFee(loanFee);
+            }
         } else {
             System.out.println("Incorrect ID for setting loan fee");
         }
+
+
     }
 
     /**
@@ -792,16 +697,14 @@ public class Inventory {
      * @param ID the ID of the member to reset
      */
     public void resetMemberCredit(String ID) {
-        int arrayPos = searchArrays(ID);
+        Member member = (Member) searchArrays(ID);
         char type = ID.charAt(0);
-
-        if (arrayPos >= 0) {
-            for (char c : UI.MEMBER_TYPES) {
-                if (type == c) {
-                    members[arrayPos].resetCredit();
-                }
+        for (char c : UI.MEMBER_TYPES) {
+            if (type == c && member != null) {
+                member.resetCredit();
             }
         }
+
     }
 
     /**
@@ -811,15 +714,14 @@ public class Inventory {
      * @return The balance of the member
      */
     public double getMemberBalance(String ID) {
-        int arrayPos = searchArrays(ID);
+        Member member = (Member) searchArrays(ID);
         char type = ID.charAt(0);
         //Check that the ID is correct, and a member
-        if (arrayPos >= 0) {
-            for (char c : UI.MEMBER_TYPES) {
-                if (type == c) {
-                    return members[arrayPos].getBalance();
-                }
+        for (char c : UI.MEMBER_TYPES) {
+            if (type == c && member != null) {
+                return member.getBalance();
             }
+
         }
         System.out.println("Item not found");
         return 0;
@@ -915,9 +817,9 @@ public class Inventory {
      * @return An integer in number of days in loan period.
      */
     public int getHoldingReturnTime(String ID) {
-        int holdingPos = searchArrays(ID);
-        if (holdingPos >= 0) {
-            return holdings[holdingPos].getMaxLoanPeriod();
+        Holding holding = (Holding) searchArrays(ID);
+        if (holding != null) {
+            return holding.getMaxLoanPeriod();
         } else return 0;
     }
 
@@ -929,25 +831,25 @@ public class Inventory {
      * @return number of days the holding can be borrowed for.
      */
     public int getHoldingLateFee(String ID, DateTime returnDay) {
-        int holdingPos = searchArrays(ID);
-        if (holdingPos >= 0) {
-            return holdings[holdingPos].calculateLateFee(returnDay);
+        Holding holding = (Holding) searchArrays(ID);
+        if (holding != null) {
+            return holding.calculateLateFee(returnDay);
         } else return 0;
     }
 
     public void addHolding(String identifier, String title, int loanFee, int maxLoanPeriod, DateTime borrowDate, boolean active, String uniqueID) {
         if (identifier.charAt(0) == 'b') {
-            holdings[firstNullArray('b')] = new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+            holdings.add(new Book(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID));
         } else if (identifier.charAt(0) == 'v') {
-            holdings[firstNullArray('v')] = new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID);
+            holdings.add(new Video(identifier, title, loanFee, maxLoanPeriod, borrowDate, active, uniqueID));
         }
     }
 
     public void addMember(String identifier, String name, int maxCredit, double balance, ArrayList<Holding> borrowed, boolean active, String uniqueID) {
         if (identifier.charAt(0) == 's') {
-            members[firstNullArray('s')] = new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+            members.add(new StandardMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID));
         } else if (identifier.charAt(0) == 'p') {
-            members[firstNullArray('p')] = new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID);
+            members.add(new PremiumMember(identifier, name, maxCredit, balance, borrowed, active, uniqueID));
         }
     }
 
@@ -960,11 +862,11 @@ public class Inventory {
     }
 
     public Holding[] getHoldings() {
-        return holdings;
+        return holdings.toArray(new Holding[holdings.size()]);
     }
 
     public Member[] getMembers() {
-        return members;
+        return members.toArray(new Member[members.size()]);
     }
 
 }

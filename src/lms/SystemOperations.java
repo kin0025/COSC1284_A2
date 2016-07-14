@@ -10,5 +10,10 @@ import lms.exceptions.IncorrectDetailsException;
  */
 public interface SystemOperations {
     boolean activate() throws IncorrectDetailsException;
+
     boolean deactivate();
+
+    String getID();
+
+    void setID(String newID);
 }

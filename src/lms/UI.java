@@ -25,8 +25,8 @@ import java.util.StringTokenizer;
  * Created by akinr on 11/04/2016 as part of s3603437_A2
  */
 public class UI {
-    public static final char[] MEMBER_TYPES = {'s', 'p'};
-    public static final char[] HOLDING_TYPES = {'b', 'v'};
+    public static final char[] MEMBER_TYPES = Utilities.MEMBER_TYPES;
+    public static final char[] HOLDING_TYPES = Utilities.HOLDING_TYPES;
     private static final String[] CHOICE_OPTIONS = {"y (yes)", "n (no)", "e (exit)"};
     private static final String[] BORROW_OPTIONS = {"y (yes)", "c (change member)", "n (no)", "e (exit)"};
     private static final String[] MEMBER_OPTIONS = {"s (standard)", "p (premium)"};
@@ -42,26 +42,9 @@ public class UI {
      * Prompts user for inventory size input.
      */
     public UI() {
-        String[] choiceOptions = {"y", "n"};
-        char choice = receiveStringInput("Do you want to enable expanded inventory?", choiceOptions, "n", 1, 5).charAt(0);
-
         //Create a normal inventory object with 15 members and 15 holdings.
-        if (choice == 'n') {
-            inv = new Inventory();
-        } else {
+        inv = new Inventory();
 
-            //Prompt the user for input and use the inputs for the size of the holding and members arrays in inventory.
-            System.out.println("Enter an integer for max number of holdings:");
-            //We don't check input validity or catch the exceptions. At this stage we are not validating input.
-            System.out.print(Utilities.INPUT_MESSAGE);
-            int holdings = input.nextInt();
-            System.out.println("Enter an integer for max number of members:");
-            System.out.print(Utilities.INPUT_MESSAGE);
-            int members = input.nextInt();
-            this.inv = new Inventory(holdings, members);
-
-
-        }
 
     }
 /* Graphical Elements */
@@ -1298,7 +1281,8 @@ public class UI {
                         }
 
                         //If it is not a date it must be a number of days. Otherwise set it to current date.
-                        else if (!date.isEmpty()) {
+
+                        else if (date != null && !date.isEmpty()) {
                             try {
                                 returnDate = new DateTime(Integer.parseInt(date));
                             } catch (Exception e) {
@@ -1439,6 +1423,7 @@ public class UI {
         try {
             //noinspection StatementWithEmptyBody
             //Wait for 1000 * wait time milliseconds
+            //noinspection StatementWithEmptyBody
             while ((System.currentTimeMillis() - startTime) < waitTime * 1000
                     && !in.ready()) {
             }

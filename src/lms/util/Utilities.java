@@ -19,8 +19,9 @@ import java.util.Random;
 @SuppressWarnings("WeakerAccess")
 public class Utilities {
 
-
-    public static final String FILE_EXTENSION = ".txt";
+    public static final char[] MEMBER_TYPES = {'s', 'p'};
+    public static final char[] HOLDING_TYPES = {'b', 'v'};
+    public static final String FILE_EXTENSION = ".csv";
     //Comment the block below after enabling colours
     public static String ANSI_RESET = "";
     public static String ANSI_BLACK = "";

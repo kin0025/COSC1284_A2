@@ -24,13 +24,14 @@ public class IO {
     private static final String fileExtension = Utilities.FILE_EXTENSION;
     private final Inventory inv;
 
-    public IO(Inventory inventory){
-           inv = inventory;
-}
+    public IO(Inventory inventory) {
+        inv = inventory;
+    }
+
     /**
      * Loads the holdings.txt, members.txt and state.txt files from the folder specified relative to the location.
      *
-     * @param folderName
+     * @param folderName the name of the folder to be loaded from
      * @throws IOException
      */
     public void load(String folderName) throws IOException {
@@ -132,6 +133,7 @@ public class IO {
         }
 
     }
+
     /**
      * Saves the program state to holdings.txt, members.txt and state.txt
      *
