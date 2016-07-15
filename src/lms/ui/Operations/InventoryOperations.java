@@ -16,6 +16,13 @@ import lms.util.Utilities;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+import static lms.ui.Input.*;
+import static lms.ui.Shared.newPage;
+import static lms.ui.UI.*;
+import static lms.ui.Menu.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
+
 /**
  * Created by kin0025 on 15/07/2016.
  */
@@ -24,13 +31,13 @@ public class InventoryOperations {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void addHolding() {
+    public static void addHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
             //Using the the method to take input.
 
             //Creating the first page
-            Shared.newPage("Add Holding");
+            newPage("Add Holding");
             String[] infoID = getValidID("Holding", HOLDING_OPTIONS);
             if (infoID == null) {
                 return;
@@ -116,7 +123,7 @@ public class InventoryOperations {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void addMember() {
+    public static void addMember() {
         boolean keepGoing = true;
         while (keepGoing) {
             //Setting options that will be used later on as choices.
@@ -197,7 +204,7 @@ public class InventoryOperations {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void removeHolding() {
+    public static void removeHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
             char choice;
@@ -254,7 +261,7 @@ public class InventoryOperations {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void removeMember() {
+    public static void removeMember() {
         boolean keepGoing = true;
         while (keepGoing) {
             char choice;
@@ -306,7 +313,7 @@ public class InventoryOperations {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void borrowHolding() {
+    public static void borrowHolding() {
         char choice = 'c';
         boolean keepGoing = true;
         String memberID = null;
@@ -399,7 +406,7 @@ public class InventoryOperations {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void returnHolding() {
+    public static void returnHolding() {
         char choice = 'c';
         boolean keepGoing = true;
         String memberID = null;
@@ -522,7 +529,7 @@ public class InventoryOperations {
     /**
      * Returns a holding with no fee.
      */
-    private void returnHoldingNoFee() {
+    public static void returnHoldingNoFee() {
         //Get both IDs
         String holdingID = getExistingID("Holding", HOLDING_TYPES);
         String memberID = getExistingID("Member", MEMBER_TYPES);
@@ -538,7 +545,7 @@ public class InventoryOperations {
     /**
      * A UI method for retrieving deleted holdings.
      */
-    private void undeleteHolding() {
+    public static void undeleteHolding() {
         //Print the options
         inv.printDeleted();
         //Give them a selection

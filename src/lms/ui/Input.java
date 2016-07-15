@@ -35,7 +35,7 @@ public  class Input {
      * @param outputLength    The length of input that will be validated and output.
      * @return The final validated chosen user input of the first <code>int outputLength</code> positions.
      **/
-    public String receiveStringInput(String flavourText, String[] options, boolean printOptionText, int outputLength) {
+    public static String receiveStringInput(String flavourText, String[] options, boolean printOptionText, int outputLength) {
         //Print the flavour text.
         System.out.print(flavourText + " ");
         //Make sure that we don't npe anywhere
@@ -222,7 +222,7 @@ public  class Input {
      * @param types  Used by <code>{@link #receiveStringInput(String, String[], boolean, int)}</code> to get the type of ID to be created.
      * @return 2 long array of Strings. First position is the type, Second position is the 6 digit ID.
      */
-    public String[] getValidID(String typeID, String[] types) {
+    public static String[] getValidID(String typeID, String[] types) {
         char type;
         if (types.length > 1) {
             type = receiveStringInput("Enter type of " + typeID + ":", types, true, 1).charAt(0);

@@ -17,6 +17,10 @@ import lms.util.Utilities;
 import java.io.File;
 import java.io.IOException;
 
+import static lms.ui.UI.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
+
 /**
  * Created by kin0025 on 15/07/2016.
  */
@@ -110,7 +114,7 @@ public class Shared {
         //Checks for incorrect closing of the program.
         try {
             //try to create the file to tell program status. This will be deleted before close. If file already exists, close must have been completed incorrectly, and assume crash.
-            result = UI.RUN_STATUS.createNewFile();
+            result = RUN_STATUS.createNewFile();
             if (!result) {
                 System.out.println("Program did not close correctly last run.");
                 //check if a backup exists.
@@ -158,7 +162,7 @@ public class Shared {
         //Choices of folder, and default set before
         else if (choice == 's') {
 
-            choice = receiveStringInput("What do folder do you want to use?", new String[]{"c (custom)", "b (backup)", "s (save)", "l (lastrun)"}, saveLocation, 1).charAt(0);
+            choice = Input.receiveStringInput("What do folder do you want to use?", new String[]{"c (custom)", "b (backup)", "s (save)", "l (lastrun)"}, saveLocation, 1).charAt(0);
 //Get the folder to load from via the choice before
             switch (choice) {
                 case 'b':
@@ -210,44 +214,13 @@ public class Shared {
         }
     }
 
-    /**
-     * Used to limit access to admin menu
-     */
-    private static void adminMenuVerify() {
-        AdminVerify verify = new AdminVerify();
-        newPage("Admin Verification");
-        System.out.println("Please enter your admin password (Password1):");
-        System.out.print(Utilities.INPUT_MESSAGE);
-        //Check the password
-        String password = input.nextLine();
-        //Run the admin menu
-        if (verify.authenticated(password)) {
-            adminMenu();
-        }
-        //Wait 5 seconds so they can't spam passwords.
-        else {
-            try {
-                System.out.println(Utilities.INFORMATION_MESSAGE + "Incorrect Password. Returning to main menu");
-                System.out.print("In 5 seconds");
-                for (int i = 5; i != 0; i--) {
-                    Thread.sleep(1000);
-                    System.out.print("\r");
-                    System.out.print("In " + i + " seconds");
-
-
-                }
-            } catch (InterruptedException ignored) {
-            }
-        }
-
-    }
 
     /**
      * Creates a new page. Formatted, displays current date and the status of inventory.
      *
      * @param title Used to make the central element of the page.
      **/
-    private static void newPage(String title) {
+    public static void newPage(String title) {
         //Sets the width of the page.
         try {
             Runtime.getRuntime().exec("cls");

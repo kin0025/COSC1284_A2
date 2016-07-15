@@ -11,7 +11,10 @@ package lms.ui.Operations;
 
 import lms.exceptions.IncorrectDetailsException;
 import lms.util.Utilities;
-
+import static lms.ui.UI.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
+import static lms.ui.Print.*;
 /**
  * Created by kin0025 on 15/07/2016.
  */
@@ -22,7 +25,7 @@ public class HoldingOperations {
      * @param types    Used for valid types for input.
      * @param typeName Used in user facing prompts.
      */
-    private void editID(char[] types, String typeName) {
+    public static void editID(char[] types, String typeName) {
         //Get the ID
         String oldID = getExistingID(typeName, types);
         //If it was entered correctly keep going
@@ -45,7 +48,7 @@ public class HoldingOperations {
      * @param types    Used for valid types for input.
      * @param typeName Used in user facing prompts.
      */
-    private void editTitle(char[] types, String typeName) {
+    public static void editTitle(char[] types, String typeName) {
         //Get the ID
         String oldID = getExistingID(typeName, types);
         //If it was entered correctly keep going
@@ -69,7 +72,7 @@ public class HoldingOperations {
     /**
      * Edits the loan cost of Videos.
      */
-    private void editLoanCost() {
+    public static void editLoanCost() {
         //We can only edit loan cost on Videos.
         char[] type = {'v'};
         String oldID = getExistingID("Video", type);

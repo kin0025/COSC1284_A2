@@ -14,6 +14,15 @@ import lms.util.DateTime;
 import lms.util.Utilities;
 
 import java.io.IOException;
+import static lms.ui.UI.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
+import static lms.ui.Print.*;
+
+import static lms.ui.Operations.InventoryOperations.*;
+import static lms.ui.Operations.HoldingOperations.*;
+import static lms.ui.Operations.GenericOperations.*;
+import static lms.ui.Operations.MemberOperations.*;
 
 /**
  * Created by kin0025 on 15/07/2016.
@@ -24,7 +33,7 @@ public class Menu {
      * Used for choice in user facing options.
      * Runs other methods based on user input.
      */
-    public void mainMenu() {
+    public static void mainMenu() {
         //Print options. Debug stuff on option 211 and 404
         newPage("Home");
         System.out.println(" 1. Add Holding");
@@ -90,7 +99,7 @@ public class Menu {
                 exit();
                 break;
             case 15:
-                adminMenuVerify();
+                Admin.adminMenuVerify();
                 break;
             case 211:
                 printState();
@@ -104,58 +113,11 @@ public class Menu {
                 break;
         }
     }
-    /**
-     * Secondary menu for admin functions used to choose what admin methods to run.
-     */
-    private void adminMenu() {
-        while (true) {
-            newPage("Admin");
-//The menu for admin stuff
-            System.out.println(" 1. Activate");
-            System.out.println(" 2. Deactivate");
-            System.out.println(" 3. Edit Holding Details");
-            System.out.println(" 4. Reset Member Credit");
-            System.out.println(" 5. Edit Member Details");
-            System.out.println(" 6. Return holding ignoring fees");
-            System.out.println(" 7. Undelete holdings");
-            System.out.println(" 8. Back to Main Menu");
-            printCharTimes('=', 50, true);
-            String[] adminOptions = {"1", "2", "3", "4", "5", "6", "7", "8"};
-            int options = Integer.parseInt(receiveStringInput("Enter an option:", adminOptions, false, 1)); //http://stackoverflow.com/questions/5585779/converting-string-to-int-in-java
-            switch (options) {
-                case 1:
-                    activate();
-                    break;
-                case 2:
-                    deactivate();
-                    break;
-                case 3:
-                    editHoldingMenu();
-                    break;
-                case 4:
-                    resetMemberCredit();
-                    break;
-                case 5:
-                    editMemberMenu();
-                    break;
-                case 6:
-                    returnHoldingNoFee();
-                    break;
-                case 7:
-                    undeleteHolding();
-                    break;
-                case 8:
-                    return;
-                default:
-                    adminMenu();
-            }
-        }
-    }
 
     /**
      * A tertiary menu for editing holdings.
      */
-    private void editHoldingMenu() {
+    public static void editHoldingMenu() {
 
         newPage("Edit Holding");
         System.out.println(" 1. ID");
@@ -181,7 +143,7 @@ public class Menu {
     /**
      * A tertiary menu for editing members.
      */
-    private void editMemberMenu() {
+    public static void editMemberMenu() {
 
         newPage("Edit Member");
         System.out.println(" 1. ID");
@@ -205,19 +167,19 @@ public class Menu {
     /**
      * Toggles the display of colours in the UI. Enable if supported by the console
      */
-    private void enableColours() {
+    private static void enableColours() {
         Utilities.toggleColours();
     }
 
     /**
      * Requests input for a change in console width for formatting.
      */
-    private void consoleWidthEdit() {
+    private static void consoleWidthEdit() {
         System.out.println("Enter console width:");
         consoleWidth = input.nextInt();
     }
 
-    private void search() {
+    public static void search() {
         SystemOperations item = searchInventory.searchMenu();
         if (item != null) {
             System.out.println(item.lineSummary());
@@ -228,7 +190,7 @@ public class Menu {
     }
 
 
-    private void save() {
+    public static void save() {
         newPage("Save");
         String folderName;
         System.out.println("Enter the folder that you want to save to. You have 5 seconds to comply or a default will be chosen:");
@@ -246,7 +208,7 @@ public class Menu {
     }
 
 
-    public void save(String folder) {
+    public static void save(String folder) {
         newPage("Save");
         try {
             inv.save(folder);
@@ -259,7 +221,7 @@ public class Menu {
     /**
      *
      */
-    private void load() {
+    public static void load() {
         newPage("Load File");
         //Get their choice
         char choice = receiveStringInput("Do you want to use the default save location?", CHOICE_OPTIONS, "y", 1).charAt(0);
@@ -281,7 +243,7 @@ public class Menu {
         input.nextLine();
     }
 
-    private void exit() {
+    private static void exit() {
         newPage("Exit");
         char choice = receiveStringInput("Do you want to exit? \"y\" for save and exit, \"e\" for exit.", CHOICE_OPTIONS, "y", 1, 30).charAt(0);
         if (choice == 'e') {

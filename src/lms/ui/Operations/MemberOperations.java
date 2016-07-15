@@ -10,6 +10,9 @@
 package lms.ui.Operations;
 
 import lms.util.Utilities;
+import static lms.ui.UI.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
 
 /**
  * Created by kin0025 on 15/07/2016.
@@ -21,7 +24,7 @@ public class MemberOperations {
      * @param types    Used for valid types for input.
      * @param typeName Used in user facing prompts.
      */
-    private void editName(char[] types, String typeName) {
+    public static void editName(char[] types, String typeName) {
         //Get the ID
         String oldID = getExistingID(typeName, types);
         //If it was entered correctly keep going
@@ -50,7 +53,7 @@ public class MemberOperations {
     /**
      * Resets the credit of the ID input by the user. Is for a member.
      */
-    private void resetMemberCredit() {
+    public static void resetMemberCredit() {
         //Get the ID
         String ID = getExistingID("Member", MEMBER_TYPES);
         if (ID != null) {

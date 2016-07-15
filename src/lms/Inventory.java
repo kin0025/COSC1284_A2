@@ -16,6 +16,7 @@ import lms.members.Member;
 import lms.members.PremiumMember;
 import lms.members.StandardMember;
 import lms.ui.SearchInventory;
+import lms.ui.Shared;
 import lms.ui.UI;
 import lms.util.DateTime;
 import lms.util.IDManager;
@@ -55,7 +56,7 @@ public class Inventory {
      *
      * @return number of holdings currently in inventory.
      */
-    int getNumberOfHoldings() {
+    public int getNumberOfHoldings() {
         return (numberOfHoldings);
     }
 
@@ -64,7 +65,7 @@ public class Inventory {
      *
      * @return number of members currently in inventory.
      */
-    int getNumberOfMembers() {
+    public int getNumberOfMembers() {
         return numberOfMembers;
     }
 
@@ -99,7 +100,7 @@ public class Inventory {
      * @param itemType the type of item been examined
      * @return Returns one of these strings: <code>Wrong Number of Digits,ID contains characters,Already taken, Valid</code>
      */
-    String checkID(String ID, char itemType) {
+    public String checkID(String ID, char itemType) {
 
         if (ID.length() != 6) {
             return ("Wrong Number of Digits");
@@ -156,25 +157,25 @@ public class Inventory {
         //Check that there is still room in inventory for a new holding.
         recalculateStatistics();
 
-            //Check that the ID is valid
-            if (checkID(ID, itemType).equals("Valid")) {
+        //Check that the ID is valid
+        if (checkID(ID, itemType).equals("Valid")) {
 
-                //Set the proper concatenated ID.
-                String holdingID = itemType + ID;
-                //Find the first open slot in inventory
-                //Create a book if the type is set to book
-                if (itemType == 'b') {
-                    holdings.add(new Book(holdingID, title));
-                    recalculateStatistics();
-                    return true;
-                }
-                //Create a video if they type is a video.
-                else if (itemType == 'v') {
-                    holdings.add(new Video(holdingID, title, loanFee));
-                    numberOfHoldings++;
-                    return true;
-                }
-            } else System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
+            //Set the proper concatenated ID.
+            String holdingID = itemType + ID;
+            //Find the first open slot in inventory
+            //Create a book if the type is set to book
+            if (itemType == 'b') {
+                holdings.add(new Book(holdingID, title));
+                recalculateStatistics();
+                return true;
+            }
+            //Create a video if they type is a video.
+            else if (itemType == 'v') {
+                holdings.add(new Video(holdingID, title, loanFee));
+                numberOfHoldings++;
+                return true;
+            }
+        } else System.out.println(Utilities.WARNING_MESSAGE + " Invalid ID");
 
         return false;
     }
@@ -497,7 +498,7 @@ public class Inventory {
             if (holding != null) {
                 holding.print();
                 //Print a separator
-                UI.printCharTimes('=', pageWidth, true);
+                Shared.printCharTimes('=', pageWidth, true);
             }
         }
     }
@@ -511,7 +512,7 @@ public class Inventory {
         for (Member member : members) {
             if (member != null) {
                 member.print();
-                UI.printCharTimes('=', pageWidth, true);
+                Shared.printCharTimes('=', pageWidth, true);
             }
         }
     }
@@ -860,9 +861,10 @@ public class Inventory {
         io.load(folder);
     }
 
-    public SearchInventory createSearch(){
-        return new SearchInventory(members,holdings);
+    public SearchInventory createSearch() {
+        return new SearchInventory(members, holdings);
     }
+
     public Holding[] getHoldings() {
         return holdings.toArray(new Holding[holdings.size()]);
     }

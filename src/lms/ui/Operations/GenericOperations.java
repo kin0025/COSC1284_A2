@@ -12,7 +12,10 @@ package lms.ui.Operations;
 import lms.exceptions.IncorrectDetailsException;
 import lms.ui.Input;
 import lms.util.Utilities;
-
+import static lms.ui.UI.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
+import static lms.ui.Print.*;
 /**
  * Created by kin0025 on 15/07/2016.
  */
@@ -20,7 +23,7 @@ public class GenericOperations {
     /**
      * Activates the ID input by the user. Can be a member or holding.
      */
-    private void activate() {
+    public static void activate() {
         //Get the ID
         String ID = Input.getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
         //If it was entered correctly keep going
@@ -42,7 +45,7 @@ public class GenericOperations {
     /**
      * Deactivates the ID input by the user. Can be a member or holding.
      */
-    private void deactivate() {
+    public static void deactivate() {
         //Get the ID
         String ID = getExistingID("Item", new char[]{'b', 'v', 's', 'p'});
         //If it was entered correctly keep going

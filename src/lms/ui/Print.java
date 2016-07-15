@@ -9,6 +9,9 @@
 */
 package lms.ui;
 
+import static lms.ui.UI.*;
+import static lms.ui.Input.*;
+import static lms.ui.Shared.*;
 /**
  * Created by kin0025 on 15/07/2016.
  */
@@ -16,7 +19,7 @@ public class Print {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void printAllHoldings() {
+    public static void printAllHoldings() {
         newPage("Holding Listing");
         inv.printAllHoldings(consoleWidth);
         System.out.println("Press enter to return to menu.");
@@ -26,7 +29,7 @@ public class Print {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void printAllMembers() {
+    public static void printAllMembers() {
         newPage("Members Listing");
         inv.printAllMembers(consoleWidth);
         System.out.println("Press enter to return to menu.");
@@ -36,7 +39,7 @@ public class Print {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void printHolding() {
+    public static void printHolding() {
         boolean keepGoing = true;
         while (keepGoing) {
             newPage("Holding");
@@ -56,7 +59,7 @@ public class Print {
     /**
      * A menu to receive input that will be passed to the inventory class.
      */
-    private void printMember() {
+    public static void printMember() {
         boolean keepGoing = true;
         while (keepGoing) {
             newPage("Member");
@@ -77,7 +80,7 @@ public class Print {
     /**
      * Compares the program md5 state to an input md5.
      */
-    private void printState() {
+    public static void printState() {
         //Print an MD5 of the state.
         String outputHash = inv.outputState();
         System.out.println(outputHash);

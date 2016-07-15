@@ -18,17 +18,17 @@ class LMS {
 
     public static void main(String[] args) {
         UI state = new UI();
-        state.logoBoot();
+
         try {
             while (true) {
-                state.mainMenu();
+                lms.ui.Menu.mainMenu();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         } finally {
             System.out.println("Saving program state to backup directory due to thrown exception.");
-            state.save("backup");
+            lms.ui.Menu.save("backup");
         }
     }
 
