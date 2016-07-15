@@ -31,6 +31,7 @@ public abstract class Member implements SystemOperations, UniqueID {
     protected ArrayList<Holding> borrowed = new ArrayList<>();
     private boolean active;
     private String uniqueID;
+    private int permissionLevel;
 
     /**
      * Used for restoring state. Allows all instance variables to be loaded at once.
@@ -484,5 +485,17 @@ public abstract class Member implements SystemOperations, UniqueID {
 
     public String lineSummary(){
         return getID() + ":" + getFullName();
+    }
+
+    public boolean setPermissions(int permissionLevel,Member actioningMember){
+        if(actioningMember.getPermissionLevel() > permissionLevel){
+            this.permissionLevel = permissionLevel;
+            return true;
+        }
+        return false;
+    }
+
+    public int getPermissionLevel(){
+        return permissionLevel;
     }
 }
