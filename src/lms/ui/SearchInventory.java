@@ -37,23 +37,29 @@ public class SearchInventory {
         System.out.println(" 3. Name");
         System.out.println("Enter your choice:");
         int choice = Integer.parseInt(input.nextLine());
+        ArrayList<SystemOperations> choices;
         switch (choice) {
             case 1:
                 System.out.println("Enter your search term:");
-                return searchID(input.nextLine());
+                choices = searchID(input.nextLine());
+                break;
 
             case 2:
                 System.out.println("Enter your search term:");
-                return searchTitle(input.nextLine());
+                choices = searchTitle(input.nextLine());
+                break;
             case 3:
                 System.out.println("Enter your search term:");
-                return searchName(input.nextLine());
+                choices = searchName(input.nextLine());
+                break;
             default:
                 return null;
         }
+        listSearched(choices);
+        return chooseSearched(choices);
     }
 
-    private SystemOperations searchID(String searchString) {
+    private ArrayList<SystemOperations> searchID(String searchString) {
         ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
 
         //Search all the holdings
@@ -62,23 +68,9 @@ public class SearchInventory {
             //Get the string to compare
             String compare = holding.getID();
 
-            //Check the string for something to compare to
-            for (int i = 0; i < compare.length(); i++) {
+            if (searchString(compare, searchString)) {
+                searchedCandidates.add(holding);
 
-                //Check each spot
-                if (compare.charAt(i) == searchString.charAt(0)) {
-
-                    //Check if there is enough room to fit the search
-                    if ((i + searchString.length()) <= compare.length()) {
-
-                        String comparable = compare.substring(i, i + searchString.length());
-
-                        if (comparable.equalsIgnoreCase(searchString)) {
-                            searchedCandidates.add(holding);
-                        }
-
-                    }
-                }
             }
 
 
@@ -90,153 +82,110 @@ public class SearchInventory {
             String compare = member.getID();
 
             //Check the string for something to compare to
-            for (int i = 0;i < compare.length() ; i++) {
+            for (int i = 0; i < compare.length(); i++) {
 
-                //Check each spot
-                if (compare.charAt(i) == searchString.charAt(0)) {
+                if (searchString(compare, searchString)) {
+                    searchedCandidates.add(member);
 
-                    //Check if there is enough room to fit the search
-                    if ((i + searchString.length()) <= compare.length()) {
-
-                        String comparable = compare.substring(i, i + searchString.length());
-
-                        if (comparable.equalsIgnoreCase(searchString)) {
-                            searchedCandidates.add(member);
-                        }
-
-                    }
                 }
+
+
             }
+        }
+
+            return searchedCandidates;
 
 
         }
 
-        for (int i = 0; i < searchedCandidates.size(); i++) {
-            SystemOperations operations = searchedCandidates.get(i);
+        private ArrayList<SystemOperations> searchTitle(String searchString){
+            ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
+
+            //Search all the holdings
+            for (Holding holding : holdings) {
+
+                //Get the string to compare
+                String compare = holding.getTitle();
+
+                if (searchString(compare, searchString)) {
+                    searchedCandidates.add(holding);
+
+                }
+
+
+            }
+
+            return searchedCandidates;
+
+
+        }
+
+        private ArrayList<SystemOperations> searchName (String searchString){
+            ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
+
+
+            //Search all the holdings
+            for (Member member : members) {
+
+                //Get the string to compare
+                String compare = member.getFullName();
+
+                if (searchString(compare, searchString)) {
+                    searchedCandidates.add(member);
+
+                }
+
+
+            }
+            return searchedCandidates;
+
+
+        }
+
+    private void listSearched(ArrayList<SystemOperations> searched) {
+        for (int i = 0; i < searched.size(); i++) {
+            SystemOperations operations = searched.get(i);
             System.out.println(i + ": " + operations.lineSummary());
         }
-        int choice;
-        boolean canGo = false;
-        System.out.println("Please enter your choice");
-        do {
-            choice = input.nextInt();
-            if (choice < searchedCandidates.size()) {
-                canGo = true;
-            }else{
-                System.out.println("Choice not valid, try again lol");
-            }
-        } while (!canGo);
-
-        return searchedCandidates.get(choice);
-
 
     }
 
-    private SystemOperations searchTitle(String searchString) {
-        ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
-
-        //Search all the holdings
-        for (Holding holding : holdings) {
-
-            //Get the string to compare
-            String compare = holding.getTitle();
-
-            //Check the string for something to compare to
-            for (int i = 0; i<compare.length() ; i++) {
-
-                //Check each spot
-                if (compare.charAt(i) == searchString.charAt(0)) {
-
-                    //Check if there is enough room to fit the search
-                    if ((i + searchString.length()) <= compare.length()) {
-
-                        String comparable = compare.substring(i, i + searchString.length());
-
-                        if (comparable.equalsIgnoreCase(searchString)) {
-                            searchedCandidates.add(holding);
-                        }
-
-                    }
-                }
-            }
-
-
-        }
-
-
-        for (int i = 0; i < searchedCandidates.size(); i++) {
-            SystemOperations operations = searchedCandidates.get(i);
-            System.out.println(i +": "+ operations.lineSummary());
-        }
-        int choice;
-        boolean canGo = false;
-        System.out.println("Please enter your choice");
-        do {
-            choice = input.nextInt();
-            if (choice < searchedCandidates.size()) {
-                canGo = true;
-            }else{
-                System.out.println("Choice not valid, try again lol");
-            }
-        } while (!canGo);
-
-        return searchedCandidates.get(choice);
-
-
-    }
-
-    private SystemOperations searchName(String searchString) {
-        ArrayList<SystemOperations> searchedCandidates = new ArrayList<>();
-
-
-        //Search all the holdings
-        for (Member member : members) {
-
-            //Get the string to compare
-            String compare = member.getFullName();
-
-            //Check the string for something to compare to
-            for (int i = 0; i<compare.length() ; i++) {
-
-                //Check each spot
-                if (compare.charAt(i) == searchString.charAt(0)) {
-
-                    //Check if there is enough room to fit the search
-                    if ((i + searchString.length()) <= compare.length()) {
-
-                        String comparable = compare.substring(i, i + searchString.length());
-
-                        if (comparable.equalsIgnoreCase(searchString)) {
-                            searchedCandidates.add(member);
-                        }
-
-                    }
-                }
-            }
-
-
-        }
-
-        for (int i = 0; i < searchedCandidates.size(); i++) {
-            SystemOperations operations = searchedCandidates.get(i);
-            System.out.println(i +": "+ operations.lineSummary());
-        }
+    private SystemOperations chooseSearched(ArrayList<SystemOperations> searched) {
         int choice;
         boolean canGo = false;
 
         System.out.println("Please enter your choice");
         do {
             choice = Integer.parseInt(input.nextLine());
-            if (choice < searchedCandidates.size()) {
+            if (choice < searched.size()) {
                 canGo = true;
-            }else{
+            } else {
                 System.out.println("Choice not valid, try again lol");
             }
         } while (!canGo);
 
-        return searchedCandidates.get(choice);
-
-
+        return searched.get(choice);
     }
 
+    private boolean searchString(String compare, String searchString) {
+        //Check the string for something to compare to
+        for (int i = 0; i < compare.length(); i++) {
+
+            //Check each spot
+            if (compare.charAt(i) == searchString.charAt(0)) {
+
+                //Check if there is enough room to fit the search
+                if ((i + searchString.length()) <= compare.length()) {
+
+                    String comparable = compare.substring(i, i + searchString.length());
+
+                    if (comparable.equalsIgnoreCase(searchString)) {
+                        return true;
+                    }
+
+                }
+            }
+        }
+        return false;
+    }
 }
