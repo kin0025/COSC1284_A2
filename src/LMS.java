@@ -8,7 +8,7 @@
 *@author - Alex Kinross-Smith
 */
 
-import lms.UI;
+import lms.ui.UI;
 
 /**
  * Created by akinr on 20/04/2016 as part of s3603437_A2

@@ -132,4 +132,24 @@ public class Utilities {
         colours = true;
         System.out.println("Colours enabled");
     }
+
+    /**
+     * Returns an array of Strings (for example {a,b,c} as a String in the format (a/b/c)
+     *
+     * @param array used as the input to formulate the final string.
+     * @return A string in the format of (0/1/2/3/...) of the input array {0,1,2,3,...}
+     **/
+    public static String stringArrayToString(String[] array) {
+        String result = Utilities.ANSI_YELLOW + "{" + Utilities.ANSI_RESET;
+        //Add all the things together
+        for (int i = 0; i < array.length; i++) {
+            //If this isn't the last entry in the array, add a / on as well
+            if (i < array.length - 1) {
+                result += array[i] + Utilities.ANSI_YELLOW + "/" + Utilities.ANSI_RESET;
+            } else { //If it is the last entry, add a closing bracket instead.
+                result += array[i] + Utilities.ANSI_YELLOW + "}" + Utilities.ANSI_RESET;
+            }
+        }
+        return (result);
+    }
 }

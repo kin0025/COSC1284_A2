@@ -16,6 +16,7 @@ import lms.members.Member;
 import lms.members.PremiumMember;
 import lms.members.StandardMember;
 import lms.ui.SearchInventory;
+import lms.ui.UI;
 import lms.util.DateTime;
 import lms.util.IDManager;
 import lms.util.IO;
@@ -859,7 +860,7 @@ public class Inventory {
         io.load(folder);
     }
 
-    SearchInventory createSearch(){
+    public SearchInventory createSearch(){
         return new SearchInventory(members,holdings);
     }
     public Holding[] getHoldings() {

@@ -18,6 +18,7 @@ import java.util.Scanner;
 
 /**
  * Created by kin0025 on 14/07/2016.
+ *
  */
 public class SearchInventory {
     private ArrayList<Member> members;
